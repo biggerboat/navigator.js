@@ -113,6 +113,10 @@ this.navigatorjs = this.navigatorjs||{};
 			return this.setPath(thePath + this._path);
 		},
 
+		hasWildcard: function() {
+			return this.getPath().indexOf("*") != -1;
+		},
+
 		mask: function(aSource) {
 			var theUnmaskedSegments = this.getSegments(),
 				theSourceSegments = aSource.getSegments(),
