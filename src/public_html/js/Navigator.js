@@ -67,9 +67,9 @@ this.navigatorjs = this.navigatorjs||{};
 		}
 
 		//TODO: Build in more strict validation?
-//			if (!(responder is matchingInterface)) {
-//				throw new Error("Responder " + responder + " should implement " + matchingInterface + " to respond to " + behavior);
-//			}
+		if (!_implementsInterface(responder, matchingInterface)) {
+			throw new Error("Responder " + responder + " should implement " + matchingInterface + " to respond to " + behavior);
+		}
 		if (addition) {
 			// add
 			if (list.indexOf(responder) < 0) {
@@ -744,7 +744,6 @@ this.navigatorjs = this.navigatorjs||{};
 		},
 
 		request: function(pathOrState) {
-			console.log(_responders);
 			if (pathOrState == null) {
 				//logger.error("Requested a null state. Aborting request.");
 				return;
