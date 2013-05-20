@@ -27,12 +27,6 @@ this.navigatorjs = this.navigatorjs||{};
 	var _asyncValidated = false;
 	var _asyncValidationOccurred = false;
 
-	var _implementsInterface = function(responder, interface) {
-		return  responder.navigatorBehaviors &&
-				responder.navigatorBehaviors instanceof Array &&
-				responder.navigatorBehaviors.indexOf(interface)!=-1;
-	};
-
 	var _modify = function(addition, responder, pathsOrStates, behaviorString) {
 		if (_relayModification(addition, responder, pathsOrStates, behaviorString)) return;
 
@@ -67,8 +61,8 @@ this.navigatorjs = this.navigatorjs||{};
 		}
 
 		//TODO: Build in more strict validation?
-		if (!_implementsInterface(responder, matchingInterface)) {
-			throw new Error("Responder " + responder + " should implement " + matchingInterface + " to respond to " + behavior);
+		if (!navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, matchingInterface)) {
+			throw new Error("Responder " + responder + " should implement " + matchingInterface + " to respond to " + behaviorString);
 		}
 		if (addition) {
 			// add
@@ -221,7 +215,7 @@ this.navigatorjs = this.navigatorjs||{};
 					waitForResponders.push(responder);
 
 					//use namespace transition;
-					console.log('_flow -> transitionOut', responder, _statusByResponder);
+					console.log('_flow -> transitionOut', this, responder, _statusByResponder);
 					responder.transitionOut(new navigatorjs.transition.TransitionCompleteDelegate(responder, navigatorjs.transition.TransitionStatus.HIDDEN, navigatorjs.NavigationBehaviors.HIDE, this, _transition).call);
 				} else {
 					// already hidden or hiding
@@ -518,8 +512,8 @@ this.navigatorjs = this.navigatorjs||{};
 				//logger.warn("Asynchronously invalidated by " + validatorResponder);
 				_asyncInvalidated = true;
 
-				if (_implementsInterface(validatorResponder, "IHasStateRedirection")) {
-					_inlineRedirection = validatorResponder.redirect(truncatedState, fullState);
+				if (navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(validatorResponder, "IHasStateRedirection")) {
+					_inlineRedirectionState = validatorResponder.redirect(truncatedState, fullState);
 				}
 			}
 
@@ -697,7 +691,7 @@ this.navigatorjs = this.navigatorjs||{};
 //			for each (var responder : INavigationResponder in responderList) {
 		for(index=0;index<responderList.length;index++) {
 			responder = responderList[index];
-			if (_statusByResponder[responder] == navigatorjs.transition.TransitionStatus.UNINITIALIZED && _implementsInterface(responder, "IHasStateInitialization")) {
+			if (_statusByResponder[responder] == navigatorjs.transition.TransitionStatus.UNINITIALIZED && navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, "IHasStateInitialization")) {
 				// first initialize the responder.
 				responder.initialize();
 				_statusByResponder[responder] = navigatorjs.transition.TransitionStatus.INITIALIZED;
