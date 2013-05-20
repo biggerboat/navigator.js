@@ -9,15 +9,17 @@ this.navigatorjs.transition = this.navigatorjs.transition||{};
 		this._navigator = navigator;
 		this._transitionNamespace = transitionNamespace;
 		this._called = false;
+		navigatorjs.utils.AutoBind(this, this);
 	};
 
 	//PUBLIC API
 	TransitionCompleteDelegate.prototype = {
 		call: function() {
+			console.log('TransitionCompleteDelegate -> call', this);
 			if (this._called) { throw new Error("Illegal second call to transition complete. This instance is already prepared for garbage collection!"); }
 
 			this._called = true;
-			this._transitionNamespace.notifyComplete(_responder, this._status, this._behavior);
+			this._transitionNamespace.notifyComplete(this._responder, this._status, this._behavior);
 			this._responder = null;
 			this._navigator = null;
 			this._transitionNamespace = null;

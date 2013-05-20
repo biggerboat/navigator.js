@@ -54,11 +54,34 @@ describe("Navigator", function () {
 		beforeEach(function () {
 			// The definition of a responder has to be defined and can differ per implementation. Keeping generic for now
 			responder = {
-				navigatorBehaviors: ["IHasStateInitialization"],
+				navigatorBehaviors: ["IHasStateInitialization", "IHasStateTransition"],
 				initialize: function() {
-					console.log("initialize");
+					console.log("responder -> initialize");
+				},
+
+				transitionIn: function(callOnComplete) {
+					console.log("responder -> transitionIn");
+					callOnComplete();
+				},
+
+				transitionOut: function(callOnComplete) {
+					console.log("responder -> transitionOut");
+					callOnComplete();
 				}
 			};
+		});
+
+		it("Starts at the root state", function () {
+			navigator.add(responder, states.contact);
+			navigator.start();
+			expect(navigator.getCurrentState().getPath()).toEqual(states.root.getPath());
+		});
+
+		it("Can request to the contact state", function () {
+			navigator.add(responder, states.contact);
+			navigator.start();
+			navigator.request(states.contact);
+			expect(navigator.getCurrentState().getPath()).toEqual(states.contact.getPath());
 		});
 
 		it("can trigger the initialize state", function () {

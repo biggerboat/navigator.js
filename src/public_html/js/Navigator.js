@@ -221,7 +221,8 @@ this.navigatorjs = this.navigatorjs||{};
 					waitForResponders.push(responder);
 
 					//use namespace transition;
-					responder.transitionOut(new navigatorjs.TransitionCompleteDelegate(responder, navigatorjs.transition.TransitionStatus.HIDDEN, navigatorjs.NavigationBehaviors.HIDE, this, _transition).call);
+					console.log('_flow -> transitionOut', responder, _statusByResponder);
+					responder.transitionOut(new navigatorjs.transition.TransitionCompleteDelegate(responder, navigatorjs.transition.TransitionStatus.HIDDEN, navigatorjs.NavigationBehaviors.HIDE, this, _transition).call);
 				} else {
 					// already hidden or hiding
 				}
@@ -297,7 +298,7 @@ this.navigatorjs = this.navigatorjs||{};
 				respondersToWaitFor.push(responder);
 
 				//use namespace transition;
-				responder.transitionIn(new navigatorjs.TransitionCompleteDelegate(responder, navigatorjs.transition.TransitionStatus.SHOWN, navigatorjs.transition.NavigationBehaviors.SHOW, this, _transition).call);
+				responder.transitionIn(new navigatorjs.transition.TransitionCompleteDelegate(responder, navigatorjs.transition.TransitionStatus.SHOWN, navigatorjs.NavigationBehaviors.SHOW, this, _transition).call);
 			}
 		}
 
@@ -718,7 +719,7 @@ this.navigatorjs = this.navigatorjs||{};
 	};
 
 	var Navigator = function () {
-
+		navigatorjs.utils.AutoBind(this, this);
 	};
 
 
