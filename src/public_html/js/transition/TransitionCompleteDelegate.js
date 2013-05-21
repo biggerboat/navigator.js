@@ -15,7 +15,7 @@ this.navigatorjs.transition = this.navigatorjs.transition||{};
 	//PUBLIC API
 	TransitionCompleteDelegate.prototype = {
 		call: function() {
-			console.log('TransitionCompleteDelegate -> call', this);
+			//console.log('TransitionCompleteDelegate -> call', this);
 			if (this._called) { throw new Error("Illegal second call to transition complete. This instance is already prepared for garbage collection!"); }
 
 			this._called = true;

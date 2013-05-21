@@ -85,8 +85,14 @@ describe("Navigator", function () {
 		});
 
 		it("can trigger the initialize state", function () {
+			spyOn(responder, 'initialize');
+
 			navigator.add(responder, states.contact);
 			navigator.start();
+			expect(responder.initialize).not.toHaveBeenCalled();
+
+			navigator.request(states.contact);
+			expect(responder.initialize).toHaveBeenCalled();
 		});
 
 	});
