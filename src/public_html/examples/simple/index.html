@@ -16,6 +16,7 @@
 	<script type="text/javascript" src="../../js/transition/TransitionCompleteDelegate.js"></script>
 	<script type="text/javascript" src="../../js/transition/ValidationPreparedDelegate.js"></script>
 	<script type="text/javascript" src="../../js/Navigator.js"></script>
+	<script type="text/javascript" src="../../js/features/DebugConsole.js"></script>
 
 	<script type="text/javascript">
 		var ShapeResponder = function($el) {
@@ -41,7 +42,10 @@
 				redSquare = new ShapeResponder($("#responders .red")),
 				greenSquare = new ShapeResponder($("#responders .green")),
 				blueSquare = new ShapeResponder($("#responders .blue")),
-				blackCircle = new ShapeResponder($("#responders .black"));
+				blackCircle = new ShapeResponder($("#responders .black")),
+				debugConsole = new navigatorjs.features.DebugConsole(navigator);
+			debugConsole.$el.css({position:'fixed', left:10, bottom:10});
+			$('body').append(debugConsole.$el);
 
 			// Here we add the responders to the navigation states they represent.
 			navigator.add(redSquare, "red");
