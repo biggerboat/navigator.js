@@ -12,19 +12,19 @@ this.navigatorjs.transition.TransitionStatus.DISAPPEARING = 5;
 
 this.navigatorjs.transition.TransitionStatus.toString = function (status) {
 	switch (status) {
-		case this.navigatorjs.transition.TransitionStatus.UNINITIALIZED:
+		case navigatorjs.transition.TransitionStatus.UNINITIALIZED:
 			return "UNINITIALIZED";
-		case this.navigatorjs.transition.TransitionStatus.INITIALIZED:
+		case navigatorjs.transition.TransitionStatus.INITIALIZED:
 			return "INITIALIZED";
-		case this.navigatorjs.transition.TransitionStatus.HIDDEN:
+		case navigatorjs.transition.TransitionStatus.HIDDEN:
 			return "HIDDEN";
-		case this.navigatorjs.transition.TransitionStatus.APPEARING:
+		case navigatorjs.transition.TransitionStatus.APPEARING:
 			return "APPEARING";
-		case this.navigatorjs.transition.TransitionStatus.SHOWN:
+		case navigatorjs.transition.TransitionStatus.SHOWN:
 			return "SHOWN";
-		case this.navigatorjs.transition.TransitionStatus.SWAPPING:
+		case navigatorjs.transition.TransitionStatus.SWAPPING:
 			return "SWAPPING";
-		case this.navigatorjs.transition.TransitionStatus.DISAPPEARING:
+		case navigatorjs.transition.TransitionStatus.DISAPPEARING:
 			return "DISAPPEARING";
 	}
 

@@ -33,6 +33,10 @@
 			transitionOut: function(callOnComplete) {
 				console.log("ShapeResponder -> transitionOut");
 				this._$el.animate({opacity:0}, 500, callOnComplete);
+			},
+
+			toString: function() {
+				return "[object "+this._$el.attr('class')+"]"
 			}
 		};
 
