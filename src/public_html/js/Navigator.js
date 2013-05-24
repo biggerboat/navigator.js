@@ -2,7 +2,7 @@ this.navigatorjs = this.navigatorjs||{};
 
 (function() {
 	//
-	var _$eventDispatcher = $();
+	var _$eventDispatcher = $({});
 	//internal namespaces
 	var _flow = {};
 	var _transition = {};
@@ -190,7 +190,7 @@ this.navigatorjs = this.navigatorjs||{};
 
 		// Do call the super.notifyStateChange() when overriding.
 		if (state != _previousState) {
-			_$eventDispatcher.trigger(navigatorjs.NavigatorEvent.STATE_REQUESTED, {statusByResponderID:_statusByResponderID, respondersByID:_respondersByID, state:_currentState});
+			_$eventDispatcher.trigger(navigatorjs.NavigatorEvent.STATE_CHANGED, {statusByResponderID:_statusByResponderID, respondersByID:_respondersByID, state:_currentState});
 		}
 	};
 
@@ -815,12 +815,14 @@ this.navigatorjs = this.navigatorjs||{};
 			return _isTransitioning;
 		},
 
-		on: function() {
-
+		on: function(event,handler) {
+			_$eventDispatcher.on(event, handler);
+			return this;
 		},
 
-		off: function() {
-
+		off: function(event, handler) {
+			_$eventDispatcher.off(event, handler);
+			return this;
 		}
 	};
 

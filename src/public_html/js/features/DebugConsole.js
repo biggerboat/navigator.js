@@ -60,6 +60,14 @@ this.navigatorjs.features = this.navigatorjs.features||{};
 					break;
 			}
 		});
+
+		var handleStatusUpdated = function(e, data) {
+			console.log('handleStatusUpdated -> handleStatusUpdated', e, data);
+		};
+
+		_navigator.on(navigatorjs.NavigatorEvent.STATE_CHANGED, handleStatusUpdated);
+		_navigator.on(navigatorjs.NavigatorEvent.TRANSITION_STATUS_UPDATED, handleStatusUpdated);
+
 	};
 
 	//PUBLIC API
