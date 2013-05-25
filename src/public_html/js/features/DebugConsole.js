@@ -3,25 +3,109 @@ this.navigatorjs.features = this.navigatorjs.features||{};
 
 (function() {
 
+	var _navigator = null,
+		_template = '<div class="debugConsole">Path: <input type="text" class="path" /><div class="responders"><div class="names"></div><div class="status"></div></div></div>',
+		_visible = true,
+		_inputRegex = new RegExp("[-_/A-Za-z0-9]"),
+		_$el = null,
+		_$pathInput = null,
+		_$responders = null,
+		_$responderNames = null,
+		_$responderStatus = null;
 
+	//Input keydown validation and requesting the entered path
+	var _onKeyPress = function(e) {
+		switch(e.which) {
+			case 13: //Return
+				e.preventDefault(); //Prevent char from writing in textfield
+				_navigator.request(_$pathInput.val());
+				return;
+				break;
+			case 8: //Backspace
+			case 0: //Others such as arrows
+				return; //This can just be executed
+				break;
+		}
+
+		var char = String.fromCharCode(e.which);
+		if(!_inputRegex.test(char)) {
+			e.preventDefault(); //Prevent char from writing in textfield
+		}
+	};
+
+	//Toggle showing debug console
+	var _onWindowKeyPress = function(e) {
+		switch(String.fromCharCode(e.which)) {
+			case "~":
+			case "$":
+			case "`":
+				_visible = !_visible;
+				_$el.css({display:_visible ? '' : 'none'});
+				break;
+		}
+	};
+
+	var _handleStatusUpdated = function(e, data) {
+		_updateDisplay(data.respondersByID, data.statusByResponderID);
+	};
+
+	var _updateDisplay = function(respondersByID, statusByResponderID) {
+		var currentState = _navigator.getCurrentState(),
+			responderID, responder, status, color, responderNamesHTMLString = "", responderStatusHTMLString = "";
+		if (!currentState) return;
+
+		_$pathInput.val(currentState.getPath());
+
+		for(responderID in respondersByID) {
+			responder = respondersByID[responderID];
+			status = statusByResponderID[responderID];
+
+			if(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, "IHasStateTransition") || navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, "IHasStateInitialization")) {
+				responderNamesHTMLString += responder + " <br />";
+				color = _getColorByStatus(status);
+				responderStatusHTMLString += "<span style=\" color:" + color + "; font-weight:bold;\">" + navigatorjs.transition.TransitionStatus.toString(status) + "</span><br />";
+			}
+		}
+
+		_$responderNames.html(responderNamesHTMLString);
+		_$responderStatus.html(responderStatusHTMLString);
+	};
+
+	var _getColorByStatus = function(status) {
+		var color = "";
+		switch(status) {
+			case navigatorjs.transition.TransitionStatus.UNINITIALIZED:
+				color = "#AAAAAA";
+				break;
+			case navigatorjs.transition.TransitionStatus.INITIALIZED:
+				color = "#FFFFFF";
+				break;
+			case navigatorjs.transition.TransitionStatus.HIDDEN:
+				color = "#FF0000";
+				break;
+			case navigatorjs.transition.TransitionStatus.APPEARING:
+			case navigatorjs.transition.TransitionStatus.DISAPPEARING:
+				color = "#FFFF00";
+				break;
+			case navigatorjs.transition.TransitionStatus.SHOWN:
+				color = "#00FF00";
+				break;
+		}
+
+		return color;
+	};
 
 	var DebugConsole = function (navigator) {
-		navigatorjs.utils.AutoBind(this, this);
+		_navigator = navigator;
 
-		var _navigator = navigator;
-		var template = '<div class="debugConsole">Path: <input type="text" class="path" /><div class="responders"><div class="names"></div><div class="status"></div></div></div>';
-		var that = this;
-		var visible = true;
-		var inputRegex = new RegExp("[-_/A-Za-z0-9]");
-
-		this.$el = $(template);
-		this.$pathInput = this.$el.find(".path");
-		this.$responders = this.$el.find(".responders");
-		this.$responderNames = this.$responders.find(".names");
-		this.$responderStatus = this.$responders.find(".status");
+		_$el = $(_template);
+		_$pathInput = _$el.find(".path");
+		_$responders = _$el.find(".responders");
+		_$responderNames = _$responders.find(".names");
+		_$responderStatus = _$responders.find(".status");
 
 		//STYLING
-		this.$el.css({
+		_$el.css({
 			backgroundColor: '#000000',
 			color: '#AAAAAA',
 			fontFamily: 'Arial',
@@ -29,116 +113,34 @@ this.navigatorjs.features = this.navigatorjs.features||{};
 			padding: 5
 		});
 
-		this.$pathInput.css({
+		_$pathInput.css({
 			color: '#00FF00',
 			backgroundColor: 'transparent',
 			fontSize: 12,
 			border: 0
 		});
 
-		this.$responderNames.css({
-			//float: 'left',
+		_$responderNames.css({
 			display: 'inline-block',
 			color: '#FF9900',
 			marginRight: 15
 		});
 
-		this.$responderStatus.css({
+		_$responderStatus.css({
 			display: 'inline-block'
 		});
 
-		//Input keydown validation and requesting the entered path
-		this.$pathInput.on('keypress', function(e) {
-			switch(e.which) {
-				case 13: //Return
-					e.preventDefault(); //Prevent char from writing in textfield
-					navigator.request(that.$pathInput.val());
-					return;
-				break;
-				case 8: //Backspace
-				case 0: //Others such as arrows
-					return; //This can just be executed
-					break;
-			}
 
-			var char = String.fromCharCode(e.which);
-			if(!inputRegex.test(char)) {
-				e.preventDefault(); //Prevent char from writing in textfield
-			}
+		_$pathInput.on('keypress', _onKeyPress);
+		$(window).on('keypress', _onWindowKeyPress);
 
-		});
-
-		//Toggle showing debug console
-		$(window).on('keypress', function(e) {
-			switch(String.fromCharCode(e.which)) {
-				case "~":
-				case "$":
-				case "`":
-					visible = !visible;
-					that.$el.css({display:visible ? '' : 'none'});
-					break;
-			}
-		});
-
-		var handleStatusUpdated = function(e, data) {
-			console.log('handleStatusUpdated -> handleStatusUpdated', e, data);
-			updateDisplay(data.respondersByID, data.statusByResponderID);
-		};
-
-		var updateDisplay = function(respondersByID, statusByResponderID) {
-			var currentState = _navigator.getCurrentState(),
-				responderID, responder, status, color, responderNamesHTMLString = "", responderStatusHTMLString = "";
-			if (!currentState) return;
-
-			that.$pathInput.val(currentState.getPath());
-			
-			for(responderID in respondersByID) {
-				responder = respondersByID[responderID];
-				status = statusByResponderID[responderID];
-
-				if(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, "IHasStateTransition") || navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, "IHasStateInitialization")) {
-					responderNamesHTMLString += responder + " <br />";
-					color = getColorByStatus(status);
-					responderStatusHTMLString += "<span style=\" color:" + color + "; font-weight:bold;\">" + navigatorjs.transition.TransitionStatus.toString(status) + "</span><br />";
-				}
-			}
-
-			that.$responderNames.html(responderNamesHTMLString);
-			that.$responderStatus.html(responderStatusHTMLString);
-		};
-
-		var getColorByStatus = function(status) {
-			var color = "";
-			switch(status) {
-				case navigatorjs.transition.TransitionStatus.UNINITIALIZED:
-					color = "#AAAAAA";
-					break;
-				case navigatorjs.transition.TransitionStatus.INITIALIZED:
-					color = "#FFFFFF";
-					break;
-				case navigatorjs.transition.TransitionStatus.HIDDEN:
-					color = "#FF0000";
-					break;
-				case navigatorjs.transition.TransitionStatus.APPEARING:
-				case navigatorjs.transition.TransitionStatus.DISAPPEARING:
-					color = "#FFFF00";
-					break;
-				case navigatorjs.transition.TransitionStatus.SHOWN:
-					color = "#00FF00";
-					break;
-			}
-
-			return color;
-		};
-
-		_navigator.on(navigatorjs.NavigatorEvent.STATE_CHANGED, handleStatusUpdated);
-		_navigator.on(navigatorjs.NavigatorEvent.TRANSITION_STATUS_UPDATED, handleStatusUpdated);
-
+		_navigator.on(navigatorjs.NavigatorEvent.STATE_CHANGED, _handleStatusUpdated);
+		_navigator.on(navigatorjs.NavigatorEvent.TRANSITION_STATUS_UPDATED, _handleStatusUpdated);
 	};
 
 	//PUBLIC API
 	DebugConsole.prototype = {
-
+		get$El: function() {return _$el;}
 	};
 
 	navigatorjs.features.DebugConsole = DebugConsole;

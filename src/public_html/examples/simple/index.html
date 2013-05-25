@@ -47,9 +47,10 @@
 				greenSquare = new ShapeResponder($("#responders .green")),
 				blueSquare = new ShapeResponder($("#responders .blue")),
 				blackCircle = new ShapeResponder($("#responders .black")),
-				debugConsole = new navigatorjs.features.DebugConsole(navigator);
-			debugConsole.$el.css({position:'fixed', left:10, bottom:10});
-			$('body').append(debugConsole.$el);
+				debugConsole = new navigatorjs.features.DebugConsole(navigator),
+				$debugConsole = debugConsole.get$El();
+			$debugConsole.css({position:'fixed', left:10, bottom:10});
+			$('body').append($debugConsole);
 
 			// Here we add the responders to the navigation states they represent.
 			navigator.add(redSquare, "red");
