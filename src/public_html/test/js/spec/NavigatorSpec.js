@@ -52,7 +52,6 @@ describe("Navigator", function () {
 	describe("Simple navigation", function () {
 
 		beforeEach(function () {
-			// The definition of a responder has to be defined and can differ per implementation. Keeping generic for now
 			responder = {
 				navigatorBehaviors: ["IHasStateInitialization", "IHasStateTransition"],
 				initialize: function() {
@@ -67,6 +66,10 @@ describe("Navigator", function () {
 				transitionOut: function(callOnComplete) {
 					console.log("responder -> transitionOut");
 					callOnComplete();
+				},
+
+				toString: function() {
+					return "[object responder]";
 				}
 			};
 		});
@@ -85,7 +88,7 @@ describe("Navigator", function () {
 		});
 
 		it("can trigger the initialize state", function () {
-			spyOn(responder, 'initialize');
+			spyOn(responder, 'initialize'); //A spy replaces the method, so the initialize log won't occur here
 
 			navigator.add(responder, states.contact);
 			navigator.start();

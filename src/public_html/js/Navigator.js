@@ -14,9 +14,9 @@ this.navigatorjs = this.navigatorjs||{};
 	var _defaultState = null;
 	var _isTransitioning = false;
 	//
-	var _responders = new navigatorjs.ResponderLists();
-	var _respondersByID = {};
-	var _statusByResponderID = {};
+	var _responders = null; //new navigatorjs.ResponderLists();
+	var _respondersByID = null; //{};
+	var _statusByResponderID = null; //{};
 	var _redirects = null;
 	var _disappearingAsynchResponders = null;
 	var _appearingAsynchResponders = null;
@@ -28,6 +28,7 @@ this.navigatorjs = this.navigatorjs||{};
 	var _asyncValidated = false;
 	var _asyncValidationOccurred = false;
 	var _responderIDCount = 0;
+
 
 	var _modify = function(addition, responder, pathsOrStates, behaviorString) {
 		if (_relayModification(addition, responder, pathsOrStates, behaviorString)) return;
@@ -730,6 +731,10 @@ this.navigatorjs = this.navigatorjs||{};
 
 	var Navigator = function () {
 		navigatorjs.utils.AutoBind(this, this);
+
+		_responders = new navigatorjs.ResponderLists();
+		_respondersByID = {};
+		_statusByResponderID = {};
 	};
 
 
@@ -823,6 +828,10 @@ this.navigatorjs = this.navigatorjs||{};
 		off: function(event, handler) {
 			_$eventDispatcher.off(event, handler);
 			return this;
+		},
+
+		logResponders: function() {
+			console.log(_responders.toString());
 		}
 	};
 
