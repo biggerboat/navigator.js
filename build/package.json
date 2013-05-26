@@ -1,0 +1,22 @@
+{
+	"name": "navigator.js",
+	"version": "0.1.0",
+	"author": {
+		"name": "Paul Tondeur",
+		"email": "paul@paultondeur.nl",
+		"url": "http://paultondeur.com"
+	},
+	"description": "A tiny yet powerful library to deal with navigation and flow in your JavaScript projects.",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/PaulTondeur/navigator.js"
+	},
+	"dependencies": {
+		"grunt": "~0.4.0",
+		"grunt-contrib-uglify": "~0.1.2",
+		"grunt-contrib-watch": "~0.3.1"
+	},
+	"engines": {
+		"node": "0.8.x"
+	}
+}
