@@ -4,14 +4,14 @@ module.exports = function (grunt) {
 		banner:'/*! <%= pkg.title || pkg.name %> - v<%= pkg.version %> - ' +
 			'<%= grunt.template.today("yyyy-mm-dd") %>\n' +
 			'<%= pkg.homepage ? "* " + pkg.homepage + "\\n" : "" %>' +
-			'* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;',
+			'* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>; \n*/\n',
 
 		concat: {
 			options: {
 				separator: ';'
 			},
 			dist: {
-				src: ['../src/public_html/js/*.js'],
+				src: ['../src/public_html/js/**/*.js'],
 				dest: '../src/public_html/dist/<%= pkg.name %>.js'
 			}
 		},
@@ -25,12 +25,12 @@ module.exports = function (grunt) {
 					banner:'<%= banner %>'
 				}
 			}
-		}//,
+		},
 
-//		watch: {
-//			files: ['../src/public_html/js/*.js'],
-//			tasks: ['concat:dist','uglify:dist']
-//		}
+		watch: {
+			files: ['../src/public_html/js/*.js'],
+			tasks: ['concat:dist','uglify:dist']
+		}
 	});
 
 	grunt.loadNpmTasks('grunt-contrib-concat');
