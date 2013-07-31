@@ -1,10 +1,15 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-		"http://www.w3.org/TR/html4/loose.dtd">
+<!doctype html>
 <html>
 <head>
+    <base href="/examples/backbone/">
 	<title>Navigator JS - Backbone example</title>
 
 	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	<script type="text/javascript" src="js/libs/underscore-min.js"></script>
+	<script type="text/javascript" src="js/libs/backbone-min.js"></script>
+	<script type="text/javascript" src="js/ApplicationRouter.js"></script>
+	<script type="text/javascript" src="js/ChooseStateView.js"></script>
+	<script type="text/javascript" src="js/ShapeView.js"></script>
 	<!--<script type="text/javascript" src="../../js/utils/AutoBind.js"></script>-->
 	<!--<script type="text/javascript" src="../../js/AsynchResponders.js"></script>-->
 	<!--<script type="text/javascript" src="../../js/NavigationBehaviors.js"></script>-->
@@ -20,62 +25,10 @@
 	<script type="text/javascript" src="../../dist/navigator-js.js"></script>
 
 	<script type="text/javascript">
-		var ShapeResponder = function($el) {
-			this._$el = $el;
-		};
-		ShapeResponder.prototype = {
-			navigatorBehaviors: ["IHasStateTransition"],
-
-			transitionIn: function(callOnComplete) {
-				console.log("ShapeResponder -> transitionIn");
-				this._$el.animate({opacity:1}, 500, callOnComplete);
-			},
-
-			transitionOut: function(callOnComplete) {
-				console.log("ShapeResponder -> transitionOut");
-				this._$el.animate({opacity:0}, 500, callOnComplete);
-			},
-
-			toString: function() {
-				return "[object "+this._$el.attr('class')+"]"
-			}
-		};
-
-		//STARTUP
-		$(function() {
-			var navigator = new navigatorjs.Navigator(),
-				redSquare = new ShapeResponder($("#responders .red")),
-				greenSquare = new ShapeResponder($("#responders .green")),
-				blueSquare = new ShapeResponder($("#responders .blue")),
-				blackCircle = new ShapeResponder($("#responders .black")),
-				debugConsole = new navigatorjs.features.DebugConsole(navigator),
-				$debugConsole = debugConsole.get$El();
-			$debugConsole.css({position:'fixed', left:10, bottom:10});
-			$('body').append($debugConsole);
-
-			// Here we add the responders to the navigation states they represent.
-			navigator.add(redSquare, "red");
-			navigator.add(greenSquare, "green");
-			navigator.add(blueSquare, "blue");
-			navigator.add(blackCircle, "black");
-
-			// We can add one responder to as many states as we like.
-			navigator.add(redSquare, "*/red");
-			navigator.add(greenSquare, "*/green");
-			navigator.add(blueSquare, "*/blue");
-			navigator.add(blackCircle, "*/black");
-
-			// And then we decide the point at which the Navigator takes over
-			navigator.start();
-
-
-			$("#introduction a").on("click", function(e){
-				e.preventDefault();
-				var path = $(e.target).attr('href');
-
-				navigator.request(path);
-			});
-		});
+        $(function() {
+            window.router = new ApplicationRouter();
+            Backbone.history.start({pushState:true, root: '/examples/backbone/'});
+        });
 	</script>
 
 	<style type="text/css">
@@ -104,10 +57,10 @@
 
 </head>
 <body>
-	<div id="introduction">
-		<h1>Simple Navigator Example (no dependencies besides jquery)</h1>
+	<div id="introduction" class="chooseStateView">
+		<h1>Backbone + Navigator Example (no dependencies besides jquery, backbone and underscore)</h1>
 		<p>
-			Welcome to the first example of the Navigator-JS library. Added to this example are 4 elements. A red, green and blue square, and a black circle. By clicking the menu, you can change the navigation state. You can also type in a path in the debug console.
+			Welcome to the second example of the Navigator-JS library. Added to this example are 4 elements. A red, green and blue square, and a black circle. By clicking the menu, you can change the navigation state. You can also type in a path in the debug console.
 		</p>
 		<p>
 			<a href='red'>Red Square</a> | <a href='green'>Green Square</a> | <a href='blue'>Blue Square</a> | <a href='black'>Black Circle</a>
