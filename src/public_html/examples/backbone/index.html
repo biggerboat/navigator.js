@@ -1,5 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-		"http://www.w3.org/TR/html4/loose.dtd">
+<!doctype html>
 <html>
 <head>
     <base href="/examples/backbone/">
@@ -30,29 +29,6 @@
             window.router = new ApplicationRouter();
             Backbone.history.start({pushState:true, root: '/examples/backbone/'});
         });
-
-//		//STARTUP
-//		$(function() {
-//			var navigator = new navigatorjs.Navigator(),
-//				redSquare = new ShapeResponder($("#responders .red")),
-//				greenSquare = new ShapeResponder($("#responders .green")),
-//				blueSquare = new ShapeResponder($("#responders .blue")),
-//				blackCircle = new ShapeResponder($("#responders .black")),
-//				debugConsole = new navigatorjs.features.DebugConsole(navigator),
-//				$debugConsole = debugConsole.get$El();
-//			$debugConsole.css({position:'fixed', left:10, bottom:10});
-//			$('body').append($debugConsole);
-//
-
-//
-//
-//			$("#introduction a").on("click", function(e){
-//				e.preventDefault();
-//				var path = $(e.target).attr('href');
-//
-//				navigator.request(path);
-//			});
-//		});
 	</script>
 
 	<style type="text/css">

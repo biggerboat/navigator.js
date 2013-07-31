@@ -11,8 +11,10 @@ $(function() {
 			this.navigator = new navigatorjs.Navigator();
 
 			this.initViews();
-			this.initNavigator();
+			this.initNavigationStates();
 			this.initDebugConsole();
+
+			this.navigator.start();
 		},
 
 		initViews: function() {
@@ -24,7 +26,7 @@ $(function() {
 			this.blackCircle = new ShapeView( { el: '#responders .black' } );
 		},
 
-		initNavigator: function() {
+		initNavigationStates: function() {
 			this.navigator.add(this, "*");
 
 			this.navigator.add(this.redSquare, "red");
@@ -37,25 +39,21 @@ $(function() {
 			this.navigator.add(this.greenSquare, "*/green");
 			this.navigator.add(this.blueSquare, "*/blue");
 			this.navigator.add(this.blackCircle, "*/black");
-
-			// And then we decide the point at which the Navigator takes over
-			this.navigator.start();
 		},
 
 		initDebugConsole: function() {
-			this.debugConsole = new navigatorjs.features.DebugConsole(this.navigator);
-			this.$debugConsole = this.debugConsole.get$El();
-			this.$debugConsole.css({position:'fixed', left:10, bottom:10});
-			$('body').append(this.$debugConsole);
+			var debugConsole = new navigatorjs.features.DebugConsole(this.navigator),
+				$debugConsole = debugConsole.get$El(),
+				cssPosition = {position:'fixed', left:10, bottom:10};
+
+			$debugConsole.css(cssPosition).appendTo('body');
 		},
 
 		updateState: function(truncatedState, fullState) {
-			console.log('ApplicationRouter -> updateState ' + fullState.getPath());
-			Backbone.history.navigate(fullState.getPath(), {trigger:true});
+			Backbone.history.navigate(fullState.getPath());
 		},
 
 		onRouteChange: function(route) {
-			console.log('ApplicationRouter -> onRouteChange ' + route);
 			this.navigator.request(route);
 		}
 	});
