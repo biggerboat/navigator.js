@@ -5,6 +5,10 @@
 	<title>Navigator JS - Backbone example</title>
 
 	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	<script type="text/javascript" src="js/libs/underscore-min.js"></script>
+	<script type="text/javascript" src="js/libs/backbone-min.js"></script>
+	<script type="text/javascript" src="js/ApplicationRouter.js"></script>
+	<script type="text/javascript" src="js/ShapeView.js"></script>
 	<!--<script type="text/javascript" src="../../js/utils/AutoBind.js"></script>-->
 	<!--<script type="text/javascript" src="../../js/AsynchResponders.js"></script>-->
 	<!--<script type="text/javascript" src="../../js/NavigationBehaviors.js"></script>-->
@@ -20,62 +24,54 @@
 	<script type="text/javascript" src="../../dist/navigator-js.js"></script>
 
 	<script type="text/javascript">
-		var ShapeResponder = function($el) {
-			this._$el = $el;
-		};
-		ShapeResponder.prototype = {
-			navigatorBehaviors: ["IHasStateTransition"],
+        $(function() {
+            var router = new ApplicationRouter();
+            Backbone.history.start({pushState:true, root: '/examples/backbone/'});
 
-			transitionIn: function(callOnComplete) {
-				console.log("ShapeResponder -> transitionIn");
-				this._$el.animate({opacity:1}, 500, callOnComplete);
-			},
+            $("#introduction a").on("click", function(e){
+                e.preventDefault();
+                var path = $(e.target).attr('href');
 
-			transitionOut: function(callOnComplete) {
-				console.log("ShapeResponder -> transitionOut");
-				this._$el.animate({opacity:0}, 500, callOnComplete);
-			},
+                //navigator.request(path);
+                router.navigate(path, {trigger: true});
+            });
+        });
 
-			toString: function() {
-				return "[object "+this._$el.attr('class')+"]"
-			}
-		};
-
-		//STARTUP
-		$(function() {
-			var navigator = new navigatorjs.Navigator(),
-				redSquare = new ShapeResponder($("#responders .red")),
-				greenSquare = new ShapeResponder($("#responders .green")),
-				blueSquare = new ShapeResponder($("#responders .blue")),
-				blackCircle = new ShapeResponder($("#responders .black")),
-				debugConsole = new navigatorjs.features.DebugConsole(navigator),
-				$debugConsole = debugConsole.get$El();
-			$debugConsole.css({position:'fixed', left:10, bottom:10});
-			$('body').append($debugConsole);
-
-			// Here we add the responders to the navigation states they represent.
-			navigator.add(redSquare, "red");
-			navigator.add(greenSquare, "green");
-			navigator.add(blueSquare, "blue");
-			navigator.add(blackCircle, "black");
-
-			// We can add one responder to as many states as we like.
-			navigator.add(redSquare, "*/red");
-			navigator.add(greenSquare, "*/green");
-			navigator.add(blueSquare, "*/blue");
-			navigator.add(blackCircle, "*/black");
-
-			// And then we decide the point at which the Navigator takes over
-			navigator.start();
-
-
-			$("#introduction a").on("click", function(e){
-				e.preventDefault();
-				var path = $(e.target).attr('href');
-
-				navigator.request(path);
-			});
-		});
+//		//STARTUP
+//		$(function() {
+//			var navigator = new navigatorjs.Navigator(),
+//				redSquare = new ShapeResponder($("#responders .red")),
+//				greenSquare = new ShapeResponder($("#responders .green")),
+//				blueSquare = new ShapeResponder($("#responders .blue")),
+//				blackCircle = new ShapeResponder($("#responders .black")),
+//				debugConsole = new navigatorjs.features.DebugConsole(navigator),
+//				$debugConsole = debugConsole.get$El();
+//			$debugConsole.css({position:'fixed', left:10, bottom:10});
+//			$('body').append($debugConsole);
+//
+//			// Here we add the responders to the navigation states they represent.
+//			navigator.add(redSquare, "red");
+//			navigator.add(greenSquare, "green");
+//			navigator.add(blueSquare, "blue");
+//			navigator.add(blackCircle, "black");
+//
+//			// We can add one responder to as many states as we like.
+//			navigator.add(redSquare, "*/red");
+//			navigator.add(greenSquare, "*/green");
+//			navigator.add(blueSquare, "*/blue");
+//			navigator.add(blackCircle, "*/black");
+//
+//			// And then we decide the point at which the Navigator takes over
+//			navigator.start();
+//
+//
+//			$("#introduction a").on("click", function(e){
+//				e.preventDefault();
+//				var path = $(e.target).attr('href');
+//
+//				navigator.request(path);
+//			});
+//		});
 	</script>
 
 	<style type="text/css">
