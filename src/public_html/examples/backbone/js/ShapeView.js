@@ -4,7 +4,7 @@ $(function() {
 		navigatorBehaviors: ["IHasStateTransition"],
 
 		initialize: function(options) {
-			this.$el.addClass(options.classNames);
+//			this.$el.addClass(options.classNames);
 		},
 
 		render: function() {
