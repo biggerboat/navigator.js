@@ -2,6 +2,7 @@
 		"http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
+    <base href="/examples/backbone/">
 	<title>Navigator JS - Backbone example</title>
 
 	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
@@ -28,14 +29,6 @@
         $(function() {
             window.router = new ApplicationRouter();
             Backbone.history.start({pushState:true, root: '/examples/backbone/'});
-
-//            $("#introduction a").on("click", function(e){
-//                e.preventDefault();
-//                var path = $(e.target).attr('href');
-//
-//                //navigator.request(path);
-//                router.navigate(path, {trigger: true});
-//            });
         });
 
 //		//STARTUP
@@ -50,20 +43,7 @@
 //			$debugConsole.css({position:'fixed', left:10, bottom:10});
 //			$('body').append($debugConsole);
 //
-//			// Here we add the responders to the navigation states they represent.
-//			navigator.add(redSquare, "red");
-//			navigator.add(greenSquare, "green");
-//			navigator.add(blueSquare, "blue");
-//			navigator.add(blackCircle, "black");
-//
-//			// We can add one responder to as many states as we like.
-//			navigator.add(redSquare, "*/red");
-//			navigator.add(greenSquare, "*/green");
-//			navigator.add(blueSquare, "*/blue");
-//			navigator.add(blackCircle, "*/black");
-//
-//			// And then we decide the point at which the Navigator takes over
-//			navigator.start();
+
 //
 //
 //			$("#introduction a").on("click", function(e){

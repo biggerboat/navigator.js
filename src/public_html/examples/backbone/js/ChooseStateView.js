@@ -6,15 +6,17 @@ $( function() {
 			'click a': 'onStateClick'
 		},
 
-		initialize: function () {
+		initialize: function (options) {
+			this.navigator = options.navigator;
+			_.bind(this.onStateClick, this);
 		},
 
 		onStateClick: function( e ) {
 			e.preventDefault();
 		    var path = $(e.target).attr('href');
 
-            //navigator.request(path);
-            window.router.navigate(path, {trigger: true});
+            this.navigator.request(path);
+            //window.router.navigate(path, {trigger: true});
 		},
 
 		render: function () {
