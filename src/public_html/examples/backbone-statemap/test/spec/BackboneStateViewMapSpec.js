@@ -1,13 +1,16 @@
 $(function() {
-	describe("BackboneJITSpec", function () {
-		var applicationRouter = window.router,
-			navigatorjs = applicationRouter.navigator,
-			$red = $('.red'),
-			$green = $('.green'),
-			$blue = $('.blue');
+	describe("BackboneStateViewMapSpec", function () {
+		var stateViewMap;
+//		var applicationRouter = window.router,
+//			navigatorjs = applicationRouter.navigator,
+//			$red = $('.red'),
+//			$green = $('.green'),
+//			$blue = $('.blue');
 
 		beforeEach(function () {
 //		    applicationRouter =
+			stateViewMap = new navigatorjs.integration.StateViewMap();
+			RedView = (function() {}());
 		});
 
 		describe("Just-in-time", function () {
