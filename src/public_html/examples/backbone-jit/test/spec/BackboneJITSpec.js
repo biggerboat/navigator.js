@@ -10,43 +10,28 @@ $(function() {
 //		    applicationRouter =
 		});
 
-		describe("Simple", function () {
+		describe("Just-in-time", function () {
 
-			it("Starts at root state", function () {
-				expect(
-					navigatorjs.getCurrentState().getPath()
-				).toEqual('/');
-			});
+			it("", function() {
+							stateViewMap.mapState("red").toView(RedView);
+							stateViewMap.mapState("blue","*/blue").toView(BlueView);
 
-			it("Goes to red state", function () {
-				navigatorjs.request('red');
-				expect( navigatorjs.getCurrentState().getPath() ).toEqual( '/red/' );
-			});
+							stateViewMap.mapState("green").toView(GreenView).inside('.myContainer');
 
-			it("Transitions via red to green state", function () {
-				expect(parseFloat($red.css('opacity'))).toEqual(0);
-				expect(parseFloat($green.css('opacity'))).toEqual(0);
+							var applicationRootRecipe = stateViewMap.mapState(RootApplication).toView(["/"]);
+							stateViewMap.mapState("black")
+										.toView(BlackView)
+										.withParent(applicationRootRecipe)
+										.inside('.myContainer');
 
-				navigatorjs.request('red');
-				expect( navigatorjs.getCurrentState().getPath() ).toEqual( '/red/' );
-				navigatorjs.request('green');
-				expect( navigatorjs.getCurrentState().getPath() ).toEqual( '/green/' );
+							stateViewMap.mapState("yellow")
+										.toView(YellowView)
+										.withArguments(a,b)
+										.withParent(applicationRootRecipe)
+										.inside('.myContainer');
 
-				waitsFor(function() {
-					return parseFloat($red.css('opacity')) == 1 && parseFloat($green.css('opacity')) == 0;
-				},"only red to be visible", 1000);
+						});
 
-
-				waitsFor(function() {
-					return parseFloat($green.css('opacity')) == 1 && parseFloat($red.css('opacity')) == 0;
-				}, "only green to be visible", 1000);
-
-
-				runs(function() {
-					expect(parseFloat($red.css('opacity'))).toEqual(0);
-					expect(parseFloat($green.css('opacity'))).toEqual(1);
-				});
-			});
 		});
 	})
 });
