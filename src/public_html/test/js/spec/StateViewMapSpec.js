@@ -160,11 +160,33 @@ $(function() {
 				expect(callWithSixArguments).toThrow();
 			});
 
-			it("adds the DOM object belonging to the ViewInstance to the DOM", function() {
-				var viewRecipe = stateViewMap.mapState("red").toView(View);
-				expect($('#view').length).toEqual(0);
-				navigator.request("red");
-				expect($('#view').length).toEqual(1);
+
+			describe("Adding views to the DOM", function() {
+				var $container,
+					viewRecipe;
+
+				beforeEach(function() {
+					viewRecipe = stateViewMap.mapState("red").toView(View);
+					$container = $('<div id="container" />');
+					$('body').append($container);
+				});
+
+				afterEach(function(){
+					$container.remove();
+				});
+
+				it("adds the $el of the ViewInstance to the DOM", function() {
+					expect($('#view').length).toEqual(0);
+					navigator.request("red");
+					expect($('#view').length).toEqual(1);
+				});
+
+				it("adds the $el of the ViewInstance inside the provided inside-selector", function() {
+					viewRecipe.inside('#container');
+					expect($container.children().length).toEqual(0);
+					navigator.request("red");
+					expect($container.children().length).toEqual(1);
+				});
 			});
 
 

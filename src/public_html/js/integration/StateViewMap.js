@@ -4,17 +4,15 @@ this.navigatorjs.integration = this.navigatorjs.integration||{};
 (function() {
 	var _navigator = null;
 	var _orderedRecipes = null;
-	var _contextView = null;
+	var _$root = null;
 
 
-	var StateViewMap = function (navigator) {
+	var StateViewMap = function (navigator, $root) {
 		_navigator = navigator;
 		_orderedRecipes = [];
-		_contextView = $('body');
-
+		_$root = $root || $('body');
 
 		_navigator.on(navigatorjs.NavigatorEvent.STATE_REQUESTED, _handleStateRequested);
-
 	};
 
 	function _addRecipe(statesOrPaths) {
@@ -62,8 +60,15 @@ this.navigatorjs.integration = this.navigatorjs.integration||{};
 		//} else if( recipe.parent ) { //TODO: do a recursive parent recipe check here
 		}
 
-		var $container = _contextView;
+		var $container = _$root,
+			$inside,
+			insideSelector = recipe.getInsideSelector();
 		//TODO recursive parent stuff. and possibly render-order checking, like the depths in Flash
+
+		if( insideSelector != null) {
+			$inside = $container.find(insideSelector);
+			$container = $inside.length > 0 ? $inside.first() : $container;
+		}
 
 		$container.append( recipe.getViewInstance().$el );
 	}

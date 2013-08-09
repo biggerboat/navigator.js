@@ -8,6 +8,7 @@ this.navigatorjs.integration = this.navigatorjs.integration||{};
 		this._viewClass = null;
 		this._viewArguments = [];
 		this._viewInstance = null;
+		this._insideSelector = null;
 	};
 
 	//PUBLIC API
@@ -84,6 +85,16 @@ this.navigatorjs.integration = this.navigatorjs.integration||{};
 			this._viewArguments = arguments;
 
 			return this;
+		},
+
+		inside: function(selector) {
+			this._insideSelector = selector;
+
+			return this;
+		},
+
+		getInsideSelector: function() {
+			return this._insideSelector;
 		}
 	};
 
