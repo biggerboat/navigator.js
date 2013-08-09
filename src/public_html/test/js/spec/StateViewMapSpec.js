@@ -8,8 +8,9 @@ $(function() {
 			navigator = new navigatorjs.Navigator();
 			stateViewMap = new navigatorjs.integration.StateViewMap(navigator);
 
-			View = function() {
+			View = function(className) {
 				this.instantiationArguments = arguments;
+				this.$el.addClass(className)
 			};
 			View.prototype = {
 				navigatorBehaviors: ["IHasStateInitialization", "IHasStateTransition"],
@@ -186,6 +187,22 @@ $(function() {
 					expect($container.children().length).toEqual(0);
 					navigator.request("red");
 					expect($container.children().length).toEqual(1);
+				});
+
+				it("adds the $el to a parent recipe's $el", function() {
+					viewRecipe.withArguments("red");
+
+					var blueRecipe = stateViewMap.mapState("red/blue").toView(View).withArguments('blue');
+					blueRecipe.withParent(viewRecipe);
+					expect($(".red")).toEqual(0);
+					expect($(".blue")).toEqual(0);
+					navigator.request("red");
+					expect($(".red")).toEqual(1);
+					expect($(".blue")).toEqual(0);
+					navigator.request("red/blue");
+					expect($(".red")).toEqual(1);
+					expect($(".blue")).toEqual(1);
+					expect($(".blue").parent()[0]).toEqual($('.red')[0]);
 				});
 			});
 

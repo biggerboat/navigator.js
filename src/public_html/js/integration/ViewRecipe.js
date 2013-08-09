@@ -9,6 +9,7 @@ this.navigatorjs.integration = this.navigatorjs.integration||{};
 		this._viewArguments = [];
 		this._viewInstance = null;
 		this._insideSelector = null;
+		this._parentRecipe = null;
 	};
 
 	//PUBLIC API
@@ -95,6 +96,15 @@ this.navigatorjs.integration = this.navigatorjs.integration||{};
 
 		getInsideSelector: function() {
 			return this._insideSelector;
+		},
+
+		withParent: function(parentRecipe) {
+			this._parentRecipe = parentRecipe;
+			return this;
+		},
+
+		getParentRecipe: function() {
+			return this._parentRecipe;
 		}
 	};
 
