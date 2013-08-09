@@ -7,10 +7,14 @@ $(function() {
 //		    applicationRouter =
 			navigator = new navigatorjs.Navigator();
 			stateViewMap = new navigatorjs.integration.StateViewMap(navigator);
+
 			View = function() {
+				this.instantiationArguments = arguments;
 			};
 			View.prototype = {
 				navigatorBehaviors: ["IHasStateInitialization", "IHasStateTransition"],
+				instantiationArguments: [],
+
 				initialize: function() {
 					console.log("View -> initialize");
 				},
@@ -125,6 +129,31 @@ $(function() {
 				expect(viewRecipe.isInstantiated()).toBeTruthy();
 				expect(viewRecipe.getViewInstance() instanceof View).toBeTruthy();
 			});
+
+			it("navigates to the red state and instantiates the view recipe's view class with red and circle as the arguments", function() {
+				var viewRecipe = stateViewMap.mapState("red")
+											 .toView(View)
+											 .withArguments("red","circle");
+
+				navigator.request("red");
+				expect(viewRecipe.getViewInstance().instantiationArguments[0]).toEqual("red");
+				expect(viewRecipe.getViewInstance().instantiationArguments[1]).toEqual("circle");
+			});
+
+			it("throws an error when setting more than 5 arguments on a viewRecipe", function() {
+				var viewRecipe = stateViewMap.mapState("red").toView(View);
+
+				var callWithFiveArguments = function() {
+					viewRecipe.withArguments(1,2,3,4,5);
+				};
+				var callWithSixArguments = function() {
+					viewRecipe.withArguments(1,2,3,4,5,6);
+				};
+
+				expect(callWithFiveArguments).not.toThrow();
+				expect(callWithSixArguments).toThrow();
+			});
+
 
 //			it("", function() {
 //				stateViewMap.mapState("red").toView(RedView);
