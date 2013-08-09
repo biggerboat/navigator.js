@@ -49,7 +49,6 @@ $(function() {
 
 			it("can map a state and returns a view recipe", function() {
 				var viewRecipe = stateViewMap.mapState("red");
-				console.log('viewRecipe -> ', viewRecipe);
 				expect(viewRecipe).toBeDefined();
 				expect(viewRecipe).not.toBeNull();
 				expect(viewRecipe instanceof navigatorjs.integration.ViewRecipe).toBeTruthy();
@@ -78,8 +77,6 @@ $(function() {
 			});
 
 			it("returns a mapped recipe containing all states that were passed as multiple arguments", function() {
-				console.log('---------------');
-
 				var redState = new navigatorjs.NavigationState("red");
 				var blueState = new navigatorjs.NavigationState("blue");
 
@@ -110,6 +107,12 @@ $(function() {
 				expect(viewRecipe.getStates()[0]).toEqual(redState);
 				expect(viewRecipe.getStates()[1]).toEqual(blueState);
 				expect(viewRecipe.getStates()[2].getPath()).toEqual("/green/");
+			});
+
+			it("can add a view to a ViewRecipe", function() {
+				var viewRecipe = stateViewMap.mapState("red").toView(View);
+
+				expect(viewRecipe.getViewClass()).toEqual(View);
 			});
 
 //			it("", function() {

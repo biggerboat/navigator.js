@@ -5,20 +5,23 @@ this.navigatorjs.integration = this.navigatorjs.integration||{};
 
 	var ViewRecipe = function () {
 		this._states = [];
+		this._viewClass = null;
 	};
 
 	//PUBLIC API
 	ViewRecipe.prototype = {
 
+		toView: function(viewClass) {
+			this._viewClass = viewClass;
 
-
-		toView: function(View) {
-
+			return this;
 		},
 
-		mapState: function(navigationState) {
-//			console.log('ViewRecipe -> mapState', navigationState.getPath());
-			
+		getViewClass: function() {
+			return this._viewClass;
+		},
+
+		addState: function(navigationState) {
 			var index, existingState, length = this._states.length;
 
 			for(index=0; index<length; index++) {
@@ -29,8 +32,9 @@ this.navigatorjs.integration = this.navigatorjs.integration||{};
 				}
 			}
 
-//			console.log('ViewRecipe -> mapState states', this._states);
 			this._states.push(navigationState);
+
+			return this;
 		},
 
 		getStates: function() {

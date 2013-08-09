@@ -11,20 +11,18 @@ this.navigatorjs.integration = this.navigatorjs.integration||{};
 		_orderedRecipes = [];
 	};
 
-
 	function _addRecipe(statesOrPaths) {
 		var recipe = new navigatorjs.integration.ViewRecipe();
 
 		var index, length = statesOrPaths.length;
 		for(index = 0; index<length; index++) {
-			recipe.mapState(navigatorjs.NavigationState.make(statesOrPaths[index]));
+			recipe.addState(navigatorjs.NavigationState.make(statesOrPaths[index]));
 		}
 
 		_orderedRecipes.push(recipe);
 
 		return recipe;
 	}
-
 
 	//PUBLIC API
 	StateViewMap.prototype = {
