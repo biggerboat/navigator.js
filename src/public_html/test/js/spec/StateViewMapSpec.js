@@ -13,6 +13,7 @@ $(function() {
 			};
 			View.prototype = {
 				navigatorBehaviors: ["IHasStateInitialization", "IHasStateTransition"],
+				$el: $('<div id="view">View</div>'),
 				instantiationArguments: [],
 
 				initialize: function() {
@@ -34,7 +35,12 @@ $(function() {
 				}
 			};
 
+
 			navigator.start("");
+		});
+
+		afterEach(function(){
+			$('#view').remove();
 		});
 
 		describe("Test view", function() {
@@ -152,6 +158,13 @@ $(function() {
 
 				expect(callWithFiveArguments).not.toThrow();
 				expect(callWithSixArguments).toThrow();
+			});
+
+			it("adds the DOM object belonging to the ViewInstance to the DOM", function() {
+				var viewRecipe = stateViewMap.mapState("red").toView(View);
+				expect($('#view').length).toEqual(0);
+				navigator.request("red");
+				expect($('#view').length).toEqual(1);
 			});
 
 

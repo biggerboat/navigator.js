@@ -4,11 +4,14 @@ this.navigatorjs.integration = this.navigatorjs.integration||{};
 (function() {
 	var _navigator = null;
 	var _orderedRecipes = null;
+	var _contextView = null;
 
 
 	var StateViewMap = function (navigator) {
 		_navigator = navigator;
 		_orderedRecipes = [];
+		_contextView = $('body');
+
 
 		_navigator.on(navigatorjs.NavigatorEvent.STATE_REQUESTED, _handleStateRequested);
 
@@ -45,12 +48,27 @@ this.navigatorjs.integration = this.navigatorjs.integration||{};
 					viewInstance = recipe.getViewInstance();
 
 					if( viewInstance.navigatorBehaviors instanceof Array) {
+						_addViewElementToDOM(recipe);
 						_navigator.add( viewInstance, state);
 					}
 				}
 			}
 		}
 	}
+
+	function _addViewElementToDOM(recipe) {
+		if( recipe.isInstantiated() && $.contains(document.documentElement, recipe.getViewInstance().$el) ) {
+			return;
+		//} else if( recipe.parent ) { //TODO: do a recursive parent recipe check here
+		}
+
+		var $container = _contextView;
+		//TODO recursive parent stuff. and possibly render-order checking, like the depths in Flash
+
+		$container.append( recipe.getViewInstance().$el );
+	}
+
+
 
 	//PUBLIC API
 	StateViewMap.prototype = {
