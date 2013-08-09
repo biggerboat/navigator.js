@@ -6,20 +6,11 @@ this.navigatorjs.integration = this.navigatorjs.integration||{};
 	var ViewRecipe = function () {
 		this._states = [];
 		this._viewClass = null;
+		this._viewInstance = null;
 	};
 
 	//PUBLIC API
 	ViewRecipe.prototype = {
-
-		toView: function(viewClass) {
-			this._viewClass = viewClass;
-
-			return this;
-		},
-
-		getViewClass: function() {
-			return this._viewClass;
-		},
 
 		addState: function(navigationState) {
 			var index, existingState, length = this._states.length;
@@ -39,6 +30,27 @@ this.navigatorjs.integration = this.navigatorjs.integration||{};
 
 		getStates: function() {
 			return this._states;
+		},
+
+		toView: function(viewClass) {
+			this._viewClass = viewClass;
+
+			return this;
+		},
+
+		getViewClass: function() {
+			return this._viewClass;
+		},
+
+		getViewInstance: function() {
+			if( !this.isInstantiated() ) {
+				this._viewInstance = new this._viewClass();
+			}
+			return this._viewInstance;
+		},
+
+		isInstantiated: function() {
+			return this._viewInstance != null;
 		}
 	};
 

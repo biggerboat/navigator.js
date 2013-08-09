@@ -9,6 +9,9 @@ this.navigatorjs.integration = this.navigatorjs.integration||{};
 	var StateViewMap = function (navigator) {
 		_navigator = navigator;
 		_orderedRecipes = [];
+
+		_navigator.on(navigatorjs.NavigatorEvent.STATE_REQUESTED, _handleStateRequested);
+
 	};
 
 	function _addRecipe(statesOrPaths) {
@@ -22,6 +25,31 @@ this.navigatorjs.integration = this.navigatorjs.integration||{};
 		_orderedRecipes.push(recipe);
 
 		return recipe;
+	}
+
+	function _handleStateRequested(e, eventData) {
+		var requestedState = eventData.state,
+			recipesIndex, recipe, recipeStates, recipesLength = _orderedRecipes.length,
+			statesIndex, state, statesLength,
+			viewInstance;
+
+		for( recipesIndex = 0; recipesIndex < recipesLength; recipesIndex++ ) {
+			recipe = _orderedRecipes[recipesIndex];
+			recipeStates = recipe.getStates();
+			statesLength = recipeStates.length;
+
+			for( statesIndex= 0; statesIndex < statesLength; statesIndex++ ) {
+				state = recipeStates[statesIndex];
+
+				if( requestedState.contains( state ) ) {
+					viewInstance = recipe.getViewInstance();
+
+					if( viewInstance.navigatorBehaviors instanceof Array) {
+						_navigator.add( viewInstance, state);
+					}
+				}
+			}
+		}
 	}
 
 	//PUBLIC API

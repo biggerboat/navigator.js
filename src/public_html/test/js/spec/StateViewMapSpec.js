@@ -28,8 +28,9 @@ $(function() {
 				toString: function() {
 					return "[object View]";
 				}
-			}
+			};
 
+			navigator.start("");
 		});
 
 		describe("Test view", function() {
@@ -113,6 +114,16 @@ $(function() {
 				var viewRecipe = stateViewMap.mapState("red").toView(View);
 
 				expect(viewRecipe.getViewClass()).toEqual(View);
+			});
+
+			it("navigates to the red state and instantiates the view recipe's view class", function() {
+				var viewRecipe = stateViewMap.mapState("red").toView(View);
+				expect(navigator.getCurrentState().getPath()).toEqual("/");
+				expect(viewRecipe.isInstantiated()).toBeFalsy();
+				navigator.request("red");
+				expect( navigator.getCurrentState().getPath()).toEqual("/red/");
+				expect(viewRecipe.isInstantiated()).toBeTruthy();
+				expect(viewRecipe.getViewInstance() instanceof View).toBeTruthy();
 			});
 
 //			it("", function() {
