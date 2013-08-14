@@ -205,6 +205,50 @@ $(function() {
 					expect($(".blue").length).toEqual(1);
 					expect($(".blue").parent()[0]).toEqual($('.red')[0]);
 				});
+
+				it("recursively adds the $el to a parent recipe's $el", function() {
+					viewRecipe.withArguments("red");
+
+					var blueRecipe = stateViewMap.mapState("red/blue").toView(View).withArguments('blue');
+					blueRecipe.withParent(viewRecipe);
+
+					var greenRecipe = stateViewMap.mapState("red/blue/green").toView(View).withArguments('green');
+					greenRecipe.withParent(blueRecipe);
+
+					var blackRecipe = stateViewMap.mapState("*/*/green/black").toView(View).withArguments('black');
+					blackRecipe.withParent(greenRecipe);
+
+					navigator.request("red/blue/green/black");
+
+					expect($(".black").parent()[0]).toEqual($('.green')[0]);
+					expect($(".green").parent()[0]).toEqual($('.blue')[0]);
+					expect($(".blue").parent()[0]).toEqual($('.red')[0]);
+				});
+
+				it("adds elements to the DOM in order as they were mapped even though they got instantiated in a different order", function() {
+					viewRecipe.withArguments("red");
+
+					var blueRecipe = stateViewMap.mapState("red/blue").toView(View).withArguments('blue');
+					blueRecipe.withParent(viewRecipe);
+
+					var greenRecipe = stateViewMap.mapState("red/green").toView(View).withArguments('green');
+					greenRecipe.withParent(viewRecipe);
+
+					var blackRecipe = stateViewMap.mapState("red/black").toView(View).withArguments('black');
+					blackRecipe.withParent(viewRecipe);
+
+					navigator.request("red/black");
+					expect(blackRecipe.getViewInstance().$el.index()).toEqual(0);
+
+					navigator.request("red/blue");
+					expect(blueRecipe.getViewInstance().$el.index()).toEqual(0);
+					expect(blackRecipe.getViewInstance().$el.index()).toEqual(1);
+
+					navigator.request("red/green");
+					expect(blueRecipe.getViewInstance().$el.index()).toEqual(0);
+					expect(greenRecipe.getViewInstance().$el.index()).toEqual(1);
+					expect(blackRecipe.getViewInstance().$el.index()).toEqual(2);
+				});
 			});
 
 

@@ -72,13 +72,28 @@ this.navigatorjs.integration = this.navigatorjs.integration||{};
 			$container = parentRecipe.getViewInstance().$el;
 		}
 
-		//TODO recursive parent stuff. and possibly render-order checking, like the depths in Flash
-
 		if( insideSelector != null) {
 			$inside = $container.find(insideSelector);
 			$container = $inside.length > 0 ? $inside.first() : $container;
 		}
 
+		var index = _orderedRecipes.indexOf(recipe) + 1,
+			length = _orderedRecipes.length,
+			testRecipe;//, testRecipeViewIndex;
+		for (index; index < length; index++) {
+			testRecipe = _orderedRecipes[index];
+
+			if (testRecipe.isInstantiated() && testRecipe.getViewInstance().$el.parent()[0] == $container[0]) {
+				// add the product right below the current test's product.
+//				testRecipeViewIndex = container.getChildIndex(testRecipe.displayObject);
+				// logger.debug("Adding " + recipe.displayObject + " to " + container + " @ " + index);
+//				addToContainerAt(container, recipe.displayObject, index);
+				testRecipe.getViewInstance().$el.before( recipe.getViewInstance().$el );
+				return;
+			}
+		}
+
+		// otherwise add on top
 		$container.append( recipe.getViewInstance().$el );
 	}
 
