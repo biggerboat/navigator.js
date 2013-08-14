@@ -10,11 +10,12 @@ $(function() {
 
 			View = function(className) {
 				this.instantiationArguments = arguments;
+				this.$el = $('<div id="view">View</div>');
 				this.$el.addClass(className)
 			};
 			View.prototype = {
 				navigatorBehaviors: ["IHasStateInitialization", "IHasStateTransition"],
-				$el: $('<div id="view">View</div>'),
+				$el: null,
 				instantiationArguments: [],
 
 				initialize: function() {
@@ -194,14 +195,14 @@ $(function() {
 
 					var blueRecipe = stateViewMap.mapState("red/blue").toView(View).withArguments('blue');
 					blueRecipe.withParent(viewRecipe);
-					expect($(".red")).toEqual(0);
-					expect($(".blue")).toEqual(0);
+					expect($(".red").length).toEqual(0);
+					expect($(".blue").length).toEqual(0);
 					navigator.request("red");
-					expect($(".red")).toEqual(1);
-					expect($(".blue")).toEqual(0);
+					expect($(".red").length).toEqual(1);
+					expect($(".blue").length).toEqual(0);
 					navigator.request("red/blue");
-					expect($(".red")).toEqual(1);
-					expect($(".blue")).toEqual(1);
+					expect($(".red").length).toEqual(1);
+					expect($(".blue").length).toEqual(1);
 					expect($(".blue").parent()[0]).toEqual($('.red')[0]);
 				});
 			});

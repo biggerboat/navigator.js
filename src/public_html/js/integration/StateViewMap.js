@@ -57,12 +57,21 @@ this.navigatorjs.integration = this.navigatorjs.integration||{};
 	function _addViewElementToDOM(recipe) {
 		if( recipe.isInstantiated() && $.contains(document.documentElement, recipe.getViewInstance().$el) ) {
 			return;
-		//} else if( recipe.parent ) { //TODO: do a recursive parent recipe check here
 		}
 
-		var $container = _$root,
+		var parentRecipe = recipe.getParentRecipe(),
+			$container = _$root,
 			$inside,
 			insideSelector = recipe.getInsideSelector();
+
+		if(parentRecipe ) {
+			if(!parentRecipe.isInstantiated()) {
+				_addViewElementToDOM(parentRecipe);
+			}
+
+			$container = parentRecipe.getViewInstance().$el;
+		}
+
 		//TODO recursive parent stuff. and possibly render-order checking, like the depths in Flash
 
 		if( insideSelector != null) {
