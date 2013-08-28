@@ -12,14 +12,14 @@ module.exports = function (grunt) {
 			},
 			dist: {
 				src: ['../src/public_html/js/**/*.js'],
-				dest: '../src/public_html/dist/<%= pkg.name %>.js'
+				dest: '../<%= pkg.name %>.js'
 			}
 		},
 
 		uglify: {
 			dist: {
 				files: {
-					'../src/public_html/dist/<%= pkg.name %>.min.js': '../src/public_html/dist/<%= pkg.name %>.js'
+					'../<%= pkg.name %>.min.js': '../src/public_html/dist/<%= pkg.name %>.js'
 				},
 				options: {
 					banner:'<%= banner %>'
