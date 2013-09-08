@@ -1,55 +1,42 @@
 $(function() {
+	var View = function(className) {
+		this.instantiationArguments = arguments;
+		this.$el = $('<div class="view">View</div>');
+		this.$el.addClass(className)
+	};
+
+	View.prototype = {
+		navigatorBehaviors: ["IHasStateInitialization", "IHasStateTransition"],
+		$el: null,
+		instantiationArguments: [],
+
+		initialize: function() {
+			console.log("View -> initialize");
+		},
+
+		transitionIn: function(callOnComplete) {
+			console.log("View -> transitionIn");
+			callOnComplete();
+		},
+
+		transitionOut: function(callOnComplete) {
+			console.log("View -> transitionOut");
+			callOnComplete();
+		},
+
+		toString: function() {
+			return "[object View]";
+		}
+	};
+
 	describe("StateViewMapSpec", function() {
 		var stateViewMap,
 			navigator;
-
-		beforeEach(function() {
-//		    applicationRouter =
-			navigator = new navigatorjs.Navigator();
-			stateViewMap = new navigatorjs.integration.StateViewMap(navigator);
-
-			View = function(className) {
-				this.instantiationArguments = arguments;
-				this.$el = $('<div id="view">View</div>');
-				this.$el.addClass(className)
-			};
-			View.prototype = {
-				navigatorBehaviors: ["IHasStateInitialization", "IHasStateTransition"],
-				$el: null,
-				instantiationArguments: [],
-
-				initialize: function() {
-					console.log("View -> initialize");
-				},
-
-				transitionIn: function(callOnComplete) {
-					console.log("View -> transitionIn");
-					callOnComplete();
-				},
-
-				transitionOut: function(callOnComplete) {
-					console.log("View -> transitionOut");
-					callOnComplete();
-				},
-
-				toString: function() {
-					return "[object View]";
-				}
-			};
-
-
-			navigator.start("");
-		});
-
-		afterEach(function(){
-			$('#view').remove();
-		});
 
 		describe("Test view", function() {
 			it("can be instantiated", function(){
 				expect(new View() instanceof View).toBeTruthy();
 			});
-
 
 			it("has responders", function(){
 				var testView = new View();
@@ -58,98 +45,46 @@ $(function() {
 			});
 		});
 
-		describe("StateViewMap", function() {
+		describe("ViewRecipe", function() {
+			//TODO: Write the specs for a recipe...
 
-			it("can map a state and returns a view recipe", function() {
-				var viewRecipe = stateViewMap.mapState("red");
-				expect(viewRecipe).toBeDefined();
-				expect(viewRecipe).not.toBeNull();
-				expect(viewRecipe instanceof navigatorjs.integration.ViewRecipe).toBeTruthy();
-			});
-
-			it("returns a mapped recipe containing the converted string state", function() {
-				var viewRecipe = stateViewMap.mapState("red");
-				expect(viewRecipe.getStates()[0].getPath()).toEqual("/red/");
-			});
-
-			it("returns a mapped recipe containing the NavigationState state", function() {
-				var redState = new navigatorjs.NavigationState("red");
-				var viewRecipe = stateViewMap.mapState(redState);
-				expect(viewRecipe.getStates()[0]).toEqual(redState);
-			});
-
-			it("returns a mapped recipe containing all states that were passed as an array", function() {
-				var redState = new navigatorjs.NavigationState("red");
-				var blueState = new navigatorjs.NavigationState("blue");
-
-				var viewRecipe = stateViewMap.mapState([redState, blueState, "green"]);
-				expect(viewRecipe.getStates().length).toEqual(3);
-				expect(viewRecipe.getStates()[0]).toEqual(redState);
-				expect(viewRecipe.getStates()[1]).toEqual(blueState);
-				expect(viewRecipe.getStates()[2].getPath()).toEqual("/green/");
-			});
-
-			it("returns a mapped recipe containing all states that were passed as multiple arguments", function() {
-				var redState = new navigatorjs.NavigationState("red");
-				var blueState = new navigatorjs.NavigationState("blue");
-
-				var viewRecipe = stateViewMap.mapState(redState, blueState, "green");
-				expect(viewRecipe.getStates().length).toEqual(3);
-				expect(viewRecipe.getStates()[0]).toEqual(redState);
-				expect(viewRecipe.getStates()[1]).toEqual(blueState);
-				expect(viewRecipe.getStates()[2].getPath()).toEqual("/green/");
-			});
-
-			it("returns a mapped recipe containing all states that were passed as a single argument and an array", function() {
-				var redState = new navigatorjs.NavigationState("red");
-				var blueState = new navigatorjs.NavigationState("blue");
-
-				var viewRecipe = stateViewMap.mapState(redState, [blueState, "green"]);
-				expect(viewRecipe.getStates().length).toEqual(3);
-				expect(viewRecipe.getStates()[0]).toEqual(redState);
-				expect(viewRecipe.getStates()[1]).toEqual(blueState);
-				expect(viewRecipe.getStates()[2].getPath()).toEqual("/green/");
-			});
-
-			it("returns a mapped recipe containing all states that were passed as multiple arrays", function() {
-				var redState = new navigatorjs.NavigationState("red");
-				var blueState = new navigatorjs.NavigationState("blue");
-
-				var viewRecipe = stateViewMap.mapState([redState], [blueState, "green"]);
-				expect(viewRecipe.getStates().length).toEqual(3);
-				expect(viewRecipe.getStates()[0]).toEqual(redState);
-				expect(viewRecipe.getStates()[1]).toEqual(blueState);
-				expect(viewRecipe.getStates()[2].getPath()).toEqual("/green/");
-			});
-
-			it("can add a view to a ViewRecipe", function() {
-				var viewRecipe = stateViewMap.mapState("red").toView(View);
+			it("can add a view", function() {
+				var viewRecipe = new navigatorjs.integration.ViewRecipe().toView(View);
 
 				expect(viewRecipe.getViewClass()).toEqual(View);
 			});
 
-			it("navigates to the red state and instantiates the view recipe's view class", function() {
-				var viewRecipe = stateViewMap.mapState("red").toView(View);
-				expect(navigator.getCurrentState().getPath()).toEqual("/");
+			it("can instantiate a view", function() {
+				var viewRecipe = new navigatorjs.integration.ViewRecipe().toView(View);
+
 				expect(viewRecipe.isInstantiated()).toBeFalsy();
-				navigator.request("red");
-				expect( navigator.getCurrentState().getPath()).toEqual("/red/");
+
+				var viewInstance = viewRecipe.getViewInstance();
+
+				expect(viewInstance instanceof View).toBeTruthy();
 				expect(viewRecipe.isInstantiated()).toBeTruthy();
-				expect(viewRecipe.getViewInstance() instanceof View).toBeTruthy();
 			});
 
-			it("navigates to the red state and instantiates the view recipe's view class with red and circle as the arguments", function() {
-				var viewRecipe = stateViewMap.mapState("red")
-											 .toView(View)
-											 .withArguments("red","circle");
+			it("always returns the exact same view instance once the view is instantiated", function() {
+				var viewRecipe = new navigatorjs.integration.ViewRecipe().toView(View);
 
-				navigator.request("red");
+				var viewInstance1 = viewRecipe.getViewInstance();
+				var viewInstance2 = viewRecipe.getViewInstance();
+
+				expect(viewInstance1).toEqual(viewInstance2);
+			});
+
+			it("instantiates the view with the arguments that were provided", function() {
+				var viewRecipe = new navigatorjs.integration.ViewRecipe()
+															.toView(View)
+															.withArguments("red","circle");
+
 				expect(viewRecipe.getViewInstance().instantiationArguments[0]).toEqual("red");
 				expect(viewRecipe.getViewInstance().instantiationArguments[1]).toEqual("circle");
 			});
 
-			it("throws an error when setting more than 5 arguments on a viewRecipe", function() {
-				var viewRecipe = stateViewMap.mapState("red").toView(View);
+			it("throws an error when using more than 5 view arguments", function() {
+				var viewRecipe =  new navigatorjs.integration.ViewRecipe();
 
 				var callWithFiveArguments = function() {
 					viewRecipe.withArguments(1,2,3,4,5);
@@ -161,9 +96,82 @@ $(function() {
 				expect(callWithFiveArguments).not.toThrow();
 				expect(callWithSixArguments).toThrow();
 			});
+		});
 
+		describe("StateViewMap", function() {
+			var navigator,
+				stateViewMap;
 
-			describe("Adding views to the DOM", function() {
+			beforeEach(function() {
+				navigator = new navigatorjs.Navigator();
+				stateViewMap = new navigatorjs.integration.StateViewMap(navigator);
+
+				navigator.start("");
+			});
+
+			it("can map a state, which returns an instance of view recipe", function() {
+				var viewRecipe = stateViewMap.mapState("red");
+				expect(viewRecipe).toBeDefined();
+				expect(viewRecipe).not.toBeNull();
+				expect(viewRecipe instanceof navigatorjs.integration.ViewRecipe).toBeTruthy();
+			});
+
+			it("can map a string state and return a recipe holding a reference to a NavigationState, of which the path is equal to the input state", function() {
+				var viewRecipe = stateViewMap.mapState("red");
+				expect(viewRecipe.getStates()[0].getPath()).toEqual("/red/");
+			});
+
+			it("can map a NavigationState and return a recipe holding a reference to the NavigationState that was given as the input state", function() {
+				var redState = new navigatorjs.NavigationState("red");
+				var viewRecipe = stateViewMap.mapState(redState);
+				expect(viewRecipe.getStates()[0]).toEqual(redState);
+			});
+
+			it("maps multiple states that are passed as an array and register them as states within the returned recipe", function() {
+				var redState = new navigatorjs.NavigationState("red");
+				var blueState = new navigatorjs.NavigationState("blue");
+
+				var viewRecipe = stateViewMap.mapState([redState, blueState, "green"]);
+				expect(viewRecipe.getStates().length).toEqual(3);
+				expect(viewRecipe.getStates()[0]).toEqual(redState);
+				expect(viewRecipe.getStates()[1]).toEqual(blueState);
+				expect(viewRecipe.getStates()[2].getPath()).toEqual("/green/");
+			});
+
+			it("maps multiple states that were passed as multiple arguments and register them as states within the returned recipe", function() {
+				var redState = new navigatorjs.NavigationState("red");
+				var blueState = new navigatorjs.NavigationState("blue");
+
+				var viewRecipe = stateViewMap.mapState(redState, blueState, "green");
+				expect(viewRecipe.getStates().length).toEqual(3);
+				expect(viewRecipe.getStates()[0]).toEqual(redState);
+				expect(viewRecipe.getStates()[1]).toEqual(blueState);
+				expect(viewRecipe.getStates()[2].getPath()).toEqual("/green/");
+			});
+
+			it("maps multiple states that were passed as a combination of multiple arguments and an array and register them as states within the returned recipe", function() {
+				var redState = new navigatorjs.NavigationState("red");
+				var blueState = new navigatorjs.NavigationState("blue");
+
+				var viewRecipe = stateViewMap.mapState(redState, [blueState, "green"]);
+				expect(viewRecipe.getStates().length).toEqual(3);
+				expect(viewRecipe.getStates()[0]).toEqual(redState);
+				expect(viewRecipe.getStates()[1]).toEqual(blueState);
+				expect(viewRecipe.getStates()[2].getPath()).toEqual("/green/");
+			});
+
+			it("maps multiple states that were passed as multiple array arguments and register them as states within the returned recipe", function() {
+				var redState = new navigatorjs.NavigationState("red");
+				var blueState = new navigatorjs.NavigationState("blue");
+
+				var viewRecipe = stateViewMap.mapState([redState], [blueState, "green"]);
+				expect(viewRecipe.getStates().length).toEqual(3);
+				expect(viewRecipe.getStates()[0]).toEqual(redState);
+				expect(viewRecipe.getStates()[1]).toEqual(blueState);
+				expect(viewRecipe.getStates()[2].getPath()).toEqual("/green/");
+			});
+
+			describe("Integration with navigation flow and adding views to the DOM", function() {
 				var $container,
 					viewRecipe;
 
@@ -174,38 +182,61 @@ $(function() {
 				});
 
 				afterEach(function(){
+					$('.view').remove();
 					$container.remove();
 				});
 
-				it("adds the $el of the ViewInstance to the DOM", function() {
-					expect($('#view').length).toEqual(0);
+				it("automatically instantiates the matching view recipe's view class once the navigator enters the mapped state", function() {
+					expect(viewRecipe.isInstantiated()).toBeFalsy();
+
 					navigator.request("red");
-					expect($('#view').length).toEqual(1);
+
+					expect(viewRecipe.isInstantiated()).toBeTruthy();
+					expect(viewRecipe.getViewInstance() instanceof View).toBeTruthy();
 				});
 
-				it("adds the $el of the ViewInstance inside the provided inside-selector", function() {
+				it("automatically adds the $el of the ViewInstance to the DOM when we enter the mapped state", function() {
+					expect($('.view').length).toEqual(0);
+					navigator.request("red");
+					expect($('.view').length).toEqual(1);
+				});
+
+				it("automatically adds the $el of the ViewInstance to the DOM as a direct child StateView map's $root ", function() {
+					navigator.request("red");
+					var viewInstance = viewRecipe.getViewInstance();
+
+					expect(viewInstance.$el.parent()[0]).toEqual(stateViewMap.get$Root()[0]);
+				});
+
+				it("automatically adds the $el of the ViewInstance inside the provided inside-selector when we enter the mapped state", function() {
 					viewRecipe.inside('#container');
 					expect($container.children().length).toEqual(0);
 					navigator.request("red");
 					expect($container.children().length).toEqual(1);
 				});
 
-				it("adds the $el to a parent recipe's $el", function() {
+				it("automatically adds the $el to a parent recipe's $el when we navigate to the state of the nested view", function() {
 					viewRecipe.withArguments("red");
 
 					var blueRecipe = stateViewMap.mapState("red/blue").toView(View).withArguments('blue');
 					blueRecipe.withParent(viewRecipe);
+
 					expect($(".red").length).toEqual(0);
 					expect($(".blue").length).toEqual(0);
+
 					navigator.request("red");
+
 					expect($(".red").length).toEqual(1);
 					expect($(".blue").length).toEqual(0);
+
 					navigator.request("red/blue");
+
 					expect($(".red").length).toEqual(1);
 					expect($(".blue").length).toEqual(1);
 					expect($(".blue").parent()[0]).toEqual($('.red')[0]);
 				});
 
+				//@TODO refactor this to testing the viewRecipe instead of a nested test of the StateViewMap
 				it("recursively adds the $el to a parent recipe's $el", function() {
 					viewRecipe.withArguments("red");
 
@@ -225,7 +256,8 @@ $(function() {
 					expect($(".blue").parent()[0]).toEqual($('.red')[0]);
 				});
 
-				it("adds elements to the DOM in order as they were mapped even though they got instantiated in a different order", function() {
+				//@TODO refactor this to testing the viewRecipe instead of a nested test of the StateViewMap
+				it("automatically adds elements to the DOM in order as they were mapped even though they got instantiated in a different order", function() {
 					viewRecipe.withArguments("red");
 
 					var blueRecipe = stateViewMap.mapState("red/blue").toView(View).withArguments('blue');
@@ -250,27 +282,6 @@ $(function() {
 					expect(blackRecipe.getViewInstance().$el.index()).toEqual(2);
 				});
 			});
-
-
-//			it("", function() {
-//				stateViewMap.mapState("red").toView(RedView);
-//				stateViewMap.mapState("blue", "*/blue").toView(BlueView);
-//
-//				stateViewMap.mapState("green").toView(GreenView).inside('.myContainer');
-//
-//				var applicationRootRecipe = stateViewMap.mapState(RootApplication).toView(["/"]);
-//				stateViewMap.mapState("black")
-//					.toView(BlackView)
-//					.withParent(applicationRootRecipe)
-//					.inside('.myContainer');
-//
-//				stateViewMap.mapState("yellow")
-//					.toView(YellowView)
-//					.withArguments(a, b)
-//					.withParent(applicationRootRecipe)
-//					.inside('.myContainer');
-//
-//			});
 
 		});
 	})
