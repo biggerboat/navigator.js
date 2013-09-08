@@ -96,6 +96,12 @@ $(function() {
 				expect(callWithFiveArguments).not.toThrow();
 				expect(callWithSixArguments).toThrow();
 			});
+
+			it("can have a parent recipe", function() {
+				var parentViewRecipe =  new navigatorjs.integration.ViewRecipe().toView(View);
+				var childViewRecipe =  new navigatorjs.integration.ViewRecipe().toView(View).withParent(parentViewRecipe);
+				expect(childViewRecipe.getParentRecipe()).toEqual(parentViewRecipe);
+			});
 		});
 
 		describe("StateViewMap", function() {
@@ -236,7 +242,6 @@ $(function() {
 					expect($(".blue").parent()[0]).toEqual($('.red')[0]);
 				});
 
-				//@TODO refactor this to testing the viewRecipe instead of a nested test of the StateViewMap
 				it("recursively adds the $el to a parent recipe's $el", function() {
 					viewRecipe.withArguments("red");
 
@@ -256,7 +261,6 @@ $(function() {
 					expect($(".blue").parent()[0]).toEqual($('.red')[0]);
 				});
 
-				//@TODO refactor this to testing the viewRecipe instead of a nested test of the StateViewMap
 				it("automatically adds elements to the DOM in order as they were mapped even though they got instantiated in a different order", function() {
 					viewRecipe.withArguments("red");
 
