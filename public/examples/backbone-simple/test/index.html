@@ -1,0 +1,121 @@
+<!doctype html>
+<html>
+<head>
+    <base href="/examples/backbone-simple/test/">
+    <title>Testsuite for Navigator JS - Backbone Simple Example</title>
+
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	<script type="text/javascript" src="../js/libs/underscore-min.js"></script>
+	<script type="text/javascript" src="../js/libs/backbone-min.js"></script>
+	<script type="text/javascript" src="../js/ApplicationRouter.js"></script>
+	<script type="text/javascript" src="../js/ChooseStateView.js"></script>
+	<script type="text/javascript" src="../js/ShapeView.js"></script>
+	<!--<script type="text/javascript" src="../../js/utils/AutoBind.js"></script>-->
+	<!--<script type="text/javascript" src="../../js/AsynchResponders.js"></script>-->
+	<!--<script type="text/javascript" src="../../js/NavigationBehaviors.js"></script>-->
+	<!--<script type="text/javascript" src="../../js/NavigationResponderBehaviors.js"></script>-->
+	<!--<script type="text/javascript" src="../../js/NavigationState.js"></script>-->
+	<!--<script type="text/javascript" src="../../js/NavigatorEvent.js"></script>-->
+	<!--<script type="text/javascript" src="../../js/ResponderLists.js"></script>-->
+	<!--<script type="text/javascript" src="../../js/transition/TransitionStatus.js"></script>-->
+	<!--<script type="text/javascript" src="../../js/transition/TransitionCompleteDelegate.js"></script>-->
+	<!--<script type="text/javascript" src="../../js/transition/ValidationPreparedDelegate.js"></script>-->
+	<!--<script type="text/javascript" src="../../js/Navigator.js"></script>-->
+	<!--<script type="text/javascript" src="../../js/features/DebugConsole.js"></script>-->
+	<script type="text/javascript" src="../../../dist/navigator-js.js"></script>
+
+	<script type="text/javascript">
+        $(function() {
+            window.location.hash = ''; // clearing deep link for testing
+            window.router = new ApplicationRouter();
+            Backbone.history.start({pushState:false, root: '/examples/backbone-jit/test/'});
+        });
+	</script>
+
+	<style type="text/css">
+		body {
+			font-family: Arial;
+			font-size: 12px;
+			color: black;
+		}
+		a { color: black;}
+
+		#responders > div {
+			opacity: 0;
+			width: 75px;
+			height: 75px;
+			margin: 10px;
+			float: left;
+		}
+
+		.circle { border-radius: 100%;}
+
+		.red {background: red;}
+		.green {background: green;}
+		.blue {background: blue;}
+		.black {background: black;}
+	</style>
+
+   	<link rel="stylesheet" type="text/css" href="../../../test/js/jasmine-1.3.1/jasmine.css">
+   	<script type="text/javascript" src="../../../test/js/jasmine-1.3.1/jasmine.js"></script>
+   	<script type="text/javascript" src="../../../test/js/jasmine-1.3.1/jasmine-html.js"></script>
+
+   	<!-- include source files here... -->
+   	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+   	<script type="text/javascript" src="../dist/navigator-js.js"></script>
+
+   	<!-- include spec files here... -->
+   	<script type="text/javascript" src="spec/BackboneSimpleSpec.js"></script>
+
+   	<script type="text/javascript">
+   		(function () {
+   			var jasmineEnv = jasmine.getEnv();
+   			jasmineEnv.updateInterval = 1000;
+
+   			var htmlReporter = new jasmine.HtmlReporter();
+
+   			jasmineEnv.addReporter(htmlReporter);
+
+   			jasmineEnv.specFilter = function (spec) {
+   				return htmlReporter.specFilter(spec);
+   			};
+
+   			var currentWindowOnload = window.onload;
+
+   			window.onload = function () {
+   				if (currentWindowOnload) {
+   					currentWindowOnload();
+   				}
+   				execJasmine();
+   			};
+
+   			function execJasmine() {
+   				jasmineEnv.execute();
+   			}
+
+   		})();
+   	</script>
+
+</head>
+<body>
+	<div id="introduction" class="chooseStateView">
+		<h1>Backbone + Navigator Simple Example (depends on jquery, backbone and underscore)</h1>
+		<p>
+			Welcome to the second example of the Navigator-JS library. Added to this example are 4 elements. A red, green and blue square, and a black circle. By clicking the menu, you can change the navigation state. You can also type in a path in the debug console.
+		</p>
+		<p>
+			<a href='red'>Red Square</a> | <a href='green'>Green Square</a> | <a href='blue'>Blue Square</a> | <a href='black'>Black Circle</a>
+		</p>
+		<p>
+			But what you can also do is show two shapes at the same time, by using state cascading:<br /><br />
+			<a href='red/blue'>Red and Blue</a> | <a href='green/black'>Green and Black</a> | <a href='*/black'>Current and Black</a>
+		</p>
+	</div>
+	<div id="responders">
+		<div class="red square">&nbsp;</div>
+		<div class="green square">&nbsp;</div>
+		<div class="blue square">&nbsp;</div>
+		<div class="black circle">&nbsp;</div>
+	</div>
+</body>
+</html>
