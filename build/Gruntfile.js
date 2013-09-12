@@ -11,7 +11,7 @@ module.exports = function (grunt) {
 				separator: ';'
 			},
 			dist: {
-				src: ['../src/public_html/js/**/*.js'],
+				src: ['../public/js/navigator-js/**/*.js'],
 				dest: '../<%= pkg.name %>.js'
 			}
 		},
@@ -19,7 +19,7 @@ module.exports = function (grunt) {
 		uglify: {
 			dist: {
 				files: {
-					'../<%= pkg.name %>.min.js': '../src/public_html/dist/<%= pkg.name %>.js'
+					'../<%= pkg.name %>.min.js': '../<%= pkg.name %>.js'
 				},
 				options: {
 					banner:'<%= banner %>'
@@ -27,15 +27,23 @@ module.exports = function (grunt) {
 			}
 		},
 
+		copy: {
+			injector: {
+				src: ['../<%= pkg.name %>.js', '../<%= pkg.name %>.min.js'],
+				dest: '../public/js/dist/*/'
+			}
+		},
+
 		watch: {
-			files: ['../src/public_html/js/*.js'],
-			tasks: ['concat:dist','uglify:dist']
+			files: ['../public/js/*.js'],
+			tasks: ['concat:dist','uglify:dist', 'copy:injector']
 		}
 	});
 
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-watch');
+	grunt.loadNpmTasks('grunt-contrib-copy');
 
-	grunt.registerTask('default', ['concat','uglify']);
+	grunt.registerTask('default', ['concat','uglify', 'copy']);
 };

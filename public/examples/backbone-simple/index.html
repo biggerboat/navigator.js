@@ -1,10 +1,10 @@
 <!doctype html>
 <html>
 <head>
-    <base href="/examples/backbone/">
+    <base href="/examples/backbone-simple/">
 	<title>Navigator JS - Backbone State Map example</title>
 
-	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	<script type="text/javascript" src="../../js/vendors/jquery-2.0.3.js"></script>
 	<script type="text/javascript" src="js/libs/underscore-min.js"></script>
 	<script type="text/javascript" src="js/libs/backbone-min.js"></script>
 	<script type="text/javascript" src="js/ApplicationRouter.js"></script>
@@ -22,12 +22,12 @@
 	<!--<script type="text/javascript" src="../../js/transition/ValidationPreparedDelegate.js"></script>-->
 	<!--<script type="text/javascript" src="../../js/Navigator.js"></script>-->
 	<!--<script type="text/javascript" src="../../js/features/DebugConsole.js"></script>-->
-	<script type="text/javascript" src="../../dist/navigator-js.js"></script>
+	<script type="text/javascript" src="../../js/dist/navigator-js.js"></script>
 
 	<script type="text/javascript">
         $(function() {
             window.router = new ApplicationRouter();
-            Backbone.history.start({pushState:true, root: '/examples/backbone/'});
+            Backbone.history.start({pushState:true, root: '/examples/backbone-simple/'});
         });
 	</script>
 
