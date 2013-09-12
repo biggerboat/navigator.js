@@ -14,41 +14,6 @@ describe("Navigator", function () {
 		}
 	});
 
-//	describe("Simple responder", function () {
-//
-//		beforeEach(function () {
-//			// The definition of a responder has to be defined and can differ per implementation. Keeping generic for now
-//			responder = {
-//				navigatorBehaviors: ["IHasStateInitialization"],
-//				initialize: function() {
-//
-//				}
-//			};
-//		});
-//
-//		it("can be added", function () {
-//			navigator.add(responder, states.contact);
-//			expect(navigator.hasResponder(responder)).toBeTruthy();
-//			console.log(navigator);
-//		});
-//
-//		it("can be removed", function () {
-//			expect(navigator.hasResponder(responder)).toBeFalsy();
-//			navigator.add(responder, states.contact);
-//			expect(navigator.hasResponder(responder)).toBeTruthy();
-//			navigator.remove(responder, states.contact);
-//			expect(navigator.hasResponder(responder)).toBeFalsy();
-//		});
-//
-//		it("throws an error when an invalid responder is added", function () {
-//			//expect(navigator.add(null, states.contact)).toThrow(new Error("add: responder is null"));
-//			expect(function() {
-//				navigator.add(null, states.contact)
-//			}).toThrow();
-//		});
-//
-//	});
-
 	describe("Simple navigation", function () {
 
 		beforeEach(function () {
