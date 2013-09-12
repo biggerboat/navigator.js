@@ -1,4 +1,4 @@
-navigator.js
+navigator.js [![Build Status](https://travis-ci.org/biggerboat/navigator.js.png)](https://travis-ci.org/biggerboat/navigator.js)
 ============
 NavigatorJS is the ultimate solution to show/hide your dom-elements based on a single state string.
 This library was created to take away your pains when it comes to navigating your application between different views or application states. It provides ways to deal with (asynchronous) transitions between states without bugging you with the tedious parts. To sum up of the library's features:
