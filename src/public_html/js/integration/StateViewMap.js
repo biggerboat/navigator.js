@@ -93,14 +93,16 @@ this.navigatorjs.integration = this.navigatorjs.integration||{};
 		$container.append( recipe.getViewInstance().$el );
 	}
 
-
-
 	//PUBLIC API
 	StateViewMap.prototype = {
 		mapState: function(statesOrPaths) {
 			var allArgumentsAsOneFlatArray = [];
 			allArgumentsAsOneFlatArray = allArgumentsAsOneFlatArray.concat.apply(allArgumentsAsOneFlatArray, arguments);
 			return _addRecipe(allArgumentsAsOneFlatArray);
+		},
+
+		get$Root: function() {
+			return _$root;
 		}
 	};
 
