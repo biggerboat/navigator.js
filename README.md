@@ -1,7 +1,7 @@
-navigator.js [![Build Status](https://travis-ci.org/biggerboat/navigator.js.png)](https://travis-ci.org/biggerboat/navigator.js)
-============
+# navigator.js [![Build Status](https://travis-ci.org/biggerboat/navigator.js.png)](https://travis-ci.org/biggerboat/navigator.js)
+
 NavigatorJS is the ultimate solution to show/hide your dom-elements based on a single state string.
-This library was created to take away your pains when it comes to navigating your application between different views or application states. It provides ways to deal with (asynchronous) transitions between states without bugging you with the tedious parts. To sum up of the library's features:
+This library was created to take away your pains when it comes to navigating your (single page) application between different views or application states. It provides ways to deal with (asynchronous) transitions between states without bugging you with the tedious parts. To sum up of the library's features:
 
 - Total control over synchronous and asynchronous visual transitions
 - Just-in-Time initalization of view components
@@ -9,8 +9,32 @@ This library was created to take away your pains when it comes to navigating you
 - Support for dynamic range elements and lists, like gallery items
 - Nested states, move complete parts of you application and they still work
 - Flow control through state validation, both synchronous and asynchronous
-- Integration of popular frameworks (Backbone), but it's optional
+- Optional integration with Backbone  
 And many more...
 
-NavigatorJS is mostly ported from the popular AS3 library NavigatorAS3, created by Epologee (www.github.com/epologee/navigator-as3)
-Most work was done by Paul Tondeur (@PaulTondeur), later joined by Michiel van der Ros (@micros). They are both members of the Bigger Boat freelance collective in Amsterdam.
+NavigatorJS is mostly ported from the popular AS3 library [Navigator-as3](www.github.com/epologee/navigator-as3), created by [@epologee](https://twitter.com/Epologee).
+Most work was done by [Paul Tondeur](https://twitter.com/PaulTondeur), later joined by [Michiel van der Ros](https://twitter.com/Micros). They are both members of the [Bigger Boat](http://www.biggerboat.nl) freelance collective in Amsterdam.
+
+## Running the specs
+
+Navigator.js was build with [TDD](http://en.wikipedia.org/wiki/Test-driven_development). We created a test suite with [Jasmine gem](https://github.com/pivotal/jasmine-gem). Every commit and pull requests gets tested with [Travis-ci](https://travis-ci.org/biggerboat/navigator.js).
+
+You can run the test locally by installing Ruby 2.x.x. For more information on how to install Ruby check the [Rbenv](https://github.com/sstephenson/rbenv#installation) installation guide. 
+
+When you have Ruby and Bundler installed run this command to install all dependencies:
+
+    $ bundle install
+    
+To see the tests in a browser run this command:
+
+    $ rake jasmine
+    
+Then open your browser with this url; [http://localhost:8888/](http://localhost:8888/)
+
+## Contributing
+
+1. Fork it
+2. Create your feature branch (`git checkout -b my-new-feature`)
+3. Commit your changes (`git commit -am 'Add some feature'`)
+4. Push to the branch (`git push origin my-new-feature`)
+5. Create new Pull Request from Github
