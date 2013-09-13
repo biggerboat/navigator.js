@@ -28,6 +28,10 @@ When you have Ruby and Bundler installed run this command to install all depende
 To see the tests in a browser run this command:
 
     $ rake jasmine
+
+If this doesn't work and gets you an error like 'rake aborted! cannot load such file', try:
+
+    $ bundle exec rake jasmine
     
 Then open your browser with this url; [http://localhost:8888/](http://localhost:8888/)
 
