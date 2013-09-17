@@ -35,7 +35,7 @@ describe("DebugConsole", function () {
 	});
 
 	afterEach(function() {
-		//$debugConsole.remove();
+		$debugConsole.remove();
 	});
 
 	it("Automatically adjusts the width based on its content", function () {
