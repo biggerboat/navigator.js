@@ -28,7 +28,7 @@ module.exports = function (grunt) {
 		},
 
 		copy: {
-			injector: {
+			navigator: {
 				src: ['../<%= pkg.name %>.js', '../<%= pkg.name %>.min.js'],
 				dest: '../public/js/dist/*/'
 			}
@@ -36,7 +36,7 @@ module.exports = function (grunt) {
 
 		watch: {
 			files: ['../public/js/*.js'],
-			tasks: ['concat:dist','uglify:dist', 'copy:injector']
+			tasks: ['concat:dist','uglify:dist', 'copy:navigator']
 		}
 	});
 
