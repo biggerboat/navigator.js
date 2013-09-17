@@ -11,7 +11,9 @@ this.navigatorjs.features = this.navigatorjs.features||{};
 		_$pathInput = null,
 		_$responders = null,
 		_$responderNames = null,
-		_$responderStatus = null;
+		_$responderStatus = null,
+		_respondersByID = null,
+		_statusByResponderID = null;
 
 	//Input keydown validation and requesting the entered path
 	var _onKeyPress = function(e) {
@@ -47,6 +49,12 @@ this.navigatorjs.features = this.navigatorjs.features||{};
 		}
 	};
 	
+	var _onResponderClick = function(e) {
+		var responderID = $(e.target).data("responder-id");
+		
+		console.log('Responder', _respondersByID[responderID]);
+	};
+	
 	var _autoSizeInput = function() {
 		var padding = 4;
 		_$pathInput.css({width:''});
@@ -54,10 +62,12 @@ this.navigatorjs.features = this.navigatorjs.features||{};
 	};
 
 	var _handleStatusUpdated = function(e, data) {
-		_updateDisplay(data.respondersByID, data.statusByResponderID);
+		_respondersByID = data.respondersByID;
+		_statusByResponderID = data.statusByResponderID;
+		_updateDisplay();
 	};
 
-	var _updateDisplay = function(respondersByID, statusByResponderID) {
+	var _updateDisplay = function() {
 		var currentState = _navigator.getCurrentState(),
 			responderID, responder, status, color, responderNamesHTMLString = "", responderStatusHTMLString = "";
 		if (!currentState) return;
@@ -65,9 +75,9 @@ this.navigatorjs.features = this.navigatorjs.features||{};
 		_$pathInput.val(currentState.getPath());
 		_autoSizeInput();
 
-		for(responderID in respondersByID) {
-			responder = respondersByID[responderID];
-			status = statusByResponderID[responderID];
+		for(responderID in _respondersByID) {
+			responder = _respondersByID[responderID];
+			status = _statusByResponderID[responderID];
 
 			if(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, "IHasStateTransition") || navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, "IHasStateInitialization")) {
 				responderNamesHTMLString += '<span data-responder-id="'+responderID+'">' + responder + '</span><br />';
@@ -142,6 +152,9 @@ this.navigatorjs.features = this.navigatorjs.features||{};
 
 		_$pathInput.on('keypress', _onKeyPress);
 		$(window).on('keypress', _onWindowKeyPress);
+
+		_$responderNames.on('click', _onResponderClick);
+		_$responderStatus.on('click', _onResponderClick);
 
 		_navigator.on(navigatorjs.NavigatorEvent.STATE_CHANGED, _handleStatusUpdated);
 		_navigator.on(navigatorjs.NavigatorEvent.TRANSITION_STATUS_UPDATED, _handleStatusUpdated);
