@@ -61,9 +61,9 @@ this.navigatorjs.features = this.navigatorjs.features||{};
 			status = statusByResponderID[responderID];
 
 			if(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, "IHasStateTransition") || navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, "IHasStateInitialization")) {
-				responderNamesHTMLString += responder + " <br />";
+				responderNamesHTMLString += '<span data-responder-id="'+responderID+'">' + responder + '</span><br />';
 				color = _getColorByStatus(status);
-				responderStatusHTMLString += "<span style=\" color:" + color + "; font-weight:bold;\">" + navigatorjs.transition.TransitionStatus.toString(status) + "</span><br />";
+				responderStatusHTMLString += '<span style=" color:' + color + '; font-weight:bold;" data-responder-id="'+responderID+'">' + navigatorjs.transition.TransitionStatus.toString(status) + '</span><br />';
 			}
 		}
 
