@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+		"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<title>Navigator JS - StateViewMap example</title>
+
+	<script type="text/javascript" src="../../js/vendors/jquery-2.0.3.js"></script>
+	<script type="text/javascript" src="../../js/dist/navigator-js.js"></script>
+
+	<script type="text/javascript">
+		var ShapeResponder = function($el) {
+			this.$el = $el;
+		};
+		ShapeResponder.prototype = {
+			navigatorBehaviors: ["IHasStateTransition"],
+
+			transitionIn: function(callOnComplete) {
+				console.log("ShapeResponder -> transitionIn");
+				this.$el.animate({opacity:1}, 500, callOnComplete);
+			},
+
+			transitionOut: function(callOnComplete) {
+				console.log("ShapeResponder -> transitionOut");
+				this.$el.animate({opacity:0}, 500, callOnComplete);
+			},
+
+			toString: function() {
+				return "[object "+this.$el.attr('class')+"]"
+			}
+		};
+
+		//STARTUP
+		$(function() {
+			var navigator = new navigatorjs.Navigator(),
+				$stateMapRoot = $("#responders"),
+				stateViewMap = new navigatorjs.integration.StateViewMap(navigator, $stateMapRoot),
+				debugConsole = new navigatorjs.features.DebugConsole(navigator),
+				$debugConsole = debugConsole.get$El();
+
+			$debugConsole.css({position:'fixed', left:10, bottom:10});
+			$('body').append($debugConsole);
+
+
+			stateViewMap.mapState(["red","*/red"]).toView(ShapeResponder).withArguments($("#responders .red"));
+			stateViewMap.mapState(["green","*/green"]).toView(ShapeResponder).withArguments($("#responders .green"));
+			stateViewMap.mapState(["blue","*/blue"]).toView(ShapeResponder).withArguments($("#responders .blue"));
+			stateViewMap.mapState(["black","*/black"]).toView(ShapeResponder).withArguments($("#responders .black"));
+
+			navigator.start();
+
+
+			$("#introduction a").on("click", function(e){
+				e.preventDefault();
+				var path = $(e.target).attr('href');
+
+				navigator.request(path);
+			});
+		});
+	</script>
+
+	<style type="text/css">
+		body {
+			font-family: Arial;
+			font-size: 12px;
+			color: black;
+		}
+		a { color: black;}
+
+		#responders > div {
+			opacity: 0;
+			width: 75px;
+			height: 75px;
+			margin: 10px;
+			float: left;
+		}
+
+		.circle { border-radius: 100%;}
+
+		.red {background: red;}
+		.green {background: green;}
+		.blue {background: blue;}
+		.black {background: black;}
+	</style>
+
+</head>
+<body>
+	<div id="introduction">
+		<h1>StateViewMap Navigator Example (no dependencies besides jquery)</h1>
+		<p>
+			Welcome to this example of the Navigator-JS library. Added to this example are 4 elements. A red, green and blue square, and a black circle. By clicking the menu, you can change the navigation state. You can also type in a path in the debug console.
+		</p>
+		<p>
+			<a href='red'>Red Square</a> | <a href='green'>Green Square</a> | <a href='blue'>Blue Square</a> | <a href='black'>Black Circle</a>
+		</p>
+		<p>
+			But what you can also do is show two shapes at the same time, by using state cascading:<br /><br />
+			<a href='red/blue'>Red and Blue</a> | <a href='green/black'>Green and Black</a> | <a href='*/black'>Current and Black</a>
+		</p>
+	</div>
+	<div id="responders">
+		<div class="red square">&nbsp;</div>
+		<div class="green square">&nbsp;</div>
+		<div class="blue square">&nbsp;</div>
+		<div class="black circle">&nbsp;</div>
+	</div>
+</body>
+</html>
