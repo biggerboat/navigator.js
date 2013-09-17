@@ -11,7 +11,7 @@ $(function() {
 			this.navigator = new navigatorjs.Navigator();
 
 			this.initViews();
-			this.initNavigationStates();
+			this.mapStates();
 			this.initDebugConsole();
 
 			this.navigator.start();
@@ -19,26 +19,16 @@ $(function() {
 
 		initViews: function() {
 			this.chooseStateView = new ChooseStateView( { navigator: this.navigator } );
-
-			this.redSquare = new ShapeView( { el: '#responders .red' } );
-			this.greenSquare = new ShapeView( { el: '#responders .green' } );
-			this.blueSquare = new ShapeView( { el: '#responders .blue' } );
-			this.blackCircle = new ShapeView( { el: '#responders .black' } );
 		},
 
-		initNavigationStates: function() {
-			this.navigator.add(this, "*");
+		mapStates: function() {
+			var $stateMapRoot = $("#responders");
+			this.stateViewMap = new navigatorjs.integration.StateViewMap(this.navigator, $stateMapRoot);
 
-			this.navigator.add(this.redSquare, "red");
-			this.navigator.add(this.greenSquare, "green");
-			this.navigator.add(this.blueSquare, "blue");
-			this.navigator.add(this.blackCircle, "black");
-
-			// We can add one responder to as many states as we like.
-			this.navigator.add(this.redSquare, "*/red");
-			this.navigator.add(this.greenSquare, "*/green");
-			this.navigator.add(this.blueSquare, "*/blue");
-			this.navigator.add(this.blackCircle, "*/black");
+			this.stateViewMap.mapState(["red","*/red"]).toView(ShapeView).withArguments({className: 'red'});
+			this.stateViewMap.mapState(["green","*/green"]).toView(ShapeView).withArguments({className: 'green'});
+			this.stateViewMap.mapState(["blue","*/blue"]).toView(ShapeView).withArguments({className: 'blue'});
+			this.stateViewMap.mapState(["black","*/black"]).toView(ShapeView).withArguments({className: 'black circle'});
 		},
 
 		initDebugConsole: function() {
