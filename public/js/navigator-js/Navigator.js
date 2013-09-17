@@ -735,6 +735,7 @@ this.navigatorjs = this.navigatorjs||{};
 		_responders = new navigatorjs.ResponderLists();
 		_respondersByID = {};
 		_statusByResponderID = {};
+		_responderIDCount = 0;
 	};
 
 
