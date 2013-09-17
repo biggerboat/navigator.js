@@ -31,6 +31,8 @@ this.navigatorjs.features = this.navigatorjs.features||{};
 		if(!_inputRegex.test(char)) {
 			e.preventDefault(); //Prevent char from writing in textfield
 		}
+
+		_autoSizeInput();
 	};
 
 	//Toggle showing debug console
@@ -44,6 +46,12 @@ this.navigatorjs.features = this.navigatorjs.features||{};
 				break;
 		}
 	};
+	
+	var _autoSizeInput = function() {
+		var padding = 4;
+		_$pathInput.css({width:''});
+		_$pathInput.css({width:_$pathInput[0].scrollWidth + padding});
+	};
 
 	var _handleStatusUpdated = function(e, data) {
 		_updateDisplay(data.respondersByID, data.statusByResponderID);
@@ -55,6 +63,7 @@ this.navigatorjs.features = this.navigatorjs.features||{};
 		if (!currentState) return;
 
 		_$pathInput.val(currentState.getPath());
+		_autoSizeInput();
 
 		for(responderID in respondersByID) {
 			responder = respondersByID[responderID];
