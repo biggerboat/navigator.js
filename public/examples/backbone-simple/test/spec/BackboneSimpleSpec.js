@@ -36,11 +36,9 @@ $(function() {
 					return parseFloat($red.css('opacity')) == 1 && parseFloat($green.css('opacity')) == 0;
 				},"only red to be visible", 1000);
 
-
 				waitsFor(function() {
 					return parseFloat($green.css('opacity')) == 1 && parseFloat($red.css('opacity')) == 0;
 				}, "only green to be visible", 1000);
-
 
 				runs(function() {
 					expect(parseFloat($red.css('opacity'))).toEqual(0);
