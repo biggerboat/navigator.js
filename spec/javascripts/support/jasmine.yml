@@ -11,6 +11,9 @@
 #   - dist/**/*.js
 #
 src_files:
+    - public/js/vendors/jquery-2.0.3.js
+    - public/js/vendors/underscore.js
+    - public/js/vendors/backbone.js
     - public/js/vendors/**/*.js
     - public/js/navigator-js/**/*.js
 
