@@ -1,0 +1,23 @@
+{
+	"name": "navigator.js",
+	"version": "0.1.0",
+	"description": "NavigatorJS is the ultimate solution to show/hide your dom-elements based on a single state string.",
+	"keywords": ["navigator.js","navigator","navigator-js","navigatorJS"],
+	"homepage": "https://github.com/biggerboat/navigator.js",
+
+	"authors": [
+		"Paul Tondeur",
+		"Michiel van der Ros",
+		"Jankees van Woezik"
+	],
+
+	"repository": {
+		"type": "git",
+		"url": "git://github.com/biggerboat/navigator.js.git"
+	},
+
+	"main": "navigator-js.js",
+	"dependencies": {
+		"jquery":"latest"
+	}
+}
