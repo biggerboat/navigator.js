@@ -1,4 +1,4 @@
-this.navigatorjs = this.navigatorjs||{};
+this.navigatorjs = this.navigatorjs || {};
 
 this.navigatorjs.NavigationBehaviors = {};
 

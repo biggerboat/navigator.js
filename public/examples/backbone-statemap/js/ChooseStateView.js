@@ -1,4 +1,4 @@
-$( function() {
+$(function() {
 	window.ChooseStateView = Backbone.View.extend({
 		el: '.chooseStateView',
 
@@ -6,16 +6,16 @@ $( function() {
 			'click a': 'onStateClick'
 		},
 
-		initialize: function (options) {
+		initialize: function(options) {
 			this.navigator = options.navigator;
 			_.bind(this.onStateClick, this);
 		},
 
-		onStateClick: function( e ) {
+		onStateClick: function(e) {
 			e.preventDefault();
-		    var path = $(e.target).attr('href');
+			var path = $(e.target).attr('href');
 
-            this.navigator.request(path);
+			this.navigator.request(path);
 
 			/**
 			 * Even though the next line will work in most situations,

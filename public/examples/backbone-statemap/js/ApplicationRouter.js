@@ -4,7 +4,7 @@ $(function() {
 		navigatorBehaviors: ["IHasStateUpdate"],
 
 		routes: {
-			"*any" : "onRouteChange"
+			"*any": "onRouteChange"
 		},
 
 		initialize: function() {
@@ -18,23 +18,23 @@ $(function() {
 		},
 
 		initViews: function() {
-			this.chooseStateView = new ChooseStateView( { navigator: this.navigator } );
+			this.chooseStateView = new ChooseStateView({ navigator: this.navigator });
 		},
 
 		mapStates: function() {
 			var $stateMapRoot = $("#responders");
 			this.stateViewMap = new navigatorjs.integration.StateViewMap(this.navigator, $stateMapRoot);
 
-			this.stateViewMap.mapState(["red","*/red"]).toView(ShapeView).withArguments({className: 'red'});
-			this.stateViewMap.mapState(["green","*/green"]).toView(ShapeView).withArguments({className: 'green'});
-			this.stateViewMap.mapState(["blue","*/blue"]).toView(ShapeView).withArguments({className: 'blue'});
-			this.stateViewMap.mapState(["black","*/black"]).toView(ShapeView).withArguments({className: 'black circle'});
+			this.stateViewMap.mapState(["red", "*/red"]).toView(ShapeView).withArguments({className: 'red'});
+			this.stateViewMap.mapState(["green", "*/green"]).toView(ShapeView).withArguments({className: 'green'});
+			this.stateViewMap.mapState(["blue", "*/blue"]).toView(ShapeView).withArguments({className: 'blue'});
+			this.stateViewMap.mapState(["black", "*/black"]).toView(ShapeView).withArguments({className: 'black circle'});
 		},
 
 		initDebugConsole: function() {
 			var debugConsole = new navigatorjs.features.DebugConsole(this.navigator),
 				$debugConsole = debugConsole.get$El(),
-				cssPosition = {position:'fixed', left:10, bottom:10};
+				cssPosition = {position: 'fixed', left: 10, bottom: 10};
 
 			$debugConsole.css(cssPosition).appendTo('body');
 		},

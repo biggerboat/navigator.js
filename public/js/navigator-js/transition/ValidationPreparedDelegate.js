@@ -1,8 +1,8 @@
-this.navigatorjs = this.navigatorjs||{};
-this.navigatorjs.transition = this.navigatorjs.transition||{};
+this.navigatorjs = this.navigatorjs || {};
+this.navigatorjs.transition = this.navigatorjs.transition || {};
 
 (function() {
-	var ValidationPreparedDelegate = function (validatorResponder, truncatedState, fullState, navigator, validationNamespace) {
+	var ValidationPreparedDelegate = function(validatorResponder, truncatedState, fullState, navigator, validationNamespace) {
 		this._validatorResponder = validatorResponder;
 		this._truncatedState = truncatedState;
 		this._fullState = fullState;

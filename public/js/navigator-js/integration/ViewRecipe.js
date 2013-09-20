@@ -1,9 +1,9 @@
-this.navigatorjs = this.navigatorjs||{};
-this.navigatorjs.integration = this.navigatorjs.integration||{};
+this.navigatorjs = this.navigatorjs || {};
+this.navigatorjs.integration = this.navigatorjs.integration || {};
 
 (function() {
 
-	var ViewRecipe = function () {
+	var ViewRecipe = function() {
 		this._states = [];
 		this._viewClass = null;
 		this._viewArguments = [];
@@ -18,10 +18,10 @@ this.navigatorjs.integration = this.navigatorjs.integration||{};
 		addState: function(navigationState) {
 			var index, existingState, length = this._states.length;
 
-			for(index=0; index<length; index++) {
+			for (index = 0; index < length; index++) {
 				existingState = this._states[index];
 
-				if(existingState.getPath() == navigationState.getPath()) {
+				if (existingState.getPath() == navigationState.getPath()) {
 					return;
 				}
 			}
@@ -46,10 +46,10 @@ this.navigatorjs.integration = this.navigatorjs.integration||{};
 		},
 
 		getViewInstance: function() {
-			if( !this.isInstantiated() ) {
+			if (!this.isInstantiated()) {
 
 				var params = this._viewArguments;
-				switch(params.length) {
+				switch (params.length) {
 					default:
 					case 0:
 						this._viewInstance = new this._viewClass();
@@ -80,7 +80,7 @@ this.navigatorjs.integration = this.navigatorjs.integration||{};
 		},
 
 		withArguments: function() {
-			if(arguments.length>5) {
+			if (arguments.length > 5) {
 				throw new Error("Uncle Bob says you want to use too many arguments");
 			}
 			this._viewArguments = arguments;

@@ -1,20 +1,20 @@
-this.navigatorjs = this.navigatorjs||{};
+this.navigatorjs = this.navigatorjs || {};
 
 (function() {
-	var ResponderLists = function () {
+	var ResponderLists = function() {
 		this.validateByPath = {};
 		this.updateByPath = {};
 		this.swapByPath = {};
 		this.showByPath = {};
 		this.hideByPath = {};
-		this.swappedBefore ={};
+		this.swappedBefore = {};
 
 		this.all = [this.validateByPath,
-					this.updateByPath,
-					this.swapByPath,
-					this.showByPath,
-					this.hideByPath,
-					this.swappedBefore];
+		            this.updateByPath,
+		            this.swapByPath,
+		            this.showByPath,
+		            this.hideByPath,
+		            this.swappedBefore];
 	};
 
 	//PUBLIC API
@@ -34,8 +34,8 @@ this.navigatorjs = this.navigatorjs||{};
 
 			for (variable in this) {
 				list = this[variable];
-				
-				if(this.all.indexOf(list)>-1) {
+
+				if (this.all.indexOf(list) > -1) {
 					contents = [];
 					for (key in list) {
 						contents.push("[" + key + " = " + list[key] + "]");

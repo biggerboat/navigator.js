@@ -1,5 +1,5 @@
-this.navigatorjs = this.navigatorjs||{};
-this.navigatorjs.integration = this.navigatorjs.integration||{};
+this.navigatorjs = this.navigatorjs || {};
+this.navigatorjs.integration = this.navigatorjs.integration || {};
 
 (function() {
 	var _navigator = null;
@@ -7,7 +7,7 @@ this.navigatorjs.integration = this.navigatorjs.integration||{};
 	var _$root = null;
 
 
-	var StateViewMap = function (navigator, $root) {
+	var StateViewMap = function(navigator, $root) {
 		_navigator = navigator;
 		_orderedRecipes = [];
 		_$root = $root || $('body');
@@ -19,7 +19,7 @@ this.navigatorjs.integration = this.navigatorjs.integration||{};
 		var recipe = new navigatorjs.integration.ViewRecipe();
 
 		var index, length = statesOrPaths.length;
-		for(index = 0; index<length; index++) {
+		for (index = 0; index < length; index++) {
 			recipe.addState(navigatorjs.NavigationState.make(statesOrPaths[index]));
 		}
 
@@ -34,20 +34,20 @@ this.navigatorjs.integration = this.navigatorjs.integration||{};
 			statesIndex, state, statesLength,
 			viewInstance;
 
-		for( recipesIndex = 0; recipesIndex < recipesLength; recipesIndex++ ) {
+		for (recipesIndex = 0; recipesIndex < recipesLength; recipesIndex++) {
 			recipe = _orderedRecipes[recipesIndex];
 			recipeStates = recipe.getStates();
 			statesLength = recipeStates.length;
 
-			for( statesIndex= 0; statesIndex < statesLength; statesIndex++ ) {
+			for (statesIndex = 0; statesIndex < statesLength; statesIndex++) {
 				state = recipeStates[statesIndex];
 
-				if( requestedState.contains( state ) ) {
+				if (requestedState.contains(state)) {
 					viewInstance = recipe.getViewInstance();
 
-					if( viewInstance.navigatorBehaviors instanceof Array) {
+					if (viewInstance.navigatorBehaviors instanceof Array) {
 						_addViewElementToDOM(recipe);
-						_navigator.add( viewInstance, state);
+						_navigator.add(viewInstance, state);
 					}
 				}
 			}
@@ -55,7 +55,7 @@ this.navigatorjs.integration = this.navigatorjs.integration||{};
 	}
 
 	function _addViewElementToDOM(recipe) {
-		if( recipe.isInstantiated() && $.contains(document.documentElement, recipe.getViewInstance().$el) ) {
+		if (recipe.isInstantiated() && $.contains(document.documentElement, recipe.getViewInstance().$el)) {
 			return;
 		}
 
@@ -64,15 +64,15 @@ this.navigatorjs.integration = this.navigatorjs.integration||{};
 			$inside,
 			insideSelector = recipe.getInsideSelector();
 
-		if(parentRecipe ) {
-			if(!parentRecipe.isInstantiated()) {
+		if (parentRecipe) {
+			if (!parentRecipe.isInstantiated()) {
 				_addViewElementToDOM(parentRecipe);
 			}
 
 			$container = parentRecipe.getViewInstance().$el;
 		}
 
-		if( insideSelector != null) {
+		if (insideSelector != null) {
 			$inside = $container.find(insideSelector);
 			$container = $inside.length > 0 ? $inside.first() : $container;
 		}
@@ -84,13 +84,13 @@ this.navigatorjs.integration = this.navigatorjs.integration||{};
 			testRecipe = _orderedRecipes[index];
 
 			if (testRecipe.isInstantiated() && testRecipe.getViewInstance().$el.parent()[0] == $container[0]) {
-				testRecipe.getViewInstance().$el.before( recipe.getViewInstance().$el );
+				testRecipe.getViewInstance().$el.before(recipe.getViewInstance().$el);
 				return;
 			}
 		}
 
 		// otherwise add on top
-		$container.append( recipe.getViewInstance().$el );
+		$container.append(recipe.getViewInstance().$el);
 	}
 
 	//PUBLIC API

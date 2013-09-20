@@ -1,4 +1,4 @@
-this.navigatorjs = this.navigatorjs||{};
+this.navigatorjs = this.navigatorjs || {};
 
 (function() {
 	//
@@ -31,14 +31,16 @@ this.navigatorjs = this.navigatorjs||{};
 
 
 	var _modify = function(addition, responder, pathsOrStates, behaviorString) {
-		if (_relayModification(addition, responder, pathsOrStates, behaviorString)) return;
+		if (_relayModification(addition, responder, pathsOrStates, behaviorString)) {
+			return;
+		}
 
 		// Using the path variable as dictionary key to break instance referencing.
 		var path = navigatorjs.NavigationState.make(pathsOrStates).getPath(),
 			list, matchingInterface;
 
 		// Create, store and retrieve the list that matches the desired behavior.
-		switch(behaviorString) {
+		switch (behaviorString) {
 			case navigatorjs.NavigationBehaviors.SHOW:
 				matchingInterface = "IHasStateTransition";
 				list = _responders.showByPath[path] = _responders.showByPath[path] || [];
@@ -72,10 +74,10 @@ this.navigatorjs = this.navigatorjs||{};
 			if (list.indexOf(responder) < 0) {
 				list.push(responder);
 
-				if(responder.__navigatorjs == undefined ) {
+				if (responder.__navigatorjs == undefined) {
 					//Create new hidden navigatorjs data
 					_responderIDCount++;
-					responder.__navigatorjs = {id:_responderIDCount};
+					responder.__navigatorjs = {id: _responderIDCount};
 					_respondersByID[responder.__navigatorjs.id] = responder;
 				}
 
@@ -102,7 +104,7 @@ this.navigatorjs = this.navigatorjs||{};
 			}
 		}
 
-		_$eventDispatcher.trigger(navigatorjs.NavigatorEvent.TRANSITION_STATUS_UPDATED, {statusByResponderID:_statusByResponderID, respondersByID:_respondersByID});
+		_$eventDispatcher.trigger(navigatorjs.NavigatorEvent.TRANSITION_STATUS_UPDATED, {statusByResponderID: _statusByResponderID, respondersByID: _respondersByID});
 	};
 
 	var _relayModification = function(addition, responder, pathsOrStates, behaviorString) {
@@ -114,7 +116,7 @@ this.navigatorjs = this.navigatorjs||{};
 
 		if (pathsOrStates instanceof Array) {
 			length = pathsOrStates.length;
-			for (index=0;index<length;index++) {
+			for (index = 0; index < length; index++) {
 				_modify(addition, responder, pathsOrStates[index], behaviorString);
 			}
 			return true;
@@ -123,10 +125,10 @@ this.navigatorjs = this.navigatorjs||{};
 		behaviorString = behaviorString || navigatorjs.NavigationBehaviors.AUTO;
 		if (behaviorString == navigatorjs.NavigationBehaviors.AUTO) {
 			length = navigatorjs.NavigationBehaviors.ALL_AUTO.length;
-			for (index=0;index<length;index++) {
+			for (index = 0; index < length; index++) {
 				try {
 					_modify(addition, responder, pathsOrStates, navigatorjs.NavigationBehaviors.ALL_AUTO[index]);
-				} catch(e) {
+				} catch (e) {
 					// ignore 'should implement xyz' errors
 				}
 			}
@@ -191,7 +193,7 @@ this.navigatorjs = this.navigatorjs||{};
 
 		// Do call the super.notifyStateChange() when overriding.
 		if (state != _previousState) {
-			_$eventDispatcher.trigger(navigatorjs.NavigatorEvent.STATE_CHANGED, {statusByResponderID:_statusByResponderID, respondersByID:_respondersByID, state:_currentState});
+			_$eventDispatcher.trigger(navigatorjs.NavigatorEvent.STATE_CHANGED, {statusByResponderID: _statusByResponderID, respondersByID: _respondersByID, state: _currentState});
 		}
 	};
 
@@ -221,7 +223,7 @@ this.navigatorjs = this.navigatorjs||{};
 
 		for (responderID in _statusByResponderID) {
 			responder = _respondersByID[responderID];
-			if (respondersToShow.indexOf(responder) ==-1) {
+			if (respondersToShow.indexOf(responder) == -1) {
 				// if the responder is not already hidden or disappearing, trigger the transitionOut:
 				if (navigatorjs.transition.TransitionStatus.HIDDEN < _statusByResponderID[responderID] && _statusByResponderID[responderID] < navigatorjs.transition.TransitionStatus.DISAPPEARING) {
 					_statusByResponderID[responderID] = navigatorjs.transition.TransitionStatus.DISAPPEARING;
@@ -243,8 +245,8 @@ this.navigatorjs = this.navigatorjs||{};
 			}
 		}
 
-		if (waitForResponders.length>0) {
-			_$eventDispatcher.trigger(navigatorjs.NavigatorEvent.TRANSITION_STATUS_UPDATED, {statusByResponderID:_statusByResponderID, respondersByID:_respondersByID});
+		if (waitForResponders.length > 0) {
+			_$eventDispatcher.trigger(navigatorjs.NavigatorEvent.TRANSITION_STATUS_UPDATED, {statusByResponderID: _statusByResponderID, respondersByID: _respondersByID});
 		}
 
 		return waitForResponders;
@@ -266,7 +268,7 @@ this.navigatorjs = this.navigatorjs||{};
 				_initializeIfNeccessary(list);
 
 				// check for existing validators.
-				for(index=0;index<list.length;index++) {
+				for (index = 0; index < list.length; index++) {
 					responder = list[index];
 					responder.updateState(_currentState.subtract(state), _currentState);
 				}
@@ -295,7 +297,7 @@ this.navigatorjs = this.navigatorjs||{};
 		_initializeIfNeccessary(respondersToShow);
 
 		//for each (var responder : IHasStateTransition in respondersToShow) {
-		for(index=0;index<respondersToShow.length;index++) {
+		for (index = 0; index < respondersToShow.length; index++) {
 			responder = respondersToShow[index];
 			status = _statusByResponderID[responder.__navigatorjs.id];
 
@@ -310,14 +312,14 @@ this.navigatorjs = this.navigatorjs||{};
 		}
 
 		// loop backwards so we can splice elements off the array while in the loop.
-		for (index = respondersToWaitFor.length;--index >= 0;) {
+		for (index = respondersToWaitFor.length; --index >= 0;) {
 			if (_statusByResponderID[respondersToWaitFor[index].__navigatorjs.id] == navigatorjs.transition.TransitionStatus.SHOWN) {
 				respondersToWaitFor.splice(index, 1);
 			}
 		}
 
-		if (respondersToWaitFor.length>0) {
-			_$eventDispatcher.trigger(navigatorjs.NavigatorEvent.TRANSITION_STATUS_UPDATED, {statusByResponderID:_statusByResponderID, respondersByID:_respondersByID});
+		if (respondersToWaitFor.length > 0) {
+			_$eventDispatcher.trigger(navigatorjs.NavigatorEvent.TRANSITION_STATUS_UPDATED, {statusByResponderID: _statusByResponderID, respondersByID: _respondersByID});
 		}
 
 		return respondersToWaitFor;
@@ -353,10 +355,11 @@ this.navigatorjs = this.navigatorjs||{};
 				_initializeIfNeccessary(swapByPathList);
 
 				// check for existing swaps.
-				for(index=0;index<swapByPathList.length;index++) {
+				for (index = 0; index < swapByPathList.length; index++) {
 					responder = swapByPathList[index];
-					if (!_responders.swappedBefore[responder])
+					if (!_responders.swappedBefore[responder]) {
 						continue;
+					}
 
 					truncatedState = _currentState.subtract(state);
 					if (responder.willSwapToState(truncatedState, _currentState)) {
@@ -371,14 +374,14 @@ this.navigatorjs = this.navigatorjs||{};
 		}
 
 		// loop backwards so we can splice elements off the array while in the loop.
-		for (index = waitForResponders.length;--index >= 0;) {
+		for (index = waitForResponders.length; --index >= 0;) {
 			if (_statusByResponderID[waitForResponders[index].__navigatorjs.id] == navigatorjs.transition.TransitionStatus.SHOWN) {
 				waitForResponders.splice(index, 1);
 			}
 		}
 
-		if (waitForResponders.length>0) {
-			_$eventDispatcher.trigger(navigatorjs.NavigatorEvent.TRANSITION_STATUS_UPDATED, {statusByResponderID:_statusByResponderID, respondersByID:_respondersByID});
+		if (waitForResponders.length > 0) {
+			_$eventDispatcher.trigger(navigatorjs.NavigatorEvent.TRANSITION_STATUS_UPDATED, {statusByResponderID: _statusByResponderID, respondersByID: _respondersByID});
 		}
 
 		return waitForResponders;
@@ -406,7 +409,7 @@ this.navigatorjs = this.navigatorjs||{};
 
 				// check for existing swaps.
 				//for each (var responder : IHasStateSwap in swapByPathList) {
-				for(index=0;index<swapByPathList.length;index++) {
+				for (index = 0; index < swapByPathList.length; index++) {
 					responder = swapByPathList[index];
 					truncatedState = _currentState.subtract(state);
 					if (responder.willSwapToState(truncatedState, _currentState)) {
@@ -430,13 +433,13 @@ this.navigatorjs = this.navigatorjs||{};
 	_transition.notifyComplete = function(responder, status, behavior) {
 		if (_statusByResponderID[responder.__navigatorjs.id]) {
 			_statusByResponderID[responder.__navigatorjs.id] = status;
-			_$eventDispatcher.trigger(navigatorjs.NavigatorEvent.TRANSITION_STATUS_UPDATED, {statusByResponderID:_statusByResponderID, respondersByID:_respondersByID});
+			_$eventDispatcher.trigger(navigatorjs.NavigatorEvent.TRANSITION_STATUS_UPDATED, {statusByResponderID: _statusByResponderID, respondersByID: _respondersByID});
 		}
 
 		var asynchResponders,
 			callbackMethod;
 
-		switch(behavior) {
+		switch (behavior) {
 			case navigatorjs.NavigationBehaviors.HIDE:
 				asynchResponders = _disappearingAsynchResponders;
 				callbackMethod = _flow.performUpdates;
@@ -475,9 +478,9 @@ this.navigatorjs = this.navigatorjs||{};
 			existingResponders,
 			i, j;
 
-		for (i=0;i<_responders.all.length;i++) {
+		for (i = 0; i < _responders.all.length; i++) {
 			respondersByPath = _responders.all[i];
-			for (j=0;j<respondersByPath.length;j++) {
+			for (j = 0; j < respondersByPath.length; j++) {
 				existingResponders = respondersByPath[j];
 				if (existingResponders.indexOf(responder) >= 0) {return true;}
 			}
@@ -546,8 +549,8 @@ this.navigatorjs = this.navigatorjs||{};
 	// VALIDATION NAMESPACE END
 
 	var _validate = function(stateToValidate, allowRedirection, allowAsyncValidation) {
-		var allowRedirection = allowRedirection==undefined ? true : allowRedirection,
-			allowAsyncValidation = allowAsyncValidation==undefined ? true : allowAsyncValidation,
+		var allowRedirection = allowRedirection == undefined ? true : allowRedirection,
+			allowAsyncValidation = allowAsyncValidation == undefined ? true : allowAsyncValidation,
 			unvalidatedState = stateToValidate,
 			implicit,
 			invalidated = false,
@@ -596,7 +599,7 @@ this.navigatorjs = this.navigatorjs||{};
 
 				if (allowAsyncValidation) {
 					// check for async validators first. If this does not
-					for(index=0;index<validateByPathList.length;index++) {
+					for (index = 0; index < validateByPathList.length; index++) {
 						responder = validateByPathList[index];
 
 						// check for optional validation
@@ -626,10 +629,12 @@ this.navigatorjs = this.navigatorjs||{};
 
 				// check regular validators
 				//for each (responder in list) {
-				for(index=0;index<validateByPathList.length;index++) {
+				for (index = 0; index < validateByPathList.length; index++) {
 					responder = validateByPathList[index];
 					// skip async validators, we handled them a few lines back.
-					if (navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, "IHasStateValidationAsync")) continue;
+					if (navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, "IHasStateValidationAsync")) {
+						continue;
+					}
 
 					// check for optional validation
 					if (navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, "IHasStateValidationOptional") && !responder.willValidate(remainderState, unvalidatedState)) {
@@ -692,7 +697,7 @@ this.navigatorjs = this.navigatorjs||{};
 
 		// remove elements from the toShow list, if they are in the toHide list.
 //			for each (var hide : IHasStateTransition in toHide) {
-		for(index=0;index<respondersToHide.length;index++) {
+		for (index = 0; index < respondersToHide.length; index++) {
 			hideResponder = respondersToHide[index];
 			hideIndex = respondersToShow.indexOf(hideResponder);
 			if (hideIndex >= 0) {
@@ -706,7 +711,7 @@ this.navigatorjs = this.navigatorjs||{};
 	var _initializeIfNeccessary = function(responderList) {
 		var index, responder;
 //			for each (var responder : INavigationResponder in responderList) {
-		for(index=0;index<responderList.length;index++) {
+		for (index = 0; index < responderList.length; index++) {
 			responder = responderList[index];
 			if (_statusByResponderID[responder.__navigatorjs.id] == navigatorjs.transition.TransitionStatus.UNINITIALIZED && navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, "IHasStateInitialization")) {
 				// first initialize the responder.
@@ -729,7 +734,7 @@ this.navigatorjs = this.navigatorjs||{};
 		return responders;
 	};
 
-	var Navigator = function () {
+	var Navigator = function() {
 		navigatorjs.utils.AutoBind(this, this);
 
 		_responders = new navigatorjs.ResponderLists();
@@ -796,7 +801,7 @@ this.navigatorjs = this.navigatorjs||{};
 			}
 
 			// this event makes it possible to add responders just in time to participate in the validation process.
-			_$eventDispatcher.trigger(navigatorjs.NavigatorEvent.STATE_REQUESTED, {state:requestedState});
+			_$eventDispatcher.trigger(navigatorjs.NavigatorEvent.STATE_REQUESTED, {state: requestedState});
 
 			// Inline redirection is reset with every request call.
 			// It can be changed by a responder implementing the IHasStateRedirection interface.
@@ -806,8 +811,8 @@ this.navigatorjs = this.navigatorjs||{};
 		},
 
 		getCurrentState: function() {
-			if(!_currentState) {
-				if(_defaultState) {
+			if (!_currentState) {
+				if (_defaultState) {
 					return _defaultState.clone();
 				}
 
@@ -821,7 +826,7 @@ this.navigatorjs = this.navigatorjs||{};
 			return _isTransitioning;
 		},
 
-		on: function(event,handler) {
+		on: function(event, handler) {
 			_$eventDispatcher.on(event, handler);
 			return this;
 		},

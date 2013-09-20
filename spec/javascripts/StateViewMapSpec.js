@@ -34,11 +34,11 @@ $(function() {
 			navigator;
 
 		describe("Test view", function() {
-			it("can be instantiated", function(){
+			it("can be instantiated", function() {
 				expect(new View() instanceof View).toBeTruthy();
 			});
 
-			it("has responders", function(){
+			it("has responders", function() {
 				var testView = new View();
 				expect(testView.navigatorBehaviors[0]).toEqual("IHasStateInitialization");
 				expect(testView.navigatorBehaviors[1]).toEqual("IHasStateTransition");
@@ -76,21 +76,21 @@ $(function() {
 
 			it("instantiates the view with the arguments that were provided", function() {
 				var viewRecipe = new navigatorjs.integration.ViewRecipe()
-															.toView(View)
-															.withArguments("red","circle");
+					.toView(View)
+					.withArguments("red", "circle");
 
 				expect(viewRecipe.getViewInstance().instantiationArguments[0]).toEqual("red");
 				expect(viewRecipe.getViewInstance().instantiationArguments[1]).toEqual("circle");
 			});
 
 			it("throws an error when using more than 5 view arguments", function() {
-				var viewRecipe =  new navigatorjs.integration.ViewRecipe();
+				var viewRecipe = new navigatorjs.integration.ViewRecipe();
 
 				var callWithFiveArguments = function() {
-					viewRecipe.withArguments(1,2,3,4,5);
+					viewRecipe.withArguments(1, 2, 3, 4, 5);
 				};
 				var callWithSixArguments = function() {
-					viewRecipe.withArguments(1,2,3,4,5,6);
+					viewRecipe.withArguments(1, 2, 3, 4, 5, 6);
 				};
 
 				expect(callWithFiveArguments).not.toThrow();
@@ -98,8 +98,8 @@ $(function() {
 			});
 
 			it("can have a parent recipe", function() {
-				var parentViewRecipe =  new navigatorjs.integration.ViewRecipe().toView(View);
-				var childViewRecipe =  new navigatorjs.integration.ViewRecipe().toView(View).withParent(parentViewRecipe);
+				var parentViewRecipe = new navigatorjs.integration.ViewRecipe().toView(View);
+				var childViewRecipe = new navigatorjs.integration.ViewRecipe().toView(View).withParent(parentViewRecipe);
 				expect(childViewRecipe.getParentRecipe()).toEqual(parentViewRecipe);
 			});
 		});
@@ -187,7 +187,7 @@ $(function() {
 					$('body').append($container);
 				});
 
-				afterEach(function(){
+				afterEach(function() {
 					$('.view').remove();
 					$container.remove();
 				});

@@ -4,7 +4,7 @@ $(function() {
 		navigatorBehaviors: ["IHasStateUpdate"],
 
 		routes: {
-			"*any" : "onRouteChange"
+			"*any": "onRouteChange"
 		},
 
 		initialize: function() {
@@ -18,12 +18,12 @@ $(function() {
 		},
 
 		initViews: function() {
-			this.chooseStateView = new ChooseStateView( { navigator: this.navigator } );
+			this.chooseStateView = new ChooseStateView({ navigator: this.navigator });
 
-			this.redSquare = new ShapeView( { el: '#responders .red' } );
-			this.greenSquare = new ShapeView( { el: '#responders .green' } );
-			this.blueSquare = new ShapeView( { el: '#responders .blue' } );
-			this.blackCircle = new ShapeView( { el: '#responders .black' } );
+			this.redSquare = new ShapeView({ el: '#responders .red' });
+			this.greenSquare = new ShapeView({ el: '#responders .green' });
+			this.blueSquare = new ShapeView({ el: '#responders .blue' });
+			this.blackCircle = new ShapeView({ el: '#responders .black' });
 		},
 
 		initNavigationStates: function() {
@@ -44,7 +44,7 @@ $(function() {
 		initDebugConsole: function() {
 			var debugConsole = new navigatorjs.features.DebugConsole(this.navigator),
 				$debugConsole = debugConsole.get$El(),
-				cssPosition = {position:'fixed', left:10, bottom:10};
+				cssPosition = {position: 'fixed', left: 10, bottom: 10};
 
 			$debugConsole.css(cssPosition).appendTo('body');
 		},

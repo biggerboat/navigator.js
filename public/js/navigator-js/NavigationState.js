@@ -1,9 +1,9 @@
-this.navigatorjs = this.navigatorjs||{};
+this.navigatorjs = this.navigatorjs || {};
 
 (function() {
-	var NavigationState = function (aPathStringOrArray) {
+	var NavigationState = function(aPathStringOrArray) {
 		this._path = '';
-		
+
 		if (aPathStringOrArray instanceof Array) {
 			this.setSegments(aPathStringOrArray);
 		} else {
@@ -16,21 +16,21 @@ this.navigatorjs = this.navigatorjs||{};
 	};
 
 	NavigationState.prototype = {
-		setPath: function (aPath) {
+		setPath: function(aPath) {
 			this._path = '/' + aPath.toLowerCase() + '/';
 			this._path = this._path.replace(new RegExp("\/+", "g"), "/");
 			this._path = this._path.replace(/\s+/g, "-");
 		},
 
-		getPath: function () {
+		getPath: function() {
 			return this._path;
 		},
 
-		setSegments: function (aSegments) {
+		setSegments: function(aSegments) {
 			this.setPath(aSegments.join("/"));
 		},
 
-		getSegments: function () {
+		getSegments: function() {
 			var theSegments = this._path.split("/");
 
 			theSegments.pop();
@@ -39,20 +39,20 @@ this.navigatorjs = this.navigatorjs||{};
 			return theSegments;
 		},
 
-		getSegment: function (aIndex) {
+		getSegment: function(aIndex) {
 			return this.getSegments()[aIndex];
 		},
 
-		getFirstSegment: function () {
+		getFirstSegment: function() {
 			return this.getSegment(0);
 		},
 
-		getLastSegment: function () {
+		getLastSegment: function() {
 			var theSegments = this.getSegments();
 			return this.getSegment(theSegments.length - 1);
 		},
 
-		contains: function (aForeignState) {
+		contains: function(aForeignState) {
 			var theForeignSegments = aForeignState.getSegments(),
 				theNativeSegments = this.getSegments(),
 				theForeignSegment, theNativeSegment,
@@ -74,7 +74,7 @@ this.navigatorjs = this.navigatorjs||{};
 			return true;
 		},
 
-		equals: function (aState) {
+		equals: function(aState) {
 			var theSubtractedState = this.subtract(aState);
 
 			if (theSubtractedState === null) {
@@ -123,8 +123,8 @@ this.navigatorjs = this.navigatorjs||{};
 				theLength = Math.min(theUnmaskedSegments.length, theSourceSegments.length),
 				theIndex;
 
-			for(theIndex=0; theIndex<theLength; theIndex++) {
-				if(theUnmaskedSegments[theIndex] === "*") {
+			for (theIndex = 0; theIndex < theLength; theIndex++) {
+				if (theUnmaskedSegments[theIndex] === "*") {
 					theUnmaskedSegments[theIndex] = theSourceSegments[theIndex];
 				}
 			}

@@ -1,4 +1,4 @@
-this.navigatorjs = this.navigatorjs||{};
+this.navigatorjs = this.navigatorjs || {};
 
 this.navigatorjs.NavigatorEvent = {};
 this.navigatorjs.NavigatorEvent.TRANSITION_STATUS_UPDATED = "TRANSITION_STATUS_UPDATED";

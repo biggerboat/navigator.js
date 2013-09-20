@@ -1,9 +1,9 @@
-describe("Navigator", function () {
+describe("Navigator", function() {
 	var navigator;
 	var states;
 	var responder;
 
-	beforeEach(function () {
+	beforeEach(function() {
 		navigator = new navigatorjs.Navigator();
 		states = {
 			root: new navigatorjs.NavigationState("/"),
@@ -14,9 +14,9 @@ describe("Navigator", function () {
 		}
 	});
 
-	describe("Simple navigation", function () {
+	describe("Simple navigation", function() {
 
-		beforeEach(function () {
+		beforeEach(function() {
 			responder = {
 				navigatorBehaviors: ["IHasStateInitialization", "IHasStateTransition"],
 				initialize: function() {
@@ -39,20 +39,20 @@ describe("Navigator", function () {
 			};
 		});
 
-		it("Starts at the root state", function () {
+		it("Starts at the root state", function() {
 			navigator.add(responder, states.contact);
 			navigator.start();
 			expect(navigator.getCurrentState().getPath()).toEqual(states.root.getPath());
 		});
 
-		it("Can request to the contact state", function () {
+		it("Can request to the contact state", function() {
 			navigator.add(responder, states.contact);
 			navigator.start();
 			navigator.request(states.contact);
 			expect(navigator.getCurrentState().getPath()).toEqual(states.contact.getPath());
 		});
 
-		it("can trigger the initialize state", function () {
+		it("can trigger the initialize state", function() {
 			spyOn(responder, 'initialize'); //A spy replaces the method, so the initialize log won't occur here
 
 			navigator.add(responder, states.contact);

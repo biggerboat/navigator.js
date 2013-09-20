@@ -1,5 +1,5 @@
-this.navigatorjs = this.navigatorjs||{};
-this.navigatorjs.features = this.navigatorjs.features||{};
+this.navigatorjs = this.navigatorjs || {};
+this.navigatorjs.features = this.navigatorjs.features || {};
 
 (function() {
 
@@ -17,7 +17,7 @@ this.navigatorjs.features = this.navigatorjs.features||{};
 
 	//Input keydown validation and requesting the entered path
 	var _onKeyPress = function(e) {
-		switch(e.which) {
+		switch (e.which) {
 			case 13: //Return
 				e.preventDefault(); //Prevent char from writing in textfield
 				_navigator.request(_$pathInput.val());
@@ -30,7 +30,7 @@ this.navigatorjs.features = this.navigatorjs.features||{};
 		}
 
 		var char = String.fromCharCode(e.which);
-		if(!_inputRegex.test(char)) {
+		if (!_inputRegex.test(char)) {
 			e.preventDefault(); //Prevent char from writing in textfield
 		}
 
@@ -39,26 +39,26 @@ this.navigatorjs.features = this.navigatorjs.features||{};
 
 	//Toggle showing debug console
 	var _onWindowKeyPress = function(e) {
-		switch(String.fromCharCode(e.which)) {
+		switch (String.fromCharCode(e.which)) {
 			case "~":
 			case "$":
 			case "`":
 				_visible = !_visible;
-				_$el.css({display:_visible ? '' : 'none'});
+				_$el.css({display: _visible ? '' : 'none'});
 				break;
 		}
 	};
-	
+
 	var _onResponderClick = function(e) {
 		var responderID = $(e.target).data("responder-id");
-		
+
 		console.log('Responder', _respondersByID[responderID]);
 	};
-	
+
 	var _autoSizeInput = function() {
 		var padding = 4;
-		_$pathInput.css({width:''});
-		_$pathInput.css({width:_$pathInput[0].scrollWidth + padding});
+		_$pathInput.css({width: ''});
+		_$pathInput.css({width: _$pathInput[0].scrollWidth + padding});
 	};
 
 	var _handleStatusUpdated = function(e, data) {
@@ -70,19 +70,21 @@ this.navigatorjs.features = this.navigatorjs.features||{};
 	var _updateDisplay = function() {
 		var currentState = _navigator.getCurrentState(),
 			responderID, responder, status, color, responderNamesHTMLString = "", responderStatusHTMLString = "";
-		if (!currentState) return;
+		if (!currentState) {
+			return;
+		}
 
 		_$pathInput.val(currentState.getPath());
 		_autoSizeInput();
 
-		for(responderID in _respondersByID) {
+		for (responderID in _respondersByID) {
 			responder = _respondersByID[responderID];
 			status = _statusByResponderID[responderID];
 
-			if(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, "IHasStateTransition") || navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, "IHasStateInitialization")) {
-				responderNamesHTMLString += '<span data-responder-id="'+responderID+'">' + responder + '</span><br />';
+			if (navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, "IHasStateTransition") || navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, "IHasStateInitialization")) {
+				responderNamesHTMLString += '<span data-responder-id="' + responderID + '">' + responder + '</span><br />';
 				color = _getColorByStatus(status);
-				responderStatusHTMLString += '<span style=" color:' + color + '; font-weight:bold;" data-responder-id="'+responderID+'">' + navigatorjs.transition.TransitionStatus.toString(status) + '</span><br />';
+				responderStatusHTMLString += '<span style=" color:' + color + '; font-weight:bold;" data-responder-id="' + responderID + '">' + navigatorjs.transition.TransitionStatus.toString(status) + '</span><br />';
 			}
 		}
 
@@ -92,7 +94,7 @@ this.navigatorjs.features = this.navigatorjs.features||{};
 
 	var _getColorByStatus = function(status) {
 		var color = "";
-		switch(status) {
+		switch (status) {
 			case navigatorjs.transition.TransitionStatus.UNINITIALIZED:
 				color = "#AAAAAA";
 				break;
@@ -114,7 +116,7 @@ this.navigatorjs.features = this.navigatorjs.features||{};
 		return color;
 	};
 
-	var DebugConsole = function (navigator) {
+	var DebugConsole = function(navigator) {
 		_navigator = navigator;
 
 		_$el = $(_template);

@@ -1,15 +1,15 @@
-describe("DebugConsole", function () {
+describe("DebugConsole", function() {
 
 	var navigator,
 		debugConsole,
 		$debugConsole,
 		responder;
 
-	beforeEach(function () {
+	beforeEach(function() {
 		navigator = new navigatorjs.Navigator(),
-		debugConsole = new navigatorjs.features.DebugConsole(navigator),
-		$debugConsole = debugConsole.get$El();
-		$debugConsole.css({position:'fixed', left:10, bottom:10});
+			debugConsole = new navigatorjs.features.DebugConsole(navigator),
+			$debugConsole = debugConsole.get$El();
+		$debugConsole.css({position: 'fixed', left: 10, bottom: 10});
 		$('body').append($debugConsole);
 
 		responder = {
@@ -38,7 +38,7 @@ describe("DebugConsole", function () {
 		$debugConsole.remove();
 	});
 
-	it("Automatically adjusts the width based on its content", function () {
+	it("Automatically adjusts the width based on its content", function() {
 		var wideStatePath = "/this/is/a/relatively/long/state/causing/the/console/to/be/very/wide/";
 
 		navigator.add(responder, wideStatePath);
