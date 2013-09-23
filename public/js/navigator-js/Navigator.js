@@ -715,7 +715,7 @@ this.navigatorjs = this.navigatorjs || {};
 			responder = responderList[index];
 			if (_statusByResponderID[responder.__navigatorjs.id] == navigatorjs.transition.TransitionStatus.UNINITIALIZED && navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, "IHasStateInitialization")) {
 				// first initialize the responder.
-				responder.initialize();
+				responder.initializeByNavigator();
 				_statusByResponderID[responder.__navigatorjs.id] = navigatorjs.transition.TransitionStatus.INITIALIZED;
 			}
 		}

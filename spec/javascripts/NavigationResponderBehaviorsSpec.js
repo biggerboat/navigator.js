@@ -58,7 +58,7 @@ describe("Navigator responder behavior/interface validation", function() {
 
 		it("Returns a list of unique methods within a list of multiple interfaces and advanced inheritance chain", function() {
 			var methods = navigatorjs.NavigationResponderBehaviors.getInterfaceMethods(["IHasStateInitialization", "IHasStateValidationOptionalAsync"]);
-			expect(methods).toEqual(["initialize", "prepareValidation", "validate", "willValidate"]);
+			expect(methods).toEqual(["initializeByNavigator", "prepareValidation", "validate", "willValidate"]);
 		});
 	});
 
@@ -67,7 +67,7 @@ describe("Navigator responder behavior/interface validation", function() {
 		it("Has state initialization but no state transition", function() {
 			var object = {
 				navigatorBehaviors: ["IHasStateInitialization"],
-				initialize: function() {}
+				initializeByNavigator: function() {}
 			};
 
 			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateInitialization")).toBeTruthy();

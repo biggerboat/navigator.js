@@ -53,7 +53,7 @@ describe("Navigator", function() {
 		});
 
 		it("can trigger the initialize state", function() {
-			spyOn(responder, 'initialize'); //A spy replaces the method, so the initialize log won't occur here
+			spyOn(responder, 'initializeByNavigator'); //A spy replaces the method, so the initialize log won't occur here
 
 			navigator.add(responder, states.contact);
 			navigator.start();
