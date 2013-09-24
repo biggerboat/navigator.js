@@ -18,6 +18,6 @@
 
 	"main": "navigator-js.js",
 	"dependencies": {
-		"jquery":"latest"
+		//"jquery":"latest" NOTE: Not forcing dependency due to choise of jQuery 1.x or 2.x. Works with either.
 	}
 }
