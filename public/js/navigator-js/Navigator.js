@@ -2,7 +2,7 @@ this.navigatorjs = this.navigatorjs || {};
 
 (function() {
 	//
-	var _$eventDispatcher = $({});
+	var _$eventDispatcher = null;
 	//internal namespaces
 	var _flow = {};
 	var _transition = {};
@@ -737,6 +737,7 @@ this.navigatorjs = this.navigatorjs || {};
 	var Navigator = function() {
 		navigatorjs.utils.AutoBind(this, this);
 
+		_$eventDispatcher = $({});
 		_responders = new navigatorjs.ResponderLists();
 		_respondersByID = {};
 		_statusByResponderID = {};
