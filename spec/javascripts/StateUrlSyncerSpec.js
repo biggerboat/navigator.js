@@ -65,6 +65,17 @@ describe("StateUrlSyncer", function() {
 
 	});
 
+	it("Cannot start twice", function() {
+		expect(stateUrlSyncer.start).not.toThrow();
+		expect(stateUrlSyncer.start).toThrow();
+	});
+
+	it("Cannot call usePushState once started", function() {
+		expect(stateUrlSyncer.usePushState).not.toThrow();
+		stateUrlSyncer.start();
+		expect(stateUrlSyncer.usePushState).toThrow();
+	});
+
 
 	it("Updates the URL when the current navigator state changes", function() {
 
