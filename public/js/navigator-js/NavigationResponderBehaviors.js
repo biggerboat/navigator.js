@@ -1,7 +1,7 @@
 this.navigatorjs = this.navigatorjs || {};
 
 this.navigatorjs.NavigationResponderBehaviors = {};
-this.navigatorjs.NavigationResponderBehaviors.IHasStateInitialization = {name: "IHasStateInitialization", methods: ["initialize"]};
+this.navigatorjs.NavigationResponderBehaviors.IHasStateInitialization = {name: "IHasStateInitialization", methods: ["initializeByNavigator"]};
 this.navigatorjs.NavigationResponderBehaviors.IHasStateValidation = {name: "IHasStateValidation", methods: ["validate"]};
 this.navigatorjs.NavigationResponderBehaviors.IHasStateValidationAsync = {name: "IHasStateValidationAsync", extends: ["IHasStateValidation"], methods: ["prepareValidation"]};
 this.navigatorjs.NavigationResponderBehaviors.IHasStateValidationOptional = {name: "IHasStateValidationOptional", extends: ["IHasStateValidation"], methods: ["willValidate"]};
