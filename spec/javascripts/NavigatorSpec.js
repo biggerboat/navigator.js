@@ -19,8 +19,8 @@ describe("Navigator", function() {
 		beforeEach(function() {
 			responder = {
 				navigatorBehaviors: ["IHasStateInitialization", "IHasStateTransition"],
-				initialize: function() {
-					console.log("responder -> initialize");
+				initializeByNavigator: function() {
+					console.log("responder -> initializeByNavigator");
 				},
 
 				transitionIn: function(callOnComplete) {
@@ -53,14 +53,14 @@ describe("Navigator", function() {
 		});
 
 		it("can trigger the initialize state", function() {
-			spyOn(responder, 'initializeByNavigator'); //A spy replaces the method, so the initialize log won't occur here
+			spyOn(responder, 'initializeByNavigator'); //A spy replaces the method, so the initializeByNavigator log won't occur here
 
 			navigator.add(responder, states.contact);
 			navigator.start();
-			expect(responder.initialize).not.toHaveBeenCalled();
+			expect(responder.initializeByNavigator).not.toHaveBeenCalled();
 
 			navigator.request(states.contact);
-			expect(responder.initialize).toHaveBeenCalled();
+			expect(responder.initializeByNavigator).toHaveBeenCalled();
 		});
 
 	});

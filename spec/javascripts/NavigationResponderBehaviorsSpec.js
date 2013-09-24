@@ -48,7 +48,7 @@ describe("Navigator responder behavior/interface validation", function() {
 
 		it("Returns a list of unique methods within a simple inheritance chain", function() {
 			var methods = navigatorjs.NavigationResponderBehaviors.getInterfaceMethods(["IHasStateInitialization"]);
-			expect(methods).toEqual(["initialize"]);
+			expect(methods).toEqual(["initializeByNavigator"]);
 		});
 
 		it("Returns a list of unique methods within an advanced inheritance chain", function() {
@@ -88,7 +88,7 @@ describe("Navigator responder behavior/interface validation", function() {
 			var object = {
 				navigatorBehaviors: ["IHasStateInitialization", "IHasStateValidation", "IHasStateValidationAsync", "IHasStateValidationOptional", "IHasStateValidationOptionalAsync", "IHasStateRedirection", "IHasStateSwap", "IHasStateTransition", "IHasStateUpdate"],
 
-				initialize: function() {}, //IHasStateInitialization
+				initializeByNavigator: function() {}, //IHasStateInitialization
 				validate: function(truncatedState, fullState) {}, //IHasStateValidation, IHasStateValidationAsync, IHasStateValidationOptional, IHasStateValidationOptionalAsync, IHasStateRedirection
 				prepareValidation: function(truncatedState, fullState, callOnPrepared) {}, //IHasStateValidationAsync, IHasStateValidationOptionalAsync
 				willValidate: function(truncatedState, fullState) {/*return bool*/}, //IHasStateValidationOptional, IHasStateValidationOptionalAsync
