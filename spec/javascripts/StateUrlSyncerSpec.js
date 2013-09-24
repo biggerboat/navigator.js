@@ -6,6 +6,20 @@ describe("StateUrlSyncer", function() {
 		search = window.location.search,
 		resetUrl = root + search;
 
+	function delayedExpect(testRunner,delay) {
+		delay = delay || 1;
+		var delayReached = false;
+		setTimeout(function() {
+			delayReached = true;
+		}, delay);
+
+		waitsFor(function() {
+			return delayReached;
+		}, "Waiting for delay", delay);
+
+		runs(testRunner);
+	}
+
 	beforeEach(function(){
 		navigator = new navigatorjs.Navigator();
 		stateUrlSyncer = new navigatorjs.integration.StateUrlSyncer(navigator);
@@ -17,6 +31,8 @@ describe("StateUrlSyncer", function() {
 		} else {
 			stateUrlSyncer.resetUrl();
 		}
+
+		stateUrlSyncer.dispose();
 	});
 
 	it("Detects if the browser supports push states", function() {
@@ -27,6 +43,11 @@ describe("StateUrlSyncer", function() {
 
 		it("Can set a URL", function() {
 			stateUrlSyncer.setUrl('test');
+			expect(stateUrlSyncer.getUrl()).toEqual('test');
+		});
+
+		it("Can read the url when the hash changes from outside", function() {
+			window.location.hash = 'test';
 			expect(stateUrlSyncer.getUrl()).toEqual('test');
 		});
 
@@ -65,24 +86,70 @@ describe("StateUrlSyncer", function() {
 
 	});
 
-	it("Cannot start twice", function() {
-		expect(stateUrlSyncer.start).not.toThrow();
-		expect(stateUrlSyncer.start).toThrow();
+	describe("Initialization", function() {
+
+		it("Cannot start twice", function() {
+			expect(stateUrlSyncer.start).not.toThrow();
+			expect(stateUrlSyncer.start).toThrow();
+		});
+
+		it("Cannot call usePushState once started", function() {
+			expect(stateUrlSyncer.usePushState).not.toThrow();
+			stateUrlSyncer.start();
+			expect(stateUrlSyncer.usePushState).toThrow();
+		});
 	});
 
-	it("Cannot call usePushState once started", function() {
-		expect(stateUrlSyncer.usePushState).not.toThrow();
-		stateUrlSyncer.start();
-		expect(stateUrlSyncer.usePushState).toThrow();
+	describe("Event binding", function() {
+
+		beforeEach(function() {
+			navigator.add({}, "bigger");
+			navigator.add({}, "bigger/boat");
+			navigator.start();
+			stateUrlSyncer.start();
+		});
+
+		it("Updates the URL when the current navigator state changes", function() {
+			navigator.request('bigger');
+			expect(stateUrlSyncer.getUrl()).toEqual('/bigger/');
+		});
+
+		it("Updates the current navigator state when the URL changes", function() {
+			window.location.hash = 'bigger';
+
+			delayedExpect(function() {
+				expect(navigator.getCurrentState().getPath()).toEqual('/bigger/');
+				expect(stateUrlSyncer.getUrl()).toEqual('/bigger/');
+
+			});
+		});
+
+		it("Refuses invalid states when the URL changes", function() {
+			window.location.hash = 'bigger/goat';
+
+			delayedExpect(function() {
+				expect(navigator.getCurrentState().getPath()).toEqual('/');
+				expect(stateUrlSyncer.getUrl()).toEqual('/');
+			});
+		});
+
+		it("When URL changes from a valid to an invalid state, it stays in the valid state", function() {
+			window.location.hash = 'bigger';
+
+			delayedExpect(function() {
+				window.location.hash = 'bigger/goat';
+
+				delayedExpect(function() {
+					expect(navigator.getCurrentState().getPath()).toEqual('/bigger/');
+					expect(stateUrlSyncer.getUrl()).toEqual('/bigger/');
+				});
+			});
+		});
+
+//				window.location.hash = 'bigger/boat';
+//		.(function() {
+//		expect(navigator.getCurrentState().getPath()).toEqual('/bigger/boat/');
+//		expect(stateUrlSyncer.getUrl()).toEqual('/bigger/boat/');
+
 	});
-
-
-	it("Updates the URL when the current navigator state changes", function() {
-
-	});
-
-	it("Updates the current navigator state when the URL changes", function() {
-
-	});
-
 });
