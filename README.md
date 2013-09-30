@@ -12,7 +12,7 @@ This library was created to take away your pains when it comes to navigating you
 - Optional integration with Backbone  
 And many more...
 
-NavigatorJS is mostly ported from the popular AS3 library [Navigator-as3](www.github.com/epologee/navigator-as3), created by [@epologee](https://twitter.com/Epologee).
+NavigatorJS is mostly ported from the popular AS3 library [Navigator-as3](https://www.github.com/epologee/navigator-as3), created by [@epologee](https://twitter.com/Epologee).
 Most work was done by [Paul Tondeur](https://twitter.com/PaulTondeur), later joined by [Michiel van der Ros](https://twitter.com/Micros). They are both members of the [Bigger Boat](http://www.biggerboat.nl) freelance collective in Amsterdam.
 
 ## Running the specs
