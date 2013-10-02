@@ -82,7 +82,7 @@ this.navigatorjs.features = this.navigatorjs.features || {};
 			status = _statusByResponderID[responderID];
 
 			if (navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, "IHasStateTransition") || navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, "IHasStateInitialization")) {
-				responderNamesHTMLString += '<span data-responder-id="' + responderID + '">' + responder + '</span><br />';
+				responderNamesHTMLString += '<span data-responder-id="' + responderID + '">' + _getResponderString(responder) + '</span><br />';
 				color = _getColorByStatus(status);
 				responderStatusHTMLString += '<span style=" color:' + color + '; font-weight:bold;" data-responder-id="' + responderID + '">' + navigatorjs.transition.TransitionStatus.toString(status) + '</span><br />';
 			}
@@ -90,6 +90,19 @@ this.navigatorjs.features = this.navigatorjs.features || {};
 
 		_$responderNames.html(responderNamesHTMLString);
 		_$responderStatus.html(responderStatusHTMLString);
+	};
+
+	var _getResponderString = function(responder) {
+		var responderString = responder.toString();
+
+		if(responderString == "[object Object]" && responder.$el) {
+			var tagName = responder.$el.prop("tagName").toLowerCase(),
+				classes = responder.$el.attr("class").split(" ").join(".");
+
+			responderString = tagName+"."+classes;
+		}
+
+		return responderString;
 	};
 
 	var _getColorByStatus = function(status) {

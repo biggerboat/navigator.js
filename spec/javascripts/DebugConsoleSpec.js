@@ -51,4 +51,44 @@ describe("DebugConsole", function() {
 		expect($input.width()).toBeGreaterThan(startInputWidth);
 	});
 
+	describe("Responder names", function() {
+		it("uses the toString method as a reference to the responder in the list", function() {
+			navigator.add(responder, "/");
+			navigator.start("");
+
+			expect($debugConsole.find(".names span:first").text()).toEqual(responder.toString());
+		});
+
+		it("uses the $el tagName and classes when the toString method is not implemented", function() {
+			var responder = {
+				navigatorBehaviors: ["IHasStateInitialization", "IHasStateTransition"],
+				$el: $('<div class="a b"></div>'),
+				initializeByNavigator: function() {},
+				transitionIn: function(callOnComplete) {},
+				transitionOut: function(callOnComplete) {}
+			};
+			navigator.add(responder, "/");
+			navigator.start("");
+
+			expect($debugConsole.find(".names span:first").text()).toEqual("div.a.b");
+		});
+
+		it("uses the toString over a generated $el name", function() {
+			var responder = {
+				navigatorBehaviors: ["IHasStateInitialization", "IHasStateTransition"],
+				$el: $('<div class="a b"></div>'),
+				initializeByNavigator: function() {},
+				transitionIn: function(callOnComplete) {},
+				transitionOut: function(callOnComplete) {},
+				toString: function() {
+					return "myResponder"
+				}
+			};
+			navigator.add(responder, "/");
+			navigator.start("");
+
+			expect($debugConsole.find(".names span:first").text()).toEqual(responder.toString());
+		});
+	});
+
 });
