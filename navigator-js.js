@@ -101,12 +101,11 @@ this.navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface = func
 
 	var inheritanceChain = navigatorjs.NavigationResponderBehaviors.getInterfaceInheritanceChain(interface),
 		methodsToBeImplemented = navigatorjs.NavigationResponderBehaviors.getInterfaceMethods(inheritanceChain),
-		index,
-		length = methodsToBeImplemented.length,
-		method;
+		i, method,
+		length = methodsToBeImplemented.length;
 
-	for (index = 0; index < length; index++) {
-		method = methodsToBeImplemented[index];
+	for (i = 0; i < length; i++) {
+		method = methodsToBeImplemented[i];
 
 		if (object[method] == undefined || typeof object[method] !== 'function') {
 			return false;
@@ -120,7 +119,7 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceInheritanceChain = fun
 	var chain = existingChain || [],
 		extendsArray,
 		extendingInterface,
-		index, length,
+		i, length,
 		interfaceObject = navigatorjs.NavigationResponderBehaviors[interface];
 
 	if (interfaceObject == undefined || typeof interfaceObject !== 'object') {
@@ -137,8 +136,8 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceInheritanceChain = fun
 
 	length = extendsArray.length;
 
-	for (index = 0; index < length; index++) {
-		extendingInterface = extendsArray[index];
+	for (i = 0; i < length; i++) {
+		extendingInterface = extendsArray[i];
 		if (chain.indexOf(extendingInterface) == -1) {
 			//We did not yet extend this interface, so continue to follow the chain
 			navigatorjs.NavigationResponderBehaviors.getInterfaceInheritanceChain(extendingInterface, chain);
@@ -155,28 +154,27 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceMethods = function(int
 	}
 
 	var combinedInterfacesChain = [],
-		interface,
-		index,
+		interface, i,
 		length = interfaces.length,
 		interfaceObject,
 		interfaceMethods,
-		methodIndex, methodsLength, method,
+		j, methodsLength, method,
 		methods = [];
 
-	for (index = 0; index < length; index++) {
-		interface = interfaces[index];
+	for (i = 0; i < length; i++) {
+		interface = interfaces[i];
 		navigatorjs.NavigationResponderBehaviors.getInterfaceInheritanceChain(interface, combinedInterfacesChain);
 	}
 
 	length = combinedInterfacesChain.length;
-	for (index = 0; index < length; index++) {
-		interface = combinedInterfacesChain[index];
+	for (i = 0; i < length; i++) {
+		interface = combinedInterfacesChain[i];
 		interfaceObject = navigatorjs.NavigationResponderBehaviors[interface];
 		interfaceMethods = interfaceObject.methods;
 		if (interfaceObject != undefined && typeof interfaceObject === 'object' && interfaceMethods != undefined && interfaceMethods instanceof Array) {
 			methodsLength = interfaceMethods.length;
-			for (methodIndex = 0; methodIndex < methodsLength; methodIndex++) {
-				method = interfaceMethods[methodIndex];
+			for (j = 0; j < methodsLength; j++) {
+				method = interfaceMethods[j];
 				if (methods.indexOf(method) == -1) {
 					methods.push(method);
 				}
@@ -188,13 +186,13 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceMethods = function(int
 };;this.navigatorjs = this.navigatorjs || {};
 
 (function() {
-	var NavigationState = function(aPathStringOrArray) {
+	var NavigationState = function(pathStringOrArray) {
 		this._path = '';
 
-		if (aPathStringOrArray instanceof Array) {
-			this.setSegments(aPathStringOrArray);
+		if (pathStringOrArray instanceof Array) {
+			this.setSegments(pathStringOrArray);
 		} else {
-			this.setPath(aPathStringOrArray);
+			this.setPath(pathStringOrArray);
 		}
 	};
 
@@ -203,31 +201,32 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceMethods = function(int
 	};
 
 	NavigationState.prototype = {
-		setPath: function(aPath) {
-			this._path = '/' + aPath.toLowerCase() + '/';
+		setPath: function(path) {
+			this._path = '/' + path.toLowerCase() + '/';
 			this._path = this._path.replace(new RegExp("\/+", "g"), "/");
 			this._path = this._path.replace(/\s+/g, "-");
+			this._path = this._path.replace(new RegExp("[^-_/A-Za-z0-9*]", "g"), "");
 		},
 
 		getPath: function() {
 			return this._path;
 		},
 
-		setSegments: function(aSegments) {
-			this.setPath(aSegments.join("/"));
+		setSegments: function(segments) {
+			this.setPath(segments.join("/"));
 		},
 
 		getSegments: function() {
-			var theSegments = this._path.split("/");
+			var segments = this._path.split("/");
 
-			theSegments.pop();
-			theSegments.shift();
+			segments.pop();
+			segments.shift();
 
-			return theSegments;
+			return segments;
 		},
 
-		getSegment: function(aIndex) {
-			return this.getSegments()[aIndex];
+		getSegment: function(index) {
+			return this.getSegments()[index];
 		},
 
 		getFirstSegment: function() {
@@ -235,25 +234,25 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceMethods = function(int
 		},
 
 		getLastSegment: function() {
-			var theSegments = this.getSegments();
-			return this.getSegment(theSegments.length - 1);
+			var segments = this.getSegments();
+			return this.getSegment(segments.length - 1);
 		},
 
-		contains: function(aForeignState) {
-			var theForeignSegments = aForeignState.getSegments(),
-				theNativeSegments = this.getSegments(),
-				theForeignSegment, theNativeSegment,
-				theIndex;
+		contains: function(foreignState) {
+			var foreignSegments = foreignState.getSegments(),
+				nativeSegments = this.getSegments(),
+				foreignSegment, nativeSegment,
+				i;
 
-			if (theForeignSegments.length > theNativeSegments.length) {
+			if (foreignSegments.length > nativeSegments.length) {
 				return false;
 			}
 
-			for (theIndex = 0; theIndex < theForeignSegments.length; theIndex++) {
-				theForeignSegment = theForeignSegments[theIndex];
-				theNativeSegment = theNativeSegments[theIndex];
+			for (i = 0; i < foreignSegments.length; i++) {
+				foreignSegment = foreignSegments[i];
+				nativeSegment = nativeSegments[i];
 
-				if (!(theForeignSegment === "*" || theNativeSegment === "*") && theForeignSegment !== theNativeSegment) {
+				if (!(foreignSegment === "*" || nativeSegment === "*") && foreignSegment !== nativeSegment) {
 					return false;
 				}
 			}
@@ -261,62 +260,62 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceMethods = function(int
 			return true;
 		},
 
-		equals: function(aState) {
-			var theSubtractedState = this.subtract(aState);
+		equals: function(state) {
+			var subtractedState = this.subtract(state);
 
-			if (theSubtractedState === null) {
+			if (subtractedState === null) {
 				return false;
 			}
 
-			return theSubtractedState.getSegments().length === 0;
+			return subtractedState.getSegments().length === 0;
 		},
 
-		subtract: function(aOperand) {
-			var theSubtractedSegments;
+		subtract: function(operand) {
+			var subtractedSegments;
 
-			if (!this.contains(aOperand)) {
+			if (!this.contains(operand)) {
 				return null;
 			}
 
-			theSubtractedSegments = this.getSegments();
-			theSubtractedSegments.splice(0, aOperand.getSegments().length);
+			subtractedSegments = this.getSegments();
+			subtractedSegments.splice(0, operand.getSegments().length);
 
-			return new navigatorjs.NavigationState(theSubtractedSegments);
+			return new navigatorjs.NavigationState(subtractedSegments);
 		},
 
-		append: function(aStringOrState) {
-			var thePath = aStringOrState;
-			if (aStringOrState instanceof NavigationState) {
-				thePath = aStringOrState.getPath();
+		append: function(stringOrState) {
+			var path = stringOrState;
+			if (stringOrState instanceof NavigationState) {
+				path = stringOrState.getPath();
 			}
-			return this.setPath(this._path + thePath);
+			return this.setPath(this._path + path);
 		},
 
-		prepend: function(aStringOrState) {
-			var thePath = aStringOrState;
-			if (aStringOrState instanceof NavigationState) {
-				thePath = aStringOrState.getPath();
+		prepend: function(stringOrState) {
+			var path = stringOrState;
+			if (stringOrState instanceof NavigationState) {
+				path = stringOrState.getPath();
 			}
-			return this.setPath(thePath + this._path);
+			return this.setPath(path + this._path);
 		},
 
 		hasWildcard: function() {
 			return this.getPath().indexOf("*") != -1;
 		},
 
-		mask: function(aSource) {
-			var theUnmaskedSegments = this.getSegments(),
-				theSourceSegments = aSource.getSegments(),
-				theLength = Math.min(theUnmaskedSegments.length, theSourceSegments.length),
-				theIndex;
+		mask: function(sourceState) {
+			var unmaskedSegments = this.getSegments(),
+				sourceSegments = sourceState.getSegments(),
+				length = Math.min(unmaskedSegments.length, sourceSegments.length),
+				i;
 
-			for (theIndex = 0; theIndex < theLength; theIndex++) {
-				if (theUnmaskedSegments[theIndex] === "*") {
-					theUnmaskedSegments[theIndex] = theSourceSegments[theIndex];
+			for (i = 0; i < length; i++) {
+				if (unmaskedSegments[i] === "*") {
+					unmaskedSegments[i] = sourceSegments[i];
 				}
 			}
 
-			return new navigatorjs.NavigationState(theUnmaskedSegments);
+			return new navigatorjs.NavigationState(unmaskedSegments);
 		},
 
 		clone: function() {
@@ -439,12 +438,12 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceMethods = function(int
 			throw new Error("add: responder is null");
 		}
 
-		var index, length;
+		var i, length;
 
 		if (pathsOrStates instanceof Array) {
 			length = pathsOrStates.length;
-			for (index = 0; index < length; index++) {
-				_modify(addition, responder, pathsOrStates[index], behaviorString);
+			for (i = 0; i < length; i++) {
+				_modify(addition, responder, pathsOrStates[i], behaviorString);
 			}
 			return true;
 		}
@@ -452,9 +451,9 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceMethods = function(int
 		behaviorString = behaviorString || navigatorjs.NavigationBehaviors.AUTO;
 		if (behaviorString == navigatorjs.NavigationBehaviors.AUTO) {
 			length = navigatorjs.NavigationBehaviors.ALL_AUTO.length;
-			for (index = 0; index < length; index++) {
+			for (i = 0; i < length; i++) {
 				try {
-					_modify(addition, responder, pathsOrStates, navigatorjs.NavigationBehaviors.ALL_AUTO[index]);
+					_modify(addition, responder, pathsOrStates, navigatorjs.NavigationBehaviors.ALL_AUTO[i]);
 				} catch (e) {
 					// ignore 'should implement xyz' errors
 				}
@@ -542,7 +541,7 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceMethods = function(int
 			responderID,
 			responder,
 			waitForResponders = [],
-			index;
+			i;
 
 		// This initialize call is to catch responders that were put on stage to show,
 		// yet still need to wait for async out transitions before they actually transition in.
@@ -566,9 +565,9 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceMethods = function(int
 		}
 
 		// loop backwards so we can splice elements off the array while in the loop.
-		for (index = waitForResponders.length; --index >= 0;) {
-			if (_statusByResponderID[waitForResponders[index].__navigatorjs.id] == navigatorjs.transition.TransitionStatus.HIDDEN) {
-				waitForResponders.splice(index, 1);
+		for (i = waitForResponders.length; --i >= 0;) {
+			if (_statusByResponderID[waitForResponders[i].__navigatorjs.id] == navigatorjs.transition.TransitionStatus.HIDDEN) {
+				waitForResponders.splice(i, 1);
 			}
 		}
 
@@ -582,7 +581,7 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceMethods = function(int
 	_flow.performUpdates = function() {
 		_disappearingAsynchResponders.reset();
 
-		var path, state, list, index, responder;
+		var path, state, list, i, responder;
 
 		for (path in _responders.updateByPath) {
 			// create a state object for comparison:
@@ -595,8 +594,8 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceMethods = function(int
 				_initializeIfNeccessary(list);
 
 				// check for existing validators.
-				for (index = 0; index < list.length; index++) {
-					responder = list[index];
+				for (i = 0; i < list.length; i++) {
+					responder = list[i];
 					responder.updateState(_currentState.subtract(state), _currentState);
 				}
 			}
@@ -619,13 +618,13 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceMethods = function(int
 			respondersToWaitFor = [],
 			responder,
 			status,
-			index;
+			i;
 
 		_initializeIfNeccessary(respondersToShow);
 
 		//for each (var responder : IHasStateTransition in respondersToShow) {
-		for (index = 0; index < respondersToShow.length; index++) {
-			responder = respondersToShow[index];
+		for (i = 0; i < respondersToShow.length; i++) {
+			responder = respondersToShow[i];
 			status = _statusByResponderID[responder.__navigatorjs.id];
 
 			if (status < navigatorjs.transition.TransitionStatus.APPEARING || navigatorjs.transition.TransitionStatus.SHOWN < status) {
@@ -639,9 +638,9 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceMethods = function(int
 		}
 
 		// loop backwards so we can splice elements off the array while in the loop.
-		for (index = respondersToWaitFor.length; --index >= 0;) {
-			if (_statusByResponderID[respondersToWaitFor[index].__navigatorjs.id] == navigatorjs.transition.TransitionStatus.SHOWN) {
-				respondersToWaitFor.splice(index, 1);
+		for (i = respondersToWaitFor.length; --i >= 0;) {
+			if (_statusByResponderID[respondersToWaitFor[i].__navigatorjs.id] == navigatorjs.transition.TransitionStatus.SHOWN) {
+				respondersToWaitFor.splice(i, 1);
 			}
 		}
 
@@ -668,7 +667,7 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceMethods = function(int
 			path, state,
 			swapByPathList,
 			responder,
-			index,
+			i,
 			truncatedState;
 
 		for (path in _responders.swapByPath) {
@@ -682,8 +681,8 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceMethods = function(int
 				_initializeIfNeccessary(swapByPathList);
 
 				// check for existing swaps.
-				for (index = 0; index < swapByPathList.length; index++) {
-					responder = swapByPathList[index];
+				for (i = 0; i < swapByPathList.length; i++) {
+					responder = swapByPathList[i];
 					if (!_responders.swappedBefore[responder]) {
 						continue;
 					}
@@ -701,9 +700,9 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceMethods = function(int
 		}
 
 		// loop backwards so we can splice elements off the array while in the loop.
-		for (index = waitForResponders.length; --index >= 0;) {
-			if (_statusByResponderID[waitForResponders[index].__navigatorjs.id] == navigatorjs.transition.TransitionStatus.SHOWN) {
-				waitForResponders.splice(index, 1);
+		for (i = waitForResponders.length; --i >= 0;) {
+			if (_statusByResponderID[waitForResponders[i].__navigatorjs.id] == navigatorjs.transition.TransitionStatus.SHOWN) {
+				waitForResponders.splice(i, 1);
 			}
 		}
 
@@ -722,7 +721,7 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceMethods = function(int
 			swapByPathList,
 			responder,
 			truncatedState,
-			index;
+			i;
 
 		for (path in _responders.swapByPath) {
 			// create a state object for comparison:
@@ -736,8 +735,8 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceMethods = function(int
 
 				// check for existing swaps.
 				//for each (var responder : IHasStateSwap in swapByPathList) {
-				for (index = 0; index < swapByPathList.length; index++) {
-					responder = swapByPathList[index];
+				for (i = 0; i < swapByPathList.length; i++) {
+					responder = swapByPathList[i];
 					truncatedState = _currentState.subtract(state);
 					if (responder.willSwapToState(truncatedState, _currentState)) {
 						_responders.swappedBefore[responder] = true;
@@ -886,7 +885,7 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceMethods = function(int
 			state,
 			remainderState,
 			validateByPathList,
-			index,
+			i,
 			responder,
 			validatorResponder;
 
@@ -926,8 +925,8 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceMethods = function(int
 
 				if (allowAsyncValidation) {
 					// check for async validators first. If this does not
-					for (index = 0; index < validateByPathList.length; index++) {
-						responder = validateByPathList[index];
+					for (i = 0; i < validateByPathList.length; i++) {
+						responder = validateByPathList[i];
 
 						// check for optional validation
 						if (navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, "IHasStateValidationOptional") && !responder.willValidate(remainderState, unvalidatedState)) {
@@ -956,8 +955,8 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceMethods = function(int
 
 				// check regular validators
 				//for each (responder in list) {
-				for (index = 0; index < validateByPathList.length; index++) {
-					responder = validateByPathList[index];
+				for (i = 0; i < validateByPathList.length; i++) {
+					responder = validateByPathList[i];
 					// skip async validators, we handled them a few lines back.
 					if (navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, "IHasStateValidationAsync")) {
 						continue;
@@ -1018,14 +1017,14 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceMethods = function(int
 	var _getRespondersToShow = function() {
 		var respondersToShow = _getResponderList(_responders.showByPath, _currentState),
 			respondersToHide = _getResponderList(_responders.hideByPath, _currentState),
-			index,
+			i,
 			hideResponder,
 			hideIndex;
 
 		// remove elements from the toShow list, if they are in the toHide list.
 //			for each (var hide : IHasStateTransition in toHide) {
-		for (index = 0; index < respondersToHide.length; index++) {
-			hideResponder = respondersToHide[index];
+		for (i = 0; i < respondersToHide.length; i++) {
+			hideResponder = respondersToHide[i];
 			hideIndex = respondersToShow.indexOf(hideResponder);
 			if (hideIndex >= 0) {
 				respondersToShow.splice(hideIndex, 1);
@@ -1036,10 +1035,10 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceMethods = function(int
 	};
 
 	var _initializeIfNeccessary = function(responderList) {
-		var index, responder;
+		var i, responder;
 //			for each (var responder : INavigationResponder in responderList) {
-		for (index = 0; index < responderList.length; index++) {
-			responder = responderList[index];
+		for (i = 0; i < responderList.length; i++) {
+			responder = responderList[i];
 			if (_statusByResponderID[responder.__navigatorjs.id] == navigatorjs.transition.TransitionStatus.UNINITIALIZED && navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, "IHasStateInitialization")) {
 				// first initialize the responder.
 				responder.initializeByNavigator();
@@ -1235,11 +1234,12 @@ this.navigatorjs.features = this.navigatorjs.features || {};
 (function() {
 
 	var _navigator = null,
-		_template = '<div class="debugConsole">Path: <input type="text" class="path" /><div class="responders"><div class="names"></div><div class="status"></div></div></div>',
+		_template = '<div class="debugConsole">Path: <input type="text" class="path" /><div class="pathRenderer"></div><div class="responders"><div class="names"></div><div class="status"></div></div></div>',
 		_visible = true,
 		_inputRegex = new RegExp("[-_/A-Za-z0-9]"),
 		_$el = null,
 		_$pathInput = null,
+		_$pathRenderer = null,
 		_$responders = null,
 		_$responderNames = null,
 		_$responderStatus = null,
@@ -1287,9 +1287,8 @@ this.navigatorjs.features = this.navigatorjs.features || {};
 	};
 
 	var _autoSizeInput = function() {
-		var padding = 4;
-		_$pathInput.css({width: ''});
-		_$pathInput.css({width: _$pathInput[0].scrollWidth + padding});
+		_$pathRenderer.text(_$pathInput.val());
+		_$pathInput.css({width: _$pathRenderer.width()});
 	};
 
 	var _handleStatusUpdated = function(e, data) {
@@ -1313,7 +1312,7 @@ this.navigatorjs.features = this.navigatorjs.features || {};
 			status = _statusByResponderID[responderID];
 
 			if (navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, "IHasStateTransition") || navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, "IHasStateInitialization")) {
-				responderNamesHTMLString += '<span data-responder-id="' + responderID + '">' + responder + '</span><br />';
+				responderNamesHTMLString += '<span data-responder-id="' + responderID + '">' + _getResponderString(responder) + '</span><br />';
 				color = _getColorByStatus(status);
 				responderStatusHTMLString += '<span style=" color:' + color + '; font-weight:bold;" data-responder-id="' + responderID + '">' + navigatorjs.transition.TransitionStatus.toString(status) + '</span><br />';
 			}
@@ -1321,6 +1320,19 @@ this.navigatorjs.features = this.navigatorjs.features || {};
 
 		_$responderNames.html(responderNamesHTMLString);
 		_$responderStatus.html(responderStatusHTMLString);
+	};
+
+	var _getResponderString = function(responder) {
+		var responderString = responder.toString();
+
+		if(responderString == "[object Object]" && responder.$el) {
+			var tagName = responder.$el.prop("tagName").toLowerCase(),
+				classes = responder.$el.attr("class").split(" ").join(".");
+
+			responderString = tagName+"."+classes;
+		}
+
+		return responderString;
 	};
 
 	var _getColorByStatus = function(status) {
@@ -1352,6 +1364,7 @@ this.navigatorjs.features = this.navigatorjs.features || {};
 
 		_$el = $(_template);
 		_$pathInput = _$el.find(".path");
+		_$pathRenderer = _$el.find(".pathRenderer");
 		_$responders = _$el.find(".responders");
 		_$responderNames = _$responders.find(".names");
 		_$responderStatus = _$responders.find(".status");
@@ -1368,8 +1381,17 @@ this.navigatorjs.features = this.navigatorjs.features || {};
 		_$pathInput.css({
 			color: '#00FF00',
 			backgroundColor: 'transparent',
+			fontFamily: 'Arial',
 			fontSize: 12,
+			minWidth: 200,
 			border: 0
+		});
+
+		_$pathRenderer.attr('style',_$pathInput.attr('style'));
+		_$pathRenderer.css({
+			position: 'absolute',
+			height:0,
+			overflowY:'hidden'
 		});
 
 		_$responderNames.css({
@@ -1381,7 +1403,6 @@ this.navigatorjs.features = this.navigatorjs.features || {};
 		_$responderStatus.css({
 			display: 'inline-block'
 		});
-
 
 		_$pathInput.on('keypress', _onKeyPress);
 		$(window).on('keypress', _onWindowKeyPress);
@@ -1534,9 +1555,9 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 	function _addRecipe(statesOrPaths) {
 		var recipe = new navigatorjs.integration.ViewRecipe();
 
-		var index, length = statesOrPaths.length;
-		for (index = 0; index < length; index++) {
-			recipe.addState(navigatorjs.NavigationState.make(statesOrPaths[index]));
+		var i, length = statesOrPaths.length;
+		for (i = 0; i < length; i++) {
+			recipe.addState(navigatorjs.NavigationState.make(statesOrPaths[i]));
 		}
 
 		_orderedRecipes.push(recipe);
@@ -1546,17 +1567,17 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 
 	function _handleStateRequested(e, eventData) {
 		var requestedState = eventData.state,
-			recipesIndex, recipe, recipeStates, recipesLength = _orderedRecipes.length,
-			statesIndex, state, statesLength,
+			index, recipe, recipeStates, recipesLength = _orderedRecipes.length,
+			j, state, statesLength,
 			viewInstance;
 
-		for (recipesIndex = 0; recipesIndex < recipesLength; recipesIndex++) {
-			recipe = _orderedRecipes[recipesIndex];
+		for (index = 0; index < recipesLength; index++) {
+			recipe = _orderedRecipes[index];
 			recipeStates = recipe.getStates();
 			statesLength = recipeStates.length;
 
-			for (statesIndex = 0; statesIndex < statesLength; statesIndex++) {
-				state = recipeStates[statesIndex];
+			for (j = 0; j < statesLength; j++) {
+				state = recipeStates[j];
 
 				if (requestedState.contains(state)) {
 					viewInstance = recipe.getViewInstance();
@@ -1593,11 +1614,11 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 			$container = $inside.length > 0 ? $inside.first() : $container;
 		}
 
-		var index = _orderedRecipes.indexOf(recipe) + 1,
+		var i = _orderedRecipes.indexOf(recipe) + 1,
 			length = _orderedRecipes.length,
 			testRecipe;
-		for (index; index < length; index++) {
-			testRecipe = _orderedRecipes[index];
+		for (i; i < length; i++) {
+			testRecipe = _orderedRecipes[i];
 
 			if (testRecipe.isInstantiated() && testRecipe.getViewInstance().$el.parent()[0] == $container[0]) {
 				testRecipe.getViewInstance().$el.before(recipe.getViewInstance().$el);
@@ -1642,10 +1663,10 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 	ViewRecipe.prototype = {
 
 		addState: function(navigationState) {
-			var index, existingState, length = this._states.length;
+			var i, existingState, length = this._states.length;
 
-			for (index = 0; index < length; index++) {
-				existingState = this._states[index];
+			for (i = 0; i < length; i++) {
+				existingState = this._states[i];
 
 				if (existingState.getPath() == navigationState.getPath()) {
 					return;
