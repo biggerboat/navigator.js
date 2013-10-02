@@ -18,9 +18,9 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 	function _addRecipe(statesOrPaths) {
 		var recipe = new navigatorjs.integration.ViewRecipe();
 
-		var index, length = statesOrPaths.length;
-		for (index = 0; index < length; index++) {
-			recipe.addState(navigatorjs.NavigationState.make(statesOrPaths[index]));
+		var i, length = statesOrPaths.length;
+		for (i = 0; i < length; i++) {
+			recipe.addState(navigatorjs.NavigationState.make(statesOrPaths[i]));
 		}
 
 		_orderedRecipes.push(recipe);
@@ -30,17 +30,17 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 
 	function _handleStateRequested(e, eventData) {
 		var requestedState = eventData.state,
-			recipesIndex, recipe, recipeStates, recipesLength = _orderedRecipes.length,
-			statesIndex, state, statesLength,
+			index, recipe, recipeStates, recipesLength = _orderedRecipes.length,
+			j, state, statesLength,
 			viewInstance;
 
-		for (recipesIndex = 0; recipesIndex < recipesLength; recipesIndex++) {
-			recipe = _orderedRecipes[recipesIndex];
+		for (index = 0; index < recipesLength; index++) {
+			recipe = _orderedRecipes[index];
 			recipeStates = recipe.getStates();
 			statesLength = recipeStates.length;
 
-			for (statesIndex = 0; statesIndex < statesLength; statesIndex++) {
-				state = recipeStates[statesIndex];
+			for (j = 0; j < statesLength; j++) {
+				state = recipeStates[j];
 
 				if (requestedState.contains(state)) {
 					viewInstance = recipe.getViewInstance();
@@ -77,11 +77,11 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 			$container = $inside.length > 0 ? $inside.first() : $container;
 		}
 
-		var index = _orderedRecipes.indexOf(recipe) + 1,
+		var i = _orderedRecipes.indexOf(recipe) + 1,
 			length = _orderedRecipes.length,
 			testRecipe;
-		for (index; index < length; index++) {
-			testRecipe = _orderedRecipes[index];
+		for (i; i < length; i++) {
+			testRecipe = _orderedRecipes[i];
 
 			if (testRecipe.isInstantiated() && testRecipe.getViewInstance().$el.parent()[0] == $container[0]) {
 				testRecipe.getViewInstance().$el.before(recipe.getViewInstance().$el);

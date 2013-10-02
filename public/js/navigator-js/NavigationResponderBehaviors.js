@@ -19,12 +19,11 @@ this.navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface = func
 
 	var inheritanceChain = navigatorjs.NavigationResponderBehaviors.getInterfaceInheritanceChain(interface),
 		methodsToBeImplemented = navigatorjs.NavigationResponderBehaviors.getInterfaceMethods(inheritanceChain),
-		index,
-		length = methodsToBeImplemented.length,
-		method;
+		i, method,
+		length = methodsToBeImplemented.length;
 
-	for (index = 0; index < length; index++) {
-		method = methodsToBeImplemented[index];
+	for (i = 0; i < length; i++) {
+		method = methodsToBeImplemented[i];
 
 		if (object[method] == undefined || typeof object[method] !== 'function') {
 			return false;
@@ -38,7 +37,7 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceInheritanceChain = fun
 	var chain = existingChain || [],
 		extendsArray,
 		extendingInterface,
-		index, length,
+		i, length,
 		interfaceObject = navigatorjs.NavigationResponderBehaviors[interface];
 
 	if (interfaceObject == undefined || typeof interfaceObject !== 'object') {
@@ -55,8 +54,8 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceInheritanceChain = fun
 
 	length = extendsArray.length;
 
-	for (index = 0; index < length; index++) {
-		extendingInterface = extendsArray[index];
+	for (i = 0; i < length; i++) {
+		extendingInterface = extendsArray[i];
 		if (chain.indexOf(extendingInterface) == -1) {
 			//We did not yet extend this interface, so continue to follow the chain
 			navigatorjs.NavigationResponderBehaviors.getInterfaceInheritanceChain(extendingInterface, chain);
@@ -73,28 +72,27 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceMethods = function(int
 	}
 
 	var combinedInterfacesChain = [],
-		interface,
-		index,
+		interface, i,
 		length = interfaces.length,
 		interfaceObject,
 		interfaceMethods,
-		methodIndex, methodsLength, method,
+		j, methodsLength, method,
 		methods = [];
 
-	for (index = 0; index < length; index++) {
-		interface = interfaces[index];
+	for (i = 0; i < length; i++) {
+		interface = interfaces[i];
 		navigatorjs.NavigationResponderBehaviors.getInterfaceInheritanceChain(interface, combinedInterfacesChain);
 	}
 
 	length = combinedInterfacesChain.length;
-	for (index = 0; index < length; index++) {
-		interface = combinedInterfacesChain[index];
+	for (i = 0; i < length; i++) {
+		interface = combinedInterfacesChain[i];
 		interfaceObject = navigatorjs.NavigationResponderBehaviors[interface];
 		interfaceMethods = interfaceObject.methods;
 		if (interfaceObject != undefined && typeof interfaceObject === 'object' && interfaceMethods != undefined && interfaceMethods instanceof Array) {
 			methodsLength = interfaceMethods.length;
-			for (methodIndex = 0; methodIndex < methodsLength; methodIndex++) {
-				method = interfaceMethods[methodIndex];
+			for (j = 0; j < methodsLength; j++) {
+				method = interfaceMethods[j];
 				if (methods.indexOf(method) == -1) {
 					methods.push(method);
 				}

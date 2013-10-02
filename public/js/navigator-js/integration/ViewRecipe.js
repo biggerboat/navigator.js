@@ -16,10 +16,10 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 	ViewRecipe.prototype = {
 
 		addState: function(navigationState) {
-			var index, existingState, length = this._states.length;
+			var i, existingState, length = this._states.length;
 
-			for (index = 0; index < length; index++) {
-				existingState = this._states[index];
+			for (i = 0; i < length; i++) {
+				existingState = this._states[i];
 
 				if (existingState.getPath() == navigationState.getPath()) {
 					return;

@@ -56,15 +56,15 @@ this.navigatorjs = this.navigatorjs || {};
 			var theForeignSegments = aForeignState.getSegments(),
 				theNativeSegments = this.getSegments(),
 				theForeignSegment, theNativeSegment,
-				theIndex;
+				i;
 
 			if (theForeignSegments.length > theNativeSegments.length) {
 				return false;
 			}
 
-			for (theIndex = 0; theIndex < theForeignSegments.length; theIndex++) {
-				theForeignSegment = theForeignSegments[theIndex];
-				theNativeSegment = theNativeSegments[theIndex];
+			for (i = 0; i < theForeignSegments.length; i++) {
+				theForeignSegment = theForeignSegments[i];
+				theNativeSegment = theNativeSegments[i];
 
 				if (!(theForeignSegment === "*" || theNativeSegment === "*") && theForeignSegment !== theNativeSegment) {
 					return false;
@@ -121,11 +121,11 @@ this.navigatorjs = this.navigatorjs || {};
 			var theUnmaskedSegments = this.getSegments(),
 				theSourceSegments = aSource.getSegments(),
 				theLength = Math.min(theUnmaskedSegments.length, theSourceSegments.length),
-				theIndex;
+				i;
 
-			for (theIndex = 0; theIndex < theLength; theIndex++) {
-				if (theUnmaskedSegments[theIndex] === "*") {
-					theUnmaskedSegments[theIndex] = theSourceSegments[theIndex];
+			for (i = 0; i < theLength; i++) {
+				if (theUnmaskedSegments[i] === "*") {
+					theUnmaskedSegments[i] = theSourceSegments[i];
 				}
 			}
 

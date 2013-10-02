@@ -112,12 +112,12 @@ this.navigatorjs = this.navigatorjs || {};
 			throw new Error("add: responder is null");
 		}
 
-		var index, length;
+		var i, length;
 
 		if (pathsOrStates instanceof Array) {
 			length = pathsOrStates.length;
-			for (index = 0; index < length; index++) {
-				_modify(addition, responder, pathsOrStates[index], behaviorString);
+			for (i = 0; i < length; i++) {
+				_modify(addition, responder, pathsOrStates[i], behaviorString);
 			}
 			return true;
 		}
@@ -125,9 +125,9 @@ this.navigatorjs = this.navigatorjs || {};
 		behaviorString = behaviorString || navigatorjs.NavigationBehaviors.AUTO;
 		if (behaviorString == navigatorjs.NavigationBehaviors.AUTO) {
 			length = navigatorjs.NavigationBehaviors.ALL_AUTO.length;
-			for (index = 0; index < length; index++) {
+			for (i = 0; i < length; i++) {
 				try {
-					_modify(addition, responder, pathsOrStates, navigatorjs.NavigationBehaviors.ALL_AUTO[index]);
+					_modify(addition, responder, pathsOrStates, navigatorjs.NavigationBehaviors.ALL_AUTO[i]);
 				} catch (e) {
 					// ignore 'should implement xyz' errors
 				}
@@ -215,7 +215,7 @@ this.navigatorjs = this.navigatorjs || {};
 			responderID,
 			responder,
 			waitForResponders = [],
-			index;
+			i;
 
 		// This initialize call is to catch responders that were put on stage to show,
 		// yet still need to wait for async out transitions before they actually transition in.
@@ -239,9 +239,9 @@ this.navigatorjs = this.navigatorjs || {};
 		}
 
 		// loop backwards so we can splice elements off the array while in the loop.
-		for (index = waitForResponders.length; --index >= 0;) {
-			if (_statusByResponderID[waitForResponders[index].__navigatorjs.id] == navigatorjs.transition.TransitionStatus.HIDDEN) {
-				waitForResponders.splice(index, 1);
+		for (i = waitForResponders.length; --i >= 0;) {
+			if (_statusByResponderID[waitForResponders[i].__navigatorjs.id] == navigatorjs.transition.TransitionStatus.HIDDEN) {
+				waitForResponders.splice(i, 1);
 			}
 		}
 
@@ -255,7 +255,7 @@ this.navigatorjs = this.navigatorjs || {};
 	_flow.performUpdates = function() {
 		_disappearingAsynchResponders.reset();
 
-		var path, state, list, index, responder;
+		var path, state, list, i, responder;
 
 		for (path in _responders.updateByPath) {
 			// create a state object for comparison:
@@ -268,8 +268,8 @@ this.navigatorjs = this.navigatorjs || {};
 				_initializeIfNeccessary(list);
 
 				// check for existing validators.
-				for (index = 0; index < list.length; index++) {
-					responder = list[index];
+				for (i = 0; i < list.length; i++) {
+					responder = list[i];
 					responder.updateState(_currentState.subtract(state), _currentState);
 				}
 			}
@@ -292,13 +292,13 @@ this.navigatorjs = this.navigatorjs || {};
 			respondersToWaitFor = [],
 			responder,
 			status,
-			index;
+			i;
 
 		_initializeIfNeccessary(respondersToShow);
 
 		//for each (var responder : IHasStateTransition in respondersToShow) {
-		for (index = 0; index < respondersToShow.length; index++) {
-			responder = respondersToShow[index];
+		for (i = 0; i < respondersToShow.length; i++) {
+			responder = respondersToShow[i];
 			status = _statusByResponderID[responder.__navigatorjs.id];
 
 			if (status < navigatorjs.transition.TransitionStatus.APPEARING || navigatorjs.transition.TransitionStatus.SHOWN < status) {
@@ -312,9 +312,9 @@ this.navigatorjs = this.navigatorjs || {};
 		}
 
 		// loop backwards so we can splice elements off the array while in the loop.
-		for (index = respondersToWaitFor.length; --index >= 0;) {
-			if (_statusByResponderID[respondersToWaitFor[index].__navigatorjs.id] == navigatorjs.transition.TransitionStatus.SHOWN) {
-				respondersToWaitFor.splice(index, 1);
+		for (i = respondersToWaitFor.length; --i >= 0;) {
+			if (_statusByResponderID[respondersToWaitFor[i].__navigatorjs.id] == navigatorjs.transition.TransitionStatus.SHOWN) {
+				respondersToWaitFor.splice(i, 1);
 			}
 		}
 
@@ -341,7 +341,7 @@ this.navigatorjs = this.navigatorjs || {};
 			path, state,
 			swapByPathList,
 			responder,
-			index,
+			i,
 			truncatedState;
 
 		for (path in _responders.swapByPath) {
@@ -355,8 +355,8 @@ this.navigatorjs = this.navigatorjs || {};
 				_initializeIfNeccessary(swapByPathList);
 
 				// check for existing swaps.
-				for (index = 0; index < swapByPathList.length; index++) {
-					responder = swapByPathList[index];
+				for (i = 0; i < swapByPathList.length; i++) {
+					responder = swapByPathList[i];
 					if (!_responders.swappedBefore[responder]) {
 						continue;
 					}
@@ -374,9 +374,9 @@ this.navigatorjs = this.navigatorjs || {};
 		}
 
 		// loop backwards so we can splice elements off the array while in the loop.
-		for (index = waitForResponders.length; --index >= 0;) {
-			if (_statusByResponderID[waitForResponders[index].__navigatorjs.id] == navigatorjs.transition.TransitionStatus.SHOWN) {
-				waitForResponders.splice(index, 1);
+		for (i = waitForResponders.length; --i >= 0;) {
+			if (_statusByResponderID[waitForResponders[i].__navigatorjs.id] == navigatorjs.transition.TransitionStatus.SHOWN) {
+				waitForResponders.splice(i, 1);
 			}
 		}
 
@@ -395,7 +395,7 @@ this.navigatorjs = this.navigatorjs || {};
 			swapByPathList,
 			responder,
 			truncatedState,
-			index;
+			i;
 
 		for (path in _responders.swapByPath) {
 			// create a state object for comparison:
@@ -409,8 +409,8 @@ this.navigatorjs = this.navigatorjs || {};
 
 				// check for existing swaps.
 				//for each (var responder : IHasStateSwap in swapByPathList) {
-				for (index = 0; index < swapByPathList.length; index++) {
-					responder = swapByPathList[index];
+				for (i = 0; i < swapByPathList.length; i++) {
+					responder = swapByPathList[i];
 					truncatedState = _currentState.subtract(state);
 					if (responder.willSwapToState(truncatedState, _currentState)) {
 						_responders.swappedBefore[responder] = true;
@@ -559,7 +559,7 @@ this.navigatorjs = this.navigatorjs || {};
 			state,
 			remainderState,
 			validateByPathList,
-			index,
+			i,
 			responder,
 			validatorResponder;
 
@@ -599,8 +599,8 @@ this.navigatorjs = this.navigatorjs || {};
 
 				if (allowAsyncValidation) {
 					// check for async validators first. If this does not
-					for (index = 0; index < validateByPathList.length; index++) {
-						responder = validateByPathList[index];
+					for (i = 0; i < validateByPathList.length; i++) {
+						responder = validateByPathList[i];
 
 						// check for optional validation
 						if (navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, "IHasStateValidationOptional") && !responder.willValidate(remainderState, unvalidatedState)) {
@@ -629,8 +629,8 @@ this.navigatorjs = this.navigatorjs || {};
 
 				// check regular validators
 				//for each (responder in list) {
-				for (index = 0; index < validateByPathList.length; index++) {
-					responder = validateByPathList[index];
+				for (i = 0; i < validateByPathList.length; i++) {
+					responder = validateByPathList[i];
 					// skip async validators, we handled them a few lines back.
 					if (navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, "IHasStateValidationAsync")) {
 						continue;
@@ -691,14 +691,14 @@ this.navigatorjs = this.navigatorjs || {};
 	var _getRespondersToShow = function() {
 		var respondersToShow = _getResponderList(_responders.showByPath, _currentState),
 			respondersToHide = _getResponderList(_responders.hideByPath, _currentState),
-			index,
+			i,
 			hideResponder,
 			hideIndex;
 
 		// remove elements from the toShow list, if they are in the toHide list.
 //			for each (var hide : IHasStateTransition in toHide) {
-		for (index = 0; index < respondersToHide.length; index++) {
-			hideResponder = respondersToHide[index];
+		for (i = 0; i < respondersToHide.length; i++) {
+			hideResponder = respondersToHide[i];
 			hideIndex = respondersToShow.indexOf(hideResponder);
 			if (hideIndex >= 0) {
 				respondersToShow.splice(hideIndex, 1);
@@ -709,10 +709,10 @@ this.navigatorjs = this.navigatorjs || {};
 	};
 
 	var _initializeIfNeccessary = function(responderList) {
-		var index, responder;
+		var i, responder;
 //			for each (var responder : INavigationResponder in responderList) {
-		for (index = 0; index < responderList.length; index++) {
-			responder = responderList[index];
+		for (i = 0; i < responderList.length; i++) {
+			responder = responderList[i];
 			if (_statusByResponderID[responder.__navigatorjs.id] == navigatorjs.transition.TransitionStatus.UNINITIALIZED && navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, "IHasStateInitialization")) {
 				// first initialize the responder.
 				responder.initializeByNavigator();
