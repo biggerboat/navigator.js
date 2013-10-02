@@ -1,13 +1,13 @@
 this.navigatorjs = this.navigatorjs || {};
 
 (function() {
-	var NavigationState = function(aPathStringOrArray) {
+	var NavigationState = function(pathStringOrArray) {
 		this._path = '';
 
-		if (aPathStringOrArray instanceof Array) {
-			this.setSegments(aPathStringOrArray);
+		if (pathStringOrArray instanceof Array) {
+			this.setSegments(pathStringOrArray);
 		} else {
-			this.setPath(aPathStringOrArray);
+			this.setPath(pathStringOrArray);
 		}
 	};
 
@@ -16,8 +16,8 @@ this.navigatorjs = this.navigatorjs || {};
 	};
 
 	NavigationState.prototype = {
-		setPath: function(aPath) {
-			this._path = '/' + aPath.toLowerCase() + '/';
+		setPath: function(path) {
+			this._path = '/' + path.toLowerCase() + '/';
 			this._path = this._path.replace(new RegExp("\/+", "g"), "/");
 			this._path = this._path.replace(/\s+/g, "-");
 		},
@@ -26,21 +26,21 @@ this.navigatorjs = this.navigatorjs || {};
 			return this._path;
 		},
 
-		setSegments: function(aSegments) {
-			this.setPath(aSegments.join("/"));
+		setSegments: function(segments) {
+			this.setPath(segments.join("/"));
 		},
 
 		getSegments: function() {
-			var theSegments = this._path.split("/");
+			var segments = this._path.split("/");
 
-			theSegments.pop();
-			theSegments.shift();
+			segments.pop();
+			segments.shift();
 
-			return theSegments;
+			return segments;
 		},
 
-		getSegment: function(aIndex) {
-			return this.getSegments()[aIndex];
+		getSegment: function(index) {
+			return this.getSegments()[index];
 		},
 
 		getFirstSegment: function() {
@@ -48,25 +48,25 @@ this.navigatorjs = this.navigatorjs || {};
 		},
 
 		getLastSegment: function() {
-			var theSegments = this.getSegments();
-			return this.getSegment(theSegments.length - 1);
+			var segments = this.getSegments();
+			return this.getSegment(segments.length - 1);
 		},
 
-		contains: function(aForeignState) {
-			var theForeignSegments = aForeignState.getSegments(),
-				theNativeSegments = this.getSegments(),
-				theForeignSegment, theNativeSegment,
+		contains: function(foreignState) {
+			var foreignSegments = foreignState.getSegments(),
+				nativeSegments = this.getSegments(),
+				foreignSegment, nativeSegment,
 				i;
 
-			if (theForeignSegments.length > theNativeSegments.length) {
+			if (foreignSegments.length > nativeSegments.length) {
 				return false;
 			}
 
-			for (i = 0; i < theForeignSegments.length; i++) {
-				theForeignSegment = theForeignSegments[i];
-				theNativeSegment = theNativeSegments[i];
+			for (i = 0; i < foreignSegments.length; i++) {
+				foreignSegment = foreignSegments[i];
+				nativeSegment = nativeSegments[i];
 
-				if (!(theForeignSegment === "*" || theNativeSegment === "*") && theForeignSegment !== theNativeSegment) {
+				if (!(foreignSegment === "*" || nativeSegment === "*") && foreignSegment !== nativeSegment) {
 					return false;
 				}
 			}
@@ -74,62 +74,62 @@ this.navigatorjs = this.navigatorjs || {};
 			return true;
 		},
 
-		equals: function(aState) {
-			var theSubtractedState = this.subtract(aState);
+		equals: function(state) {
+			var subtractedState = this.subtract(state);
 
-			if (theSubtractedState === null) {
+			if (subtractedState === null) {
 				return false;
 			}
 
-			return theSubtractedState.getSegments().length === 0;
+			return subtractedState.getSegments().length === 0;
 		},
 
-		subtract: function(aOperand) {
-			var theSubtractedSegments;
+		subtract: function(operand) {
+			var subtractedSegments;
 
-			if (!this.contains(aOperand)) {
+			if (!this.contains(operand)) {
 				return null;
 			}
 
-			theSubtractedSegments = this.getSegments();
-			theSubtractedSegments.splice(0, aOperand.getSegments().length);
+			subtractedSegments = this.getSegments();
+			subtractedSegments.splice(0, operand.getSegments().length);
 
-			return new navigatorjs.NavigationState(theSubtractedSegments);
+			return new navigatorjs.NavigationState(subtractedSegments);
 		},
 
-		append: function(aStringOrState) {
-			var thePath = aStringOrState;
-			if (aStringOrState instanceof NavigationState) {
-				thePath = aStringOrState.getPath();
+		append: function(stringOrState) {
+			var path = stringOrState;
+			if (stringOrState instanceof NavigationState) {
+				path = stringOrState.getPath();
 			}
-			return this.setPath(this._path + thePath);
+			return this.setPath(this._path + path);
 		},
 
-		prepend: function(aStringOrState) {
-			var thePath = aStringOrState;
-			if (aStringOrState instanceof NavigationState) {
-				thePath = aStringOrState.getPath();
+		prepend: function(stringOrState) {
+			var path = stringOrState;
+			if (stringOrState instanceof NavigationState) {
+				path = stringOrState.getPath();
 			}
-			return this.setPath(thePath + this._path);
+			return this.setPath(path + this._path);
 		},
 
 		hasWildcard: function() {
 			return this.getPath().indexOf("*") != -1;
 		},
 
-		mask: function(aSource) {
-			var theUnmaskedSegments = this.getSegments(),
-				theSourceSegments = aSource.getSegments(),
-				theLength = Math.min(theUnmaskedSegments.length, theSourceSegments.length),
+		mask: function(sourceState) {
+			var unmaskedSegments = this.getSegments(),
+				sourceSegments = sourceState.getSegments(),
+				length = Math.min(unmaskedSegments.length, sourceSegments.length),
 				i;
 
-			for (i = 0; i < theLength; i++) {
-				if (theUnmaskedSegments[i] === "*") {
-					theUnmaskedSegments[i] = theSourceSegments[i];
+			for (i = 0; i < length; i++) {
+				if (unmaskedSegments[i] === "*") {
+					unmaskedSegments[i] = sourceSegments[i];
 				}
 			}
 
-			return new navigatorjs.NavigationState(theUnmaskedSegments);
+			return new navigatorjs.NavigationState(unmaskedSegments);
 		},
 
 		clone: function() {
