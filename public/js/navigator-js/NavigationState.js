@@ -20,6 +20,7 @@ this.navigatorjs = this.navigatorjs || {};
 			this._path = '/' + path.toLowerCase() + '/';
 			this._path = this._path.replace(new RegExp("\/+", "g"), "/");
 			this._path = this._path.replace(/\s+/g, "-");
+			this._path = this._path.replace(new RegExp("[^-_/A-Za-z0-9*]", "g"), "");
 		},
 
 		getPath: function() {

@@ -27,6 +27,12 @@ describe("NavigationState", function() {
 			expect(currentState.getPath()).toEqual("/test-state/");
 		});
 
+		it("omits characters that are not allowed", function() {
+			var state = new navigatorjs.NavigationState("t#e&s?t");
+			var test = new navigatorjs.NavigationState("test");
+			expect(state.getPath()).toEqual(test.getPath())
+		});
+
 		it("will remove double slashes", function() {
 			currentState = new navigatorjs.NavigationState("//test////");
 			expect(currentState.getPath()).toEqual("/test/");
