@@ -14,8 +14,8 @@ describe("DebugConsole", function() {
 
 		responder = {
 			navigatorBehaviors: ["IHasStateInitialization", "IHasStateTransition"],
-			initialize: function() {
-				console.log("responder -> initialize");
+			initializeByNavigator: function() {
+				console.log("responder -> initializeByNavigator");
 			},
 
 			transitionIn: function(callOnComplete) {

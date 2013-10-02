@@ -10,8 +10,8 @@ $(function() {
 		$el: null,
 		instantiationArguments: [],
 
-		initialize: function() {
-			console.log("View -> initialize");
+		initializeByNavigator: function() {
+			console.log("View -> initializeByNavigator");
 		},
 
 		transitionIn: function(callOnComplete) {
