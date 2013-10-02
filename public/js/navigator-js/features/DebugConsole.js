@@ -4,11 +4,12 @@ this.navigatorjs.features = this.navigatorjs.features || {};
 (function() {
 
 	var _navigator = null,
-		_template = '<div class="debugConsole">Path: <input type="text" class="path" /><div class="responders"><div class="names"></div><div class="status"></div></div></div>',
+		_template = '<div class="debugConsole">Path: <input type="text" class="path" /><div class="pathRenderer"></div><div class="responders"><div class="names"></div><div class="status"></div></div></div>',
 		_visible = true,
 		_inputRegex = new RegExp("[-_/A-Za-z0-9]"),
 		_$el = null,
 		_$pathInput = null,
+		_$pathRenderer = null,
 		_$responders = null,
 		_$responderNames = null,
 		_$responderStatus = null,
@@ -56,9 +57,8 @@ this.navigatorjs.features = this.navigatorjs.features || {};
 	};
 
 	var _autoSizeInput = function() {
-		var padding = 4;
-		_$pathInput.css({width: ''});
-		_$pathInput.css({width: _$pathInput[0].scrollWidth + padding});
+		_$pathRenderer.text(_$pathInput.val());
+		_$pathInput.css({width: _$pathRenderer.width()});
 	};
 
 	var _handleStatusUpdated = function(e, data) {
@@ -121,6 +121,7 @@ this.navigatorjs.features = this.navigatorjs.features || {};
 
 		_$el = $(_template);
 		_$pathInput = _$el.find(".path");
+		_$pathRenderer = _$el.find(".pathRenderer");
 		_$responders = _$el.find(".responders");
 		_$responderNames = _$responders.find(".names");
 		_$responderStatus = _$responders.find(".status");
@@ -137,8 +138,17 @@ this.navigatorjs.features = this.navigatorjs.features || {};
 		_$pathInput.css({
 			color: '#00FF00',
 			backgroundColor: 'transparent',
+			fontFamily: 'Arial',
 			fontSize: 12,
+			minWidth: 200,
 			border: 0
+		});
+
+		_$pathRenderer.attr('style',_$pathInput.attr('style'));
+		_$pathRenderer.css({
+			position: 'absolute',
+			height:0,
+			overflowY:'hidden'
 		});
 
 		_$responderNames.css({
@@ -150,7 +160,6 @@ this.navigatorjs.features = this.navigatorjs.features || {};
 		_$responderStatus.css({
 			display: 'inline-block'
 		});
-
 
 		_$pathInput.on('keypress', _onKeyPress);
 		$(window).on('keypress', _onWindowKeyPress);
