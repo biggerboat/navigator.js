@@ -66,20 +66,27 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 		},
 
 		setUrl: function(url) {
+			var newState;
 			if (_usingPushState) {
 				console.log(_rootUrl, url);
-				window.history.pushState(null, '', _rootUrl + url);
+				newState = new navigatorjs.NavigationState(_rootUrl + url);
+				window.history.pushState(null, '', newState.getPath());
 			} else {
-				window.location.hash = url;
+				newState = new navigatorjs.NavigationState(url);
+				window.location.hash = newState.getPath();
 			}
 		},
 
-		getUrl: function() {
+		getRawUrl: function() {
 			if (_usingPushState) {
 				return this.parsePushStateUrl(window.location.pathname);
 			} else {
 				return this.parseHashUrl(window.location.hash);
 			}
+		},
+
+		getUrlState: function() {
+			return new navigatorjs.NavigationState(this.getRawUrl());
 		},
 
 		_onStateChanged: function() {
@@ -88,8 +95,8 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 		},
 
 		_onUrlChange: function() {
-			console.log('StateUrlSyncer -> _onUrlChange', this.getUrl());
-			_navigator.request(this.getUrl());
+			console.log('StateUrlSyncer -> _onUrlChange', this.getUrlState());
+			_navigator.request(this.getUrlState());
 		},
 
 		resetUrl: function() {

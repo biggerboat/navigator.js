@@ -43,22 +43,22 @@ describe("StateUrlSyncer", function() {
 
 		it("Can set a URL", function() {
 			stateUrlSyncer.setUrl('test');
-			expect(stateUrlSyncer.getUrl()).toEqual('test');
+			expect(stateUrlSyncer.getUrlState().getPath()).toEqual('/test/');
 		});
 
 		it("Can read the url when the hash changes from outside", function() {
 			window.location.hash = 'test';
-			expect(stateUrlSyncer.getUrl()).toEqual('test');
+			expect(stateUrlSyncer.getUrlState().getPath()).toEqual('/test/');
 		});
 
 		it("The parameters in the URL can be reset", function() {
-			expect(stateUrlSyncer.getUrl()).toEqual('');
+			expect(stateUrlSyncer.getUrlState().getPath()).toEqual('/');
 
 			stateUrlSyncer.setUrl('test');
-			expect(stateUrlSyncer.getUrl()).toEqual('test');
+			expect(stateUrlSyncer.getUrlState().getPath()).toEqual('/test/');
 
 			stateUrlSyncer.resetUrl();
-			expect(stateUrlSyncer.getUrl()).toEqual('');
+			expect(stateUrlSyncer.getUrlState().getPath()).toEqual('/');
 		});
 
 	});
@@ -71,17 +71,23 @@ describe("StateUrlSyncer", function() {
 
 		it("Can set a URL", function() {
 			stateUrlSyncer.setUrl('test');
-			expect(stateUrlSyncer.getUrl()).toEqual('test');
+			expect(stateUrlSyncer.getUrlState().getPath()).toEqual('/test/');
 		});
 
 		it("The parameters in the URL can be reset", function() {
-			expect(stateUrlSyncer.getUrl()).toEqual('');
+			expect(stateUrlSyncer.getUrlState().getPath()).toEqual('/');
 
 			stateUrlSyncer.setUrl('test');
-			expect(stateUrlSyncer.getUrl()).toEqual('test');
+			expect(stateUrlSyncer.getUrlState().getPath()).toEqual('/test/');
 
 			stateUrlSyncer.resetUrl();
-			expect(stateUrlSyncer.getUrl()).toEqual('');
+			expect(stateUrlSyncer.getUrlState().getPath()).toEqual('/');
+		});
+
+		it("Allows the push root state to end with a slash", function() {
+			stateUrlSyncer.usePushState("/");
+			stateUrlSyncer.start();
+			expect(navigator.start).not.toThrow();
 		});
 
 	});
@@ -112,7 +118,7 @@ describe("StateUrlSyncer", function() {
 
 		it("Updates the URL when the current navigator state changes", function() {
 			navigator.request('bigger');
-			expect(stateUrlSyncer.getUrl()).toEqual('/bigger/');
+			expect(stateUrlSyncer.getUrlState().getPath()).toEqual('/bigger/');
 		});
 
 		it("Updates the current navigator state when the URL changes", function() {
@@ -120,7 +126,7 @@ describe("StateUrlSyncer", function() {
 
 			delayedExpect(function() {
 				expect(navigator.getCurrentState().getPath()).toEqual('/bigger/');
-				expect(stateUrlSyncer.getUrl()).toEqual('/bigger/');
+				expect(stateUrlSyncer.getUrlState().getPath()).toEqual('/bigger/');
 
 			});
 		});
@@ -130,7 +136,7 @@ describe("StateUrlSyncer", function() {
 
 			delayedExpect(function() {
 				expect(navigator.getCurrentState().getPath()).toEqual('/');
-				expect(stateUrlSyncer.getUrl()).toEqual('/');
+				expect(stateUrlSyncer.getUrlState().getPath()).toEqual('/');
 			});
 		});
 
@@ -142,7 +148,7 @@ describe("StateUrlSyncer", function() {
 
 				delayedExpect(function() {
 					expect(navigator.getCurrentState().getPath()).toEqual('/bigger/');
-					expect(stateUrlSyncer.getUrl()).toEqual('/bigger/');
+					expect(stateUrlSyncer.getUrlState().getPath()).toEqual('/bigger/');
 				});
 			});
 		});
