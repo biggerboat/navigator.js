@@ -53,8 +53,9 @@ this.navigatorjs = this.navigatorjs || {};
 			return this.getSegment(segments.length - 1);
 		},
 
-		contains: function(foreignState) {
-			var foreignSegments = foreignState.getSegments(),
+		contains: function(foreignStateOrPath) {
+			var foreignState = NavigationState.make(foreignStateOrPath),
+				foreignSegments = foreignState.getSegments(),
 				nativeSegments = this.getSegments(),
 				foreignSegment, nativeSegment,
 				i;
@@ -75,8 +76,9 @@ this.navigatorjs = this.navigatorjs || {};
 			return true;
 		},
 
-		equals: function(state) {
-			var subtractedState = this.subtract(state);
+		equals: function(stateOrPath) {
+			var state = NavigationState.make(stateOrPath),
+				subtractedState = this.subtract(state);
 
 			if (subtractedState === null) {
 				return false;
@@ -85,8 +87,9 @@ this.navigatorjs = this.navigatorjs || {};
 			return subtractedState.getSegments().length === 0;
 		},
 
-		subtract: function(operand) {
-			var subtractedSegments;
+		subtract: function(operandStateOrPath) {
+			var operand = NavigationState.make(operandStateOrPath),
+				subtractedSegments;
 
 			if (!this.contains(operand)) {
 				return null;
@@ -118,8 +121,9 @@ this.navigatorjs = this.navigatorjs || {};
 			return this.getPath().indexOf("*") != -1;
 		},
 
-		mask: function(sourceState) {
-			var unmaskedSegments = this.getSegments(),
+		mask: function(sourceStateOrPath) {
+			var sourceState = NavigationState.make(sourceStateOrPath),
+				unmaskedSegments = this.getSegments(),
 				sourceSegments = sourceState.getSegments(),
 				length = Math.min(unmaskedSegments.length, sourceSegments.length),
 				i;

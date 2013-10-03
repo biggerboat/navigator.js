@@ -222,5 +222,19 @@ describe("NavigationState", function() {
 			var foreignState = new navigatorjs.NavigationState("/*/*/2/");
 			expect(foreignState.mask(currentState).getPath()).toEqual('/gallery/holiday/2/');
 		});
+
+		it("also works when a string is passed into state operators", function() {
+			expect(function() {currentState.contains('')}).not.toThrow();
+			expect(function() {currentState.equals('')}).not.toThrow();
+			expect(function() {currentState.subtract('')}).not.toThrow();
+			expect(function() {currentState.mask('')}).not.toThrow();
+		});
+
+		it("also works when a path-array is passed into state operators", function() {
+			expect(function() {currentState.contains([])}).not.toThrow();
+			expect(function() {currentState.equals([])}).not.toThrow();
+			expect(function() {currentState.subtract([])}).not.toThrow();
+			expect(function() {currentState.mask([])}).not.toThrow();
+		});
 	});
 });
