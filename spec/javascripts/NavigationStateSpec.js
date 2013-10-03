@@ -38,6 +38,12 @@ describe("NavigationState", function() {
 			expect(currentState.getPath()).toEqual("/test/");
 		});
 
+		it("correctly removes double slashes that are caused by omitting characters that are not allowed", function() {
+			var state = new navigatorjs.NavigationState("#/test/");
+			var test = new navigatorjs.NavigationState("test");
+			expect(state.getPath()).toEqual(test.getPath())
+		});
+
 		it("has the three segments in the array /gallery/holiday/1/", function() {
 			var segments = currentState.getSegments();
 			expect(segments[0]).toEqual('gallery');
