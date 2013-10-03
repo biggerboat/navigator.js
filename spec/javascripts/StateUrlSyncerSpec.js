@@ -15,7 +15,7 @@ describe("StateUrlSyncer", function() {
 
 		waitsFor(function() {
 			return delayReached;
-		}, "Waiting for delay", delay);
+		}, "Waiting for delay", delay + 50);
 
 		runs(testRunner);
 	}
@@ -116,8 +116,8 @@ describe("StateUrlSyncer", function() {
 				delayedExpect(function(){
 					expect(stateUrlSyncer.getRawUrl()).not.toEqual('test/');
 					expect(stateUrlSyncer.getRawUrl()).toEqual('');
-				},1000);
-			},1000);
+				},250);
+			},250);
 		});
 
 	});
