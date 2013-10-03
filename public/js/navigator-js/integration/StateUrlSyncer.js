@@ -27,7 +27,7 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 			}
 
 			_usingPushState = this.supportsPushState;
-			_rootUrl = rootUrl;
+			_rootUrl = rootUrl || _rootUrl;
 		},
 
 		isUsingPushState: function() {
