@@ -101,6 +101,7 @@ describe("StateUrlSyncer", function() {
 	});
 
 	describe("Event binding", function() {
+		//Note that changing the hash is asynchronous, hence the delayed expects.
 
 		beforeEach(function() {
 			navigator.add({}, "bigger");
