@@ -116,8 +116,8 @@ describe("StateUrlSyncer", function() {
 				delayedExpect(function(){
 					expect(stateUrlSyncer.getRawUrl()).not.toEqual('test/');
 					expect(stateUrlSyncer.getRawUrl()).toEqual('');
-				},200);
-			},200);
+				},10000);
+			},10000);
 		});
 
 	});
