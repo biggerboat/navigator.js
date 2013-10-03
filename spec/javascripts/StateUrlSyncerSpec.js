@@ -61,6 +61,13 @@ describe("StateUrlSyncer", function() {
 			expect(stateUrlSyncer.getUrlState().getPath()).toEqual('/');
 		});
 
+		it("Doesn't change the URL when a leading or trailing slash is missing", function() {
+			window.location.hash = 'test';
+			expect(stateUrlSyncer.getRawUrl()).toEqual('test');
+			stateUrlSyncer.setUrl('test');
+			expect(stateUrlSyncer.getRawUrl()).not.toEqual('/test/');
+		});
+
 	});
 
 	describe("Use push states in url", function() {

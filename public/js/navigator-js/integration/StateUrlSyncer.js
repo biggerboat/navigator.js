@@ -62,13 +62,16 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 		},
 
 		setUrl: function(url) {
-			var newState;
+			var newState,
+				urlState = this.getUrlState();
 			if (_usingPushState) {
 				newState = new navigatorjs.NavigationState(_rootUrl + url);
 				window.history.pushState(null, '', newState.getPath());
 			} else {
 				newState = new navigatorjs.NavigationState(url);
-				window.location.hash = newState.getPath();
+				if(!newState.equals(urlState)) {
+					window.location.hash = newState.getPath();
+				}
 			}
 		},
 
