@@ -42,15 +42,12 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 
 			_started = true;
 			this._addListeners();
-//			this._onUrlChange();
 		},
 
 		_addListeners: function() {
 			if (_usingPushState) {
-				console.log('StateUrlSyncer -> _addListeners pushState');
 				$(window).on('popstate', this._onUrlChange);
 			} else {
-				console.log('StateUrlSyncer -> _addListeners hashChange');
 				$(window).on('hashchange', this._onUrlChange);
 			}
 
@@ -60,7 +57,6 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 		},
 
 		_removeListeners: function() {
-			console.log('StateUrlSyncer -> _removeListeners');
 			$(window).off('popstate', this._onUrlChange);
 			$(window).off('hashchange', this._onUrlChange);
 		},
@@ -68,7 +64,6 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 		setUrl: function(url) {
 			var newState;
 			if (_usingPushState) {
-				console.log(_rootUrl, url);
 				newState = new navigatorjs.NavigationState(_rootUrl + url);
 				window.history.pushState(null, '', newState.getPath());
 			} else {
@@ -90,12 +85,10 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 		},
 
 		_onStateChanged: function() {
-			console.log('StateUrlSyncer -> _onStateChanged', _navigator.getCurrentState().getPath());
 			this.setUrl(_navigator.getCurrentState().getPath());
 		},
 
 		_onUrlChange: function() {
-			console.log('StateUrlSyncer -> _onUrlChange', this.getUrlState());
 			_navigator.request(this.getUrlState());
 		},
 
