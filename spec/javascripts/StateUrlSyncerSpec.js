@@ -97,6 +97,29 @@ describe("StateUrlSyncer", function() {
 			expect(navigator.start).not.toThrow();
 		});
 
+		it("Does change the URL when a leading or trailing slash is missing, but doesn't create a history entry", function() {
+			navigator.add({}, "*");
+			stateUrlSyncer.start();
+			navigator.start();
+
+			expect(stateUrlSyncer.getRawUrl()).toEqual('');
+
+			//Browsers are strange. We got to do a few tricks to get the popstate event triggered
+			window.history.pushState(null, '', 'test'); //The push state we would like to trigger, though this doesn't call the popstate event
+			window.history.pushState(null, '', 'force-popstate-event'); //A temporary push state
+			history.go(-1); //Navigate away from the temp state to enforce a trigger of the popstate event
+
+			delayedExpect(function(){
+				//It takes a while before the event is processed...
+				expect(stateUrlSyncer.getRawUrl()).toEqual('test/');
+				history.go(-1);
+				delayedExpect(function(){
+					expect(stateUrlSyncer.getRawUrl()).not.toEqual('test/');
+					expect(stateUrlSyncer.getRawUrl()).toEqual('');
+				},250);
+			},250);
+		});
+
 	});
 
 	describe("Initialization", function() {

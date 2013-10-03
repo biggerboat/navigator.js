@@ -66,7 +66,11 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 				urlState = this.getUrlState();
 			if (_usingPushState) {
 				newState = new navigatorjs.NavigationState(_rootUrl + url);
-				window.history.pushState(null, '', newState.getPath());
+				if(newState.equals(urlState)) {
+					window.history.replaceState(null, '', newState.getPath());
+				} else {
+					window.history.pushState(null, '', newState.getPath());
+				}
 			} else {
 				newState = new navigatorjs.NavigationState(url);
 				if(!newState.equals(urlState)) {
