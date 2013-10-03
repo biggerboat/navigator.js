@@ -15,7 +15,7 @@ describe("StateUrlSyncer", function() {
 
 		waitsFor(function() {
 			return delayReached;
-		}, "Waiting for delay", delay + 250);
+		}, "Waiting for delay", delay * 2);//Travis CI hack? Else it will complain about giving a timeout
 
 		runs(testRunner);
 	}
@@ -116,8 +116,8 @@ describe("StateUrlSyncer", function() {
 				delayedExpect(function(){
 					expect(stateUrlSyncer.getRawUrl()).not.toEqual('test/');
 					expect(stateUrlSyncer.getRawUrl()).toEqual('');
-				},1000);
-			},1000);
+				},250);
+			},250);
 		});
 
 	});
