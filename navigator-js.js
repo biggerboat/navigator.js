@@ -203,9 +203,9 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceMethods = function(int
 	NavigationState.prototype = {
 		setPath: function(path) {
 			this._path = '/' + path.toLowerCase() + '/';
+			this._path = this._path.replace(new RegExp("[^-_/A-Za-z0-9* ]", "g"), "");
 			this._path = this._path.replace(new RegExp("\/+", "g"), "/");
 			this._path = this._path.replace(/\s+/g, "-");
-			this._path = this._path.replace(new RegExp("[^-_/A-Za-z0-9*]", "g"), "");
 		},
 
 		getPath: function() {
@@ -238,8 +238,9 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceMethods = function(int
 			return this.getSegment(segments.length - 1);
 		},
 
-		contains: function(foreignState) {
-			var foreignSegments = foreignState.getSegments(),
+		contains: function(foreignStateOrPath) {
+			var foreignState = NavigationState.make(foreignStateOrPath),
+				foreignSegments = foreignState.getSegments(),
 				nativeSegments = this.getSegments(),
 				foreignSegment, nativeSegment,
 				i;
@@ -260,8 +261,9 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceMethods = function(int
 			return true;
 		},
 
-		equals: function(state) {
-			var subtractedState = this.subtract(state);
+		equals: function(stateOrPath) {
+			var state = NavigationState.make(stateOrPath),
+				subtractedState = this.subtract(state);
 
 			if (subtractedState === null) {
 				return false;
@@ -270,8 +272,9 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceMethods = function(int
 			return subtractedState.getSegments().length === 0;
 		},
 
-		subtract: function(operand) {
-			var subtractedSegments;
+		subtract: function(operandStateOrPath) {
+			var operand = NavigationState.make(operandStateOrPath),
+				subtractedSegments;
 
 			if (!this.contains(operand)) {
 				return null;
@@ -303,8 +306,9 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceMethods = function(int
 			return this.getPath().indexOf("*") != -1;
 		},
 
-		mask: function(sourceState) {
-			var unmaskedSegments = this.getSegments(),
+		mask: function(sourceStateOrPath) {
+			var sourceState = NavigationState.make(sourceStateOrPath),
+				unmaskedSegments = this.getSegments(),
 				sourceSegments = sourceState.getSegments(),
 				length = Math.min(unmaskedSegments.length, sourceSegments.length),
 				i;
@@ -1449,7 +1453,7 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 			}
 
 			_usingPushState = this.supportsPushState;
-			_rootUrl = rootUrl;
+			_rootUrl = rootUrl || _rootUrl;
 		},
 
 		isUsingPushState: function() {
@@ -1464,15 +1468,12 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 
 			_started = true;
 			this._addListeners();
-//			this._onUrlChange();
 		},
 
 		_addListeners: function() {
 			if (_usingPushState) {
-				console.log('StateUrlSyncer -> _addListeners pushState');
 				$(window).on('popstate', this._onUrlChange);
 			} else {
-				console.log('StateUrlSyncer -> _addListeners hashChange');
 				$(window).on('hashchange', this._onUrlChange);
 			}
 
@@ -1482,21 +1483,29 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 		},
 
 		_removeListeners: function() {
-			console.log('StateUrlSyncer -> _removeListeners');
 			$(window).off('popstate', this._onUrlChange);
 			$(window).off('hashchange', this._onUrlChange);
 		},
 
 		setUrl: function(url) {
+			var newState,
+				urlState = this.getUrlState();
 			if (_usingPushState) {
-				console.log(_rootUrl, url);
-				window.history.pushState(null, '', _rootUrl + url);
+				newState = new navigatorjs.NavigationState(_rootUrl + url);
+				if(newState.equals(urlState)) {
+					window.history.replaceState(null, '', newState.getPath());
+				} else {
+					window.history.pushState(null, '', newState.getPath());
+				}
 			} else {
-				window.location.hash = url;
+				newState = new navigatorjs.NavigationState(url);
+				if(!newState.equals(urlState)) {
+					window.location.hash = newState.getPath();
+				}
 			}
 		},
 
-		getUrl: function() {
+		getRawUrl: function() {
 			if (_usingPushState) {
 				return this.parsePushStateUrl(window.location.pathname);
 			} else {
@@ -1504,14 +1513,16 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 			}
 		},
 
+		getUrlState: function() {
+			return new navigatorjs.NavigationState(this.getRawUrl());
+		},
+
 		_onStateChanged: function() {
-			console.log('StateUrlSyncer -> _onStateChanged', _navigator.getCurrentState().getPath());
 			this.setUrl(_navigator.getCurrentState().getPath());
 		},
 
 		_onUrlChange: function() {
-			console.log('StateUrlSyncer -> _onUrlChange', this.getUrl());
-			_navigator.request(this.getUrl());
+			_navigator.request(this.getUrlState());
 		},
 
 		resetUrl: function() {
