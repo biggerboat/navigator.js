@@ -18,6 +18,8 @@
 
 	"main": "navigator-js.js",
 	"dependencies": {
-		
+		"jquery": "*",
+		"underscore": "*",
+		"backbone":"*"
 	}
 }
