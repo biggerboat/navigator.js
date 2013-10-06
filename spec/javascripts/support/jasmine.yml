@@ -14,7 +14,6 @@ src_files:
     - js/vendors/jquery/jquery.js
     - js/vendors/underscore/underscore.js
     - js/vendors/backbone/backbone.js
-    - js/vendors/injector.js/injector-js.js
     - js/navigator-js/**/*.js
 
 # stylesheets
