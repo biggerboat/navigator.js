@@ -70,57 +70,62 @@ describe("StateUrlSyncer", function() {
 
 	});
 
-	describe("Use push states in url", function() {
+	//Do we support push states? If so, we can execute the following tests on the browser
+	//If not, we'd better not execute these tests, as they rely on the pushState to work
+	if(!!(window && window.history && window.history.pushState)) {
 
-		beforeEach(function(){
-			stateUrlSyncer.usePushState(root);
-		});
+		describe("Use push states in url", function() {
 
-		it("Can set a URL", function() {
-			stateUrlSyncer.setUrl('test');
-			expect(stateUrlSyncer.getUrlState().getPath()).toEqual('/test/');
-		});
+			beforeEach(function(){
+				stateUrlSyncer.usePushState(root);
+			});
 
-		it("The parameters in the URL can be reset", function() {
-			expect(stateUrlSyncer.getUrlState().getPath()).toEqual('/');
+			it("Can set a URL", function() {
+				stateUrlSyncer.setUrl('test');
+				expect(stateUrlSyncer.getUrlState().getPath()).toEqual('/test/');
+			});
 
-			stateUrlSyncer.setUrl('test');
-			expect(stateUrlSyncer.getUrlState().getPath()).toEqual('/test/');
+			it("The parameters in the URL can be reset", function() {
+				expect(stateUrlSyncer.getUrlState().getPath()).toEqual('/');
 
-			stateUrlSyncer.resetUrl();
-			expect(stateUrlSyncer.getUrlState().getPath()).toEqual('/');
-		});
+				stateUrlSyncer.setUrl('test');
+				expect(stateUrlSyncer.getUrlState().getPath()).toEqual('/test/');
 
-		it("Allows the push root state to end with a slash", function() {
-			stateUrlSyncer.usePushState("/");
-			stateUrlSyncer.start();
-			expect(navigator.start).not.toThrow();
-		});
+				stateUrlSyncer.resetUrl();
+				expect(stateUrlSyncer.getUrlState().getPath()).toEqual('/');
+			});
 
-		it("Does change the URL when a leading or trailing slash is missing, but doesn't create a history entry", function() {
-			navigator.add({}, "*");
-			stateUrlSyncer.start();
-			navigator.start();
+			it("Allows the push root state to end with a slash", function() {
+				stateUrlSyncer.usePushState("/");
+				stateUrlSyncer.start();
+				expect(navigator.start).not.toThrow();
+			});
 
-			expect(stateUrlSyncer.getRawUrl()).toEqual('');
+			it("Does change the URL when a leading or trailing slash is missing, but doesn't create a history entry", function() {
+				navigator.add({}, "*");
+				stateUrlSyncer.start();
+				navigator.start();
 
-			//Browsers are strange. We got to do a few tricks to get the popstate event triggered
-			window.history.pushState(null, '', 'test'); //The push state we would like to trigger, though this doesn't call the popstate event
-			window.history.pushState(null, '', 'force-popstate-event'); //A temporary push state
-			history.go(-1); //Navigate away from the temp state to enforce a trigger of the popstate event
+				expect(stateUrlSyncer.getRawUrl()).toEqual('');
 
-			delayedExpect(function(){
-				//It takes a while before the event is processed...
-				expect(stateUrlSyncer.getRawUrl()).toEqual('test/');
-				history.go(-1);
+				//Browsers are strange. We got to do a few tricks to get the popstate event triggered
+				window.history.pushState(null, '', 'test'); //The push state we would like to trigger, though this doesn't call the popstate event
+				window.history.pushState(null, '', 'force-popstate-event'); //A temporary push state
+				history.go(-1); //Navigate away from the temp state to enforce a trigger of the popstate event
+
 				delayedExpect(function(){
-					expect(stateUrlSyncer.getRawUrl()).not.toEqual('test/');
-					expect(stateUrlSyncer.getRawUrl()).toEqual('');
+					//It takes a while before the event is processed...
+					expect(stateUrlSyncer.getRawUrl()).toEqual('test/');
+					history.go(-1);
+					delayedExpect(function(){
+						expect(stateUrlSyncer.getRawUrl()).not.toEqual('test/');
+						expect(stateUrlSyncer.getRawUrl()).toEqual('');
+					},250);
 				},250);
-			},250);
-		});
+			});
 
-	});
+		});
+	}
 
 	describe("Initialization", function() {
 
