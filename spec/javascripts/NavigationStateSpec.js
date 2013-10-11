@@ -130,7 +130,7 @@ describe("NavigationState", function() {
 		});
 	});
 
-	describe("State appending  by string", function() {
+	describe("State appending by string", function() {
 		it("can be appended by appending a string", function() {
 			currentState.append('original');
 			expect(currentState.getPath()).toEqual('/gallery/holiday/1/original/');
@@ -153,6 +153,10 @@ describe("NavigationState", function() {
 		it("can be appended by appending a string of multiple segments, also if it has leading or trailing slashes", function() {
 			currentState.append('/original/zoom/');
 			expect(currentState.getPath()).toEqual('/gallery/holiday/1/original/zoom/');
+		});
+
+		it("returns an instance of itself", function() {
+			expect(currentState.append('/original/zoom/').getPath()).toEqual('/gallery/holiday/1/original/zoom/');
 		});
 	});
 

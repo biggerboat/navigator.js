@@ -21,6 +21,8 @@ this.navigatorjs = this.navigatorjs || {};
 			this._path = this._path.replace(new RegExp("[^-_/A-Za-z0-9* ]", "g"), "");
 			this._path = this._path.replace(new RegExp("\/+", "g"), "/");
 			this._path = this._path.replace(/\s+/g, "-");
+
+			return this;
 		},
 
 		getPath: function() {
