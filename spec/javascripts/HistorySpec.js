@@ -50,6 +50,7 @@ describe('History', function() {
 		navigator.request('state1');
 		expect(history.back()).toBe(true);
 		expect(history.getCurrentState().getPath()).toEqual('/');
+		expect(history.getNextState().getPath()).toEqual('/state1/');
 	});
 
 	it('navigates back in history with multiple items', function() {
@@ -57,6 +58,8 @@ describe('History', function() {
 		navigator.request('state2');
 		expect(history.back()).toBe(true);
 		expect(history.getCurrentState().getPath()).toEqual('/state1/');
+		expect(history.getNextState().getPath()).toEqual('/state2/');
+		expect(history.getPreviousState().getPath()).toEqual('/');
 	});
 
 	it('navigates back multiple times', function() {
@@ -198,6 +201,18 @@ describe('History', function() {
 		navigator.request('state1');
 		expect(history.getPositionByState(history.getCurrentState())).toEqual(0);
 		expect(history.getPositionByState(history.getPreviousState())).toEqual(1);
+	});
+
+	it('max length limit works', function() {
+		history.maxLength = 3;
+		navigator.request('state1');
+		navigator.request('state2');
+		navigator.request('state3');
+		navigator.request('state4');
+		navigator.request('state5');
+
+		expect(history.getLength()).toEqual(3);
+		expect(history.getStateByPosition(history.getLength() - 1).getPath()).toEqual('/state3/');
 	});
 
 });
