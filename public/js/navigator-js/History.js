@@ -135,10 +135,10 @@ this.navigatorjs = this.navigatorjs || {};
 		 * @param steps The number of steps to go back in history
 		 * @return The found state or null if no state was found
 		 */
-		previousState: function(steps) {
+		getPreviousState: function(steps) {
 
 			// Cannot go beyond the first entry in history
-			if (this._historyPosition == this._history.length - 1) {
+			if (this._history.length === 0 || this._historyPosition == Math.max(0, this._history.length - 1)) {
 				return null;
 			}
 
@@ -146,7 +146,7 @@ this.navigatorjs = this.navigatorjs || {};
 			steps = steps || 1;
 
 			// Fetch the requested state in history
-			var position = Math.min(this._history.length - 1, this._historyPosition + steps);
+			var position = Math.min(this._history.length - 1, Math.max(0, this._historyPosition + steps));
 			return this._history[position];
 		},
 
@@ -159,7 +159,7 @@ this.navigatorjs = this.navigatorjs || {};
 		getNextState: function(steps) {
 
 			// Cannot look into the future (for now ;-))
-			if (this._historyPosition === 0) {
+			if (this._history.length === 0 || this._historyPosition === 0) {
 				return null;
 			}
 
@@ -169,6 +169,15 @@ this.navigatorjs = this.navigatorjs || {};
 			// Fetch the requested state in history
 			var position = Math.max(0, this._historyPosition - steps);
 			return this._history[position];
+		},
+
+		/**
+		 * Fetch the current NavigationState
+		 * 
+		 * @return NavigationState
+		 */
+		getCurrentState: function() {
+			return this._history[this._historyPosition];
 		},
 
 		/**
@@ -199,15 +208,30 @@ this.navigatorjs = this.navigatorjs || {};
 		 * @return Number - The found position or -1 if no position was found
 		 */
 		getPositionByState: function(state) {
-			return this._history.indexOf(state);
+			return this.getPositionByPath(state.getPath());
 		},
 
 		/**
-		 * Get an array with the states in the history
-		 * @return Array
+		 * Find the first occurence of the path in the history
+		 * @param String path
+		 * @return Number The index or false if not found
 		 */
-		history: function() {
-			return this._history;
+		getPositionByPath: function(path) {
+			var count = this.getLength();
+			for (var i = 0; i < count; i++) {
+				if (this._history[i].getPath() == path) {
+					return i;
+				}
+			}
+			return false;
+		},
+
+		/**
+		 * Get the number of items in the history
+		 * @return Number
+		 */
+		getLength: function() {
+			return this._history.length;
 		},
 
 		/**
@@ -221,8 +245,8 @@ this.navigatorjs = this.navigatorjs || {};
 		/**
 		 * Check what to do with the new state
 		 */
-		_handleStateChange: function(event) {
-			var state = event.state;
+		_handleStateChange: function(event, update) {
+			var state = update.state;
 
 			switch (this._navigationDirection) {
 
@@ -231,6 +255,7 @@ this.navigatorjs = this.navigatorjs || {};
 					break;
 
 				case History.DIRECTION_NORMAL:
+
 					// Strip every history state before current
 					this._history.splice(0, this._historyPosition);
 
