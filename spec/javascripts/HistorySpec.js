@@ -14,9 +14,6 @@ describe('History', function() {
 		navigator.start('/');
 	});
 
-	afterEach(function() {
-	});
-
 	it('starts with no history', function() {
 		expect(history.getPreviousState()).toBeNull();
 		expect(history.getNextState()).toBeNull();
