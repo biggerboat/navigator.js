@@ -742,6 +742,9 @@ this.navigatorjs = this.navigatorjs || {};
 		_respondersByID = {};
 		_statusByResponderID = {};
 		_responderIDCount = 0;
+
+		// Fixed bug where start event is not fired when creating second navigator
+		_currentState = null;
 	};
 
 
@@ -768,7 +771,7 @@ this.navigatorjs = this.navigatorjs || {};
 
 		request: function(pathOrState) {
 			if (pathOrState == null) {
-				//logger.error("Requested a null state. Aborting request.");
+				// logger.error("Requested a null state. Aborting request.");
 				return;
 			}
 
