@@ -181,7 +181,7 @@ this.navigatorjs = this.navigatorjs || {};
 		 * @return {navigatorjs.NavigationState}
 		 */
 		getCurrentState: function() {
-			return this._history[this._historyPosition];
+			return this._history[this._historyPosition] || null;
 		},
 
 		/**
