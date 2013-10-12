@@ -738,6 +738,7 @@ this.navigatorjs = this.navigatorjs || {};
 		navigatorjs.utils.AutoBind(this, this);
 
 		_$eventDispatcher = $({});
+		_currentState = null;
 		_responders = new navigatorjs.ResponderLists();
 		_respondersByID = {};
 		_statusByResponderID = {};
@@ -768,7 +769,7 @@ this.navigatorjs = this.navigatorjs || {};
 
 		request: function(pathOrState) {
 			if (pathOrState == null) {
-				//logger.error("Requested a null state. Aborting request.");
+				// logger.error("Requested a null state. Aborting request.");
 				return;
 			}
 
