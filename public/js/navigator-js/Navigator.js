@@ -738,13 +738,11 @@ this.navigatorjs = this.navigatorjs || {};
 		navigatorjs.utils.AutoBind(this, this);
 
 		_$eventDispatcher = $({});
+		_currentState = null;
 		_responders = new navigatorjs.ResponderLists();
 		_respondersByID = {};
 		_statusByResponderID = {};
 		_responderIDCount = 0;
-
-		// Fixed bug where start event is not fired when creating second navigator
-		_currentState = null;
 	};
 
 
