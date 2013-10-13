@@ -232,7 +232,7 @@ this.navigatorjs = this.navigatorjs || {};
 		 * @return {navigatorjs.NavigationState}
 		 */
 		getCurrentState: function() {
-			return this._history[this._historyPosition];
+			return this._history[this._historyPosition] || null;
 		},
 
 		/**
@@ -1366,13 +1366,11 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceMethods = function(int
 		navigatorjs.utils.AutoBind(this, this);
 
 		_$eventDispatcher = $({});
+		_currentState = null;
 		_responders = new navigatorjs.ResponderLists();
 		_respondersByID = {};
 		_statusByResponderID = {};
 		_responderIDCount = 0;
-
-		// Fixed bug where start event is not fired when creating second navigator
-		_currentState = null;
 	};
 
 
