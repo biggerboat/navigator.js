@@ -28,12 +28,12 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 			var exactMatch = aExactMatch == undefined ? false : aExactMatch,
 				oneShot = aOneShot == undefined ? false : aOneShot,
 				state = navigatorjs.NavigationState.make(stateOrPath),
-				commands = this._commandsByState[state.path] || [];
+				commands = this._commandsByState[state.getPath()] || [];
 
-			this._commandsByState[state.path] = commands;
+			this._commandsByState[state.getPath()] = commands;
 
 			if (this._hasCommand(commands, CommandClass)) {
-				console.log("Already mapped " + CommandClass + " to state " + state.getPath());
+				throw new Error("Already mapped " + CommandClass + " to state " + state.getPath());
 				return;
 			}
 
@@ -44,9 +44,9 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 
 		unmapCommand: function(stateOrPath, CommandClass) {
 			var state = navigatorjs.NavigationState.make(stateOrPath),
-				commands = this._commandsByState[state.path] || [],
+				commands = this._commandsByState[state.getPath()] || [],
 				i, wrapper;
-			this._commandsByState[state.path] = commands;
+			this._commandsByState[state.getPath()] = commands;
 
 			for (i = commands.length; --i >= 0;) {
 				wrapper = commands[i];
@@ -136,8 +136,7 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 			if (this._verifiedCommandClasses[CommandClass]) {
 				return;
 			}
-
-			if (!CommandClass.prototype.hasOwnProperty('execute')) {
+			if (CommandClass.prototype["execute"]===undefined) {
 				throw new Error("Command doesn't implement an execute method - " + CommandClass);
 			}
 			this._verifiedCommandClasses[CommandClass] = true;
