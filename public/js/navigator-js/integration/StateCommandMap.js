@@ -2,7 +2,7 @@ this.navigatorjs = this.navigatorjs || {};
 this.navigatorjs.integration = this.navigatorjs.integration || {};
 
 (function() {
-	var StateCommandMap = new function(navigator, injector) {
+	var StateCommandMap = function(navigator, injector) {
 		this._navigator = navigator;
 		this._injector = injector;
 		this._commandsByState = {};
@@ -137,7 +137,7 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 				return;
 			}
 
-			if (!CommandClass.hasOwnProperty('execute')) {
+			if (!CommandClass.prototype.hasOwnProperty('execute')) {
 				throw new Error("Command doesn't implement an execute method - " + CommandClass);
 			}
 			this._verifiedCommandClasses[CommandClass] = true;
