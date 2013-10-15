@@ -5,6 +5,10 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 	var StateCommandMap = new function(navigator, injector) {
 		this._navigator = navigator;
 		this._injector = injector;
+		this._commandsByState = {};
+		this._verifiedCommandClasses = {};
+
+		this._navigator.add(this, "");
 
 		this.initialize();
 	};
@@ -18,11 +22,9 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 		_verifiedCommandClasses: null, //{}
 
 		initialize: function() {
-			this._commandsByState = {};
-			this._verifiedCommandClasses = {};
 		},
 
-		mapCommand: function(stateOrPath, commandClass, aExactMatch, aOneShot) {
+		mapCommand: function(stateOrPath, CommandClass, aExactMatch, aOneShot) {
 			var exactMatch = aExactMatch == undefined ? false : aExactMatch,
 				oneShot = aOneShot == undefined ? false : aOneShot,
 				state = navigatorjs.NavigationState.make(stateOrPath),
@@ -30,8 +32,8 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 
 			this._commandsByState[state.path] = commands;
 
-			if (this._hasCommand(commands, commandClass)) {
-				console.log("Already mapped " + commandClass + " to state " + state.getPath());
+			if (this._hasCommand(commands, CommandClass)) {
+				console.log("Already mapped " + CommandClass + " to state " + state.getPath());
 				return;
 			}
 
@@ -130,15 +132,15 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 			return false;
 		},
 
-		_verifyCommandClass: function(commandClass) {
-			if (this._verifiedCommandClasses[commandClass]) {
+		_verifyCommandClass: function(CommandClass) {
+			if (this._verifiedCommandClasses[CommandClass]) {
 				return;
 			}
 
-			if (!commandClass.hasOwnProperty('execute')) {
-				throw new Error("Command doesn't implement an execute method - " + commandClass);
+			if (!CommandClass.hasOwnProperty('execute')) {
+				throw new Error("Command doesn't implement an execute method - " + CommandClass);
 			}
-			this._verifiedCommandClasses[commandClass] = true;
+			this._verifiedCommandClasses[CommandClass] = true;
 		}
 	};
 
