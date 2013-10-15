@@ -12,7 +12,7 @@ this.navigatorjs.NavigationResponderBehaviors.IHasStateTransition = {name: "IHas
 this.navigatorjs.NavigationResponderBehaviors.IHasStateUpdate = {name: "IHasStateUpdate", methods: ["updateState"]};
 
 this.navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface = function(object, interface) {
-	if (object.navigatorBehaviors == undefined || !object.navigatorBehaviors instanceof Array || object.navigatorBehaviors.indexOf(interface) == -1) {
+	if (object.navigatorBehaviors == undefined || !object.navigatorBehaviors instanceof Array) {
 		//The input interface is not set on object's navigatorBehaviors.
 		return false;
 	}
