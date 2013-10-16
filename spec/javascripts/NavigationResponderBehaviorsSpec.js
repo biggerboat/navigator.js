@@ -84,6 +84,17 @@ describe("Navigator responder behavior/interface validation", function() {
 			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateInitialization")).toBeFalsy();
 		});
 
+		it("Checks inherited behaviours", function() {
+			var object = {
+				navigatorBehaviors: ["IHasStateValidationOptional"],
+				validate: function(truncatedState, fullState) {}, //IHasStateValidation, IHasStateValidationAsync, IHasStateValidationOptional, IHasStateValidationOptionalAsync, IHasStateRedirection
+				willValidate: function(truncatedState, fullState) {/*return bool*/} //IHasStateValidationOptional, IHasStateValidationOptionalAsync
+			};
+
+			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateValidationOptional")).toBeTruthy();
+			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateValidation")).toBeTruthy();
+		});
+
 		it("Has implemented all behaviors", function() {
 			var object = {
 				navigatorBehaviors: ["IHasStateInitialization", "IHasStateValidation", "IHasStateValidationAsync", "IHasStateValidationOptional", "IHasStateValidationOptionalAsync", "IHasStateRedirection", "IHasStateSwap", "IHasStateTransition", "IHasStateUpdate"],
