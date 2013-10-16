@@ -9,7 +9,6 @@ describe("StateCommandMap", function() {
 		stateCommandMap = new navigatorjs.integration.StateCommandMap(navigator, injectorjs);
 	});
 
-
 	describe("mapping and unmapping", function() {
 		it("can map a state to a command", function() {
 			stateCommandMap.mapCommand("/command", Backbone.Command);
@@ -47,41 +46,125 @@ describe("StateCommandMap", function() {
 	});
 
 	describe("execution", function() {
-		var executed;
+		var executeCount;
 		var Command;
 
 		beforeEach(function() {
-			executed = false;
+			executeCount = 0;
 
 			Command = Backbone.Command.extend({
 				execute: function() {
-					executed = true;
+					executeCount++;
 				}
 			});
 
 			navigator.start();
 		});
 
-		it("executes the command when the mapped state is requested", function(){
+		it("executes the command when the mapped state is requested", function() {
 			stateCommandMap.mapCommand("/command", Command);
 			navigator.request("/command");
 
-			expect(executed).toBe(true);
+			expect(executeCount).toBe(1);
 		});
 
-		it("executes the command when a different state is requested", function(){
+		it("doesn't execute the command when a different state is requested", function() {
 			navigator.add({}, "/test");
 			stateCommandMap.mapCommand("/command", Command);
 			navigator.request("/test");
 
-			expect(executed).toBe(false);
+			expect(executeCount).toBe(0);
 		});
 
-//		describe("injection", function(){
-//			it("injects the full state");
-//			it("injects the truncated state");
-//			it("cleans up the mapped states after execution");
-//		});
+		it("executes the command that is mapped with a wildcard state", function() {
+			stateCommandMap.mapCommand("*/command", Command);
+			navigator.request("/test/command");
+
+			expect(executeCount).toBe(1);
+		});
+
+		it("executes the command every time the new state contains the mapped state", function() {
+			navigator.add({}, "/*/command/*");
+			stateCommandMap.mapCommand("*/command", Command);
+			navigator.request("/test/command");
+			navigator.request("/test/command/test1");
+			navigator.request("/test/command/test2");
+
+			expect(executeCount).toBe(3);
+		});
+
+		it("doesn't execute the command when we leave the mapped state", function() {
+			navigator.add({}, "/");
+			stateCommandMap.mapCommand("/command", Command);
+			navigator.request("/command");
+			navigator.request("/test");
+
+			expect(executeCount).toBe(1);
+		});
+
+		it("can be mapped to exact states and doesn't execute when the current state only contains the mapped state", function() {
+			navigator.add({}, "/*/command/*");
+			stateCommandMap.mapCommand("*/command", Command, true);
+			navigator.request("/test/command");
+			navigator.request("/test/command/test1");
+			navigator.request("/test/command/test2");
+
+			expect(executeCount).toBe(1);
+		});
+
+		it("doesn't execute the command multiple times when the onShot parameter is set to true", function() {
+			navigator.add({}, "/*/command/*");
+			stateCommandMap.mapCommand("*/command", Command, false, true);
+			navigator.request("/test/command");
+			navigator.request("/test/command/test1");
+			navigator.request("/test/command/test2");
+
+			expect(executeCount).toBe(1);
+		});
+
+		describe("injection", function() {
+			var fullState,
+				truncatedState;
+
+			beforeEach(function() {
+				fullState = truncatedState = undefined;
+
+				Command = Backbone.Command.extend({
+
+					fullState: 'inject',
+					truncatedState: 'inject',
+
+					execute: function() {
+						fullState = this.fullState;
+						truncatedState = this.truncatedState;
+					}
+				});
+			});
+
+			it("temporarily injects the full state", function() {
+				expect(injectorjs.hasMapping('fullState')).toBe(false);
+				expect(fullState).toBeUndefined();
+
+				stateCommandMap.mapCommand("/command", Command);
+				navigator.request("/command");
+
+				expect(fullState).not.toBe('inject');
+				expect(fullState).not.toBeUndefined();
+				expect(injectorjs.hasMapping('fullState')).toBe(false);
+			});
+
+			it("temporarily injects the truncated state", function() {
+				expect(injectorjs.hasMapping('truncatedState')).toBe(false);
+				expect(truncatedState).toBeUndefined();
+
+				stateCommandMap.mapCommand("/command", Command);
+				navigator.request("/command");
+
+				expect(fullState).not.toBe('inject');
+				expect(truncatedState).not.toBeUndefined();
+				expect(injectorjs.hasMapping('truncatedState')).toBe(false);
+			});
+		});
 	});
 
 });

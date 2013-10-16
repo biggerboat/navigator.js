@@ -107,7 +107,7 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 						this._injector.map('fullState').toValue(fullState);
 						this._injector.map('truncatedState').toValue(fullState.subtract(wrapper.state));
 
-						command = new wrapper.CommandClass();
+						command = new wrapper.CommandClass({injector:this._injector});
 						command.execute();
 
 						this._injector.unmap('fullState');
