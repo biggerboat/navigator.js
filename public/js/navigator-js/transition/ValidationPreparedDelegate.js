@@ -8,6 +8,7 @@ this.navigatorjs.transition = this.navigatorjs.transition || {};
 		this._fullState = fullState;
 		this._navigator = navigator;
 		this._validationNamespace = validationNamespace;
+		navigatorjs.utils.AutoBind(this, this);
 	};
 
 	//PUBLIC API
