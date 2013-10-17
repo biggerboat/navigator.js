@@ -1422,7 +1422,7 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceMethods = function(int
 				for (path in _redirects) {
 					fromState = new navigatorjs.NavigationState(path);
 					if (fromState.equals(requestedState)) {
-						toState = navigatorjs.NavigationState(_redirects[path]);
+						toState = navigatorjs.NavigationState.make(_redirects[path]);
 						//logger.info("Redirecting " + from + " to " + to);
 						this.request(toState);
 						return;
