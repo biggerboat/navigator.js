@@ -1,4 +1,19 @@
 describe("Navigator responder behavior/interface validation", function() {
+
+	function delayedExpect(testRunner,delay) {
+		delay = delay || 1;
+		var delayReached = false;
+		setTimeout(function() {
+			delayReached = true;
+		}, delay);
+
+		waitsFor(function() {
+			return delayReached;
+		}, "Waiting for delay", delay * 2);//Travis CI hack? Else it will complain about giving a timeout
+
+		runs(testRunner);
+	}
+
 	beforeEach(function() {
 	});
 
@@ -143,15 +158,115 @@ describe("Navigator responder behavior/interface validation", function() {
 
 	describe("navigator state flow integration", function() {
 
-		describe("asynchronous", function() {
+		var njs,
+			Responder,
+			responder;
 
-			var njs,
-				Responder1, Responder2,
+		beforeEach(function() {
+			njs = new navigatorjs.Navigator();
+		});
+
+		describe("initialization", function() {
+			//TODO write tests for how this works. In current implementation IHasStateInitialization will only be called when it also implements one of the other interfaces
+		});
+
+		describe("transitions", function() {
+			beforeEach(function() {
+				Responder = function() {};
+				Responder.prototype = {
+					navigatorBehaviors: ["IHasStateTransition"],
+					inCallComplete: null,
+					outCallComplete: null,
+					transitionIn: function(callOnComplete) {
+						this.inCallComplete = callOnComplete;
+					},
+
+					transitionOut: function(callOnComplete) {
+						this.outCallComplete = callOnComplete;
+					}
+				};
+
+				responder = new Responder();
+
+				spyOn(responder, 'transitionIn').andCallThrough();
+				spyOn(responder, 'transitionOut').andCallThrough();
+
+				njs.add({}, "/");
+				njs.add(responder, "home");
+			});
+
+			it("calls the transitionIn method when entering the state", function() {
+				njs.start("/");
+				expect(responder.transitionIn).not.toHaveBeenCalled();
+				njs.request("home");
+				expect(responder.transitionIn).toHaveBeenCalled();
+			});
+
+			it("calls the transitionOut once we leave the mapped state", function() {
+				njs.start("/");
+				expect(responder.transitionOut).not.toHaveBeenCalled();
+				njs.request("home");
+				expect(responder.transitionOut).not.toHaveBeenCalled();
+				njs.request("/");
+				expect(responder.transitionOut).toHaveBeenCalled();
+			});
+
+			it("calls the transitionOut method despite of the transitionIn call to be completed", function() {
+				njs.start("/");
+				expect(responder.transitionOut).not.toHaveBeenCalled();
+				njs.request("home");
+				njs.request("/");
+				expect(responder.transitionOut).toHaveBeenCalled();
+			});
+
+			it("doesn't call the transitionIn of a new state before the previous state has transitioned out", function() {
+				var contact = new Responder();
+				spyOn(contact, 'transitionIn').andCallThrough();
+				spyOn(contact, 'transitionOut').andCallThrough();
+				
+				njs.add(contact, "contact");
+				njs.start("/");
+				njs.request("home");
+				njs.request("contact");
+				expect(contact.transitionIn).not.toHaveBeenCalled();
+				responder.outCallComplete();
+				expect(contact.transitionIn).toHaveBeenCalled();
+			});
+
+			it("it updates the currentState immediately, even though transitions are running", function() {
+				njs.start("/");
+				njs.request("home");
+				expect(njs.getCurrentState().getPath()).toEqual('/home/');
+				njs.request("/");
+				expect(njs.getCurrentState().getPath()).toEqual('/');
+			});
+		});
+
+		describe("redirection", function() {
+
+		});
+
+		describe("swapping", function() {
+
+		});
+
+		describe("updating", function() {
+
+		});
+
+		describe("validation", function() {
+
+			describe("synchronous", function() {
+
+			});
+
+			describe("asynchronous", function() {
+
+			var Responder1, Responder2,
 				responder1ValidateCalls,
 				responder2ValidateCalls;
 
 			beforeEach(function() {
-				njs = new navigatorjs.Navigator();
 				responder1ValidateCalls = responder2ValidateCalls = 0;
 
 				Responder1 = function() {};
@@ -189,6 +304,7 @@ describe("Navigator responder behavior/interface validation", function() {
 				};
 
 				njs.add(new Responder1(), "/*/");
+//				njs.add({}, "/*/");
 				njs.add(new Responder2(), "/*/test/*/");
 				njs.start("/");
 			});
@@ -232,7 +348,7 @@ describe("Navigator responder behavior/interface validation", function() {
 			});
 
 		})
-
+		});
 	});
 
 });
