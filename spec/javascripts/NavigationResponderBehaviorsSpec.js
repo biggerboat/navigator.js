@@ -419,7 +419,51 @@ describe("Navigator responder behavior/interface validation", function() {
 		});
 
 		describe("updating", function() {
+			beforeEach(function() {
+				Responder = function() {};
+				Responder.prototype = {
+					navigatorBehaviors: ["IHasStateUpdate"],
 
+					updateStateCount: 0,
+
+					updateState: function(truncatedState, fullState) {
+						this.updateStateCount++;
+					}
+
+				};
+
+				responder = new Responder();
+
+				njs.add({}, "/");
+			});
+
+			it("calls the update state method when we enter the state that is mapped to the responder", function() {
+				njs.add(responder, "update");
+				njs.start("/");
+				expect(responder.updateStateCount).toEqual(0);
+				njs.request("update");
+				expect(responder.updateStateCount).toEqual(1);
+			});
+
+			it("calls the update state method when we enter a child state", function() {
+				njs.add(responder, "update");
+				njs.add({}, ["update/*","update/*/*"]);
+				njs.start("/");
+				njs.request("update");
+				njs.request("update/test");
+				njs.request("update/test/test");
+				expect(responder.updateStateCount).toEqual(3);
+			});
+
+			it("doesn't call the update state for state changes that are no children of the mapped state", function() {
+				njs.add(responder, "update");
+				njs.add({}, "other");
+				njs.start("/");
+				njs.request("update");
+				njs.request("/");
+				njs.request("other");
+				expect(responder.updateStateCount).toEqual(1);
+			});
 		});
 
 		describe("validation", function() {
