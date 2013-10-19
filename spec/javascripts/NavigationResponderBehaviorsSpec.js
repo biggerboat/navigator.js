@@ -327,6 +327,94 @@ describe("Navigator responder behavior/interface validation", function() {
 		});
 
 		describe("swapping", function() {
+			beforeEach(function() {
+				Responder = function() {};
+				Responder.prototype = {
+					navigatorBehaviors: ["IHasStateSwap"],
+					callOnSwapOutComplete: null,
+					willSwapToStateReturnValue: true,
+
+					willSwapToStateCount: 0,
+					swapInCount: 0,
+					swapOutCount: 0,
+
+					willSwapToState: function(truncatedState, fullState) {
+						this.willSwapToStateCount++;
+						return this.willSwapToStateReturnValue;
+					},
+
+					swapIn: function(truncatedState, fullState) {
+						this.swapInCount++;
+					},
+
+					swapOut: function(callOnSwapOutComplete) {
+						this.swapOutCount++;
+						this.callOnSwapOutComplete = callOnSwapOutComplete;
+					}
+
+				};
+
+				responder = new Responder();
+				spyOn(responder, 'willSwapToState').andCallThrough();
+				spyOn(responder, 'swapOut').andCallThrough();
+				spyOn(responder, 'swapIn').andCallThrough();
+
+				njs.add({}, "/");
+			});
+
+			it("Swaps swap in when we arrive at the mapped state when willSwapToState returns true", function() {
+				njs.add(responder, "swapper");
+				njs.start("/");
+				njs.request("swapper");
+
+				expect(responder.willSwapToState).toHaveBeenCalled();
+				expect(responder.swapIn).toHaveBeenCalled();
+				expect(responder.swapOut).not.toHaveBeenCalled();
+			});
+
+			it("Won't swap in when we arrive at the mapped state when willSwapToState returns false", function() {
+				responder.willSwapToStateReturnValue = false;
+				njs.add(responder, "swapper");
+				njs.start("/");
+				njs.request("swapper");
+
+				expect(responder.willSwapToState).toHaveBeenCalled();
+				expect(responder.swapIn).not.toHaveBeenCalled();
+				expect(responder.swapOut).not.toHaveBeenCalled();
+			});
+
+			it("Calls the swapout when we swap to a child state", function() {
+				njs.add(responder, "swapper");
+				njs.add({}, "swapper/*");
+				njs.start("/");
+				njs.request("swapper");
+				njs.request("swapper/test1");
+
+				expect(responder.willSwapToState).toHaveBeenCalled();
+				expect(responder.swapIn).toHaveBeenCalled();
+				expect(responder.swapOut).toHaveBeenCalled();
+			});
+
+			it("Won't swap in till the previous swap out has completed", function() {
+				njs.add(responder, "swapper");
+				njs.add({}, "swapper/*");
+				njs.start("/");
+				njs.request("swapper");
+				njs.request("swapper/test1");
+				expect(responder.swapInCount).toEqual(1);
+				responder.callOnSwapOutComplete();
+				expect(responder.swapInCount).toEqual(2);
+			});
+
+//			it("tests", function() {
+//				njs.add(responder, "swapper");
+//				njs.add({}, "swapper/test");
+//				njs.start("/");
+//				njs.request("swapper");
+//				njs.request("swapper/test");
+//				njs.request("/");
+//
+//			});
 
 		});
 
@@ -428,6 +516,10 @@ describe("Navigator responder behavior/interface validation", function() {
 			});
 
 		})
+		});
+
+		describe("implementing all behaviors", function() {
+
 		});
 	});
 

@@ -270,7 +270,10 @@ this.navigatorjs = this.navigatorjs || {};
 			responder = _respondersByID[responderID];
 			if (respondersToShow.indexOf(responder) == -1) {
 				// if the responder is not already hidden or disappearing, trigger the transitionOut:
-				if (navigatorjs.transition.TransitionStatus.HIDDEN < _statusByResponderID[responderID] && _statusByResponderID[responderID] < navigatorjs.transition.TransitionStatus.DISAPPEARING) {
+				if (navigatorjs.transition.TransitionStatus.HIDDEN < _statusByResponderID[responderID] && _statusByResponderID[responderID] < navigatorjs.transition.TransitionStatus.DISAPPEARING &&
+					//We could also not be hidden or disappearing but performing a state swap.
+					navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, "IHasStateTransition")) {
+
 					_statusByResponderID[responderID] = navigatorjs.transition.TransitionStatus.DISAPPEARING;
 					waitForResponders.push(responder);
 
@@ -412,7 +415,7 @@ this.navigatorjs = this.navigatorjs || {};
 						waitForResponders.push(responder);
 
 						//use namespace transition;
-						responder.swapOut(new navigatorjs.TransitionCompleteDelegate(responder, navigatorjs.transition.TransitionStatus.SHOWN, navigatorjs.transition.NavigationBehaviors.SWAP, this, _transition).call);
+						responder.swapOut(new navigatorjs.transition.TransitionCompleteDelegate(responder, navigatorjs.transition.TransitionStatus.SHOWN, navigatorjs.NavigationBehaviors.SWAP, this, _transition).call);
 					}
 				}
 			}
