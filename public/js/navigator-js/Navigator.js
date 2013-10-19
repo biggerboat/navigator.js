@@ -138,6 +138,51 @@ this.navigatorjs = this.navigatorjs || {};
 		return false;
 	};
 
+	var _request = function(pathOrState) {
+		if (pathOrState == null) {
+			// logger.error("Requested a null state. Aborting request.");
+			return;
+		}
+
+		var requestedState,
+			path,
+			fromState,
+			toState;
+
+		// Store and possibly mask the requested state
+		requestedState = navigatorjs.NavigationState.make(pathOrState);
+		if (requestedState.hasWildcard()) {
+			requestedState = requestedState.mask(_currentState || _defaultState);
+		}
+
+		// Check for exact match of the requested and the current state
+		if (_currentState && _currentState.getPath() == requestedState.getPath()) {
+			//logger.info("Already at the requested state: " + requested);
+			return;
+		}
+
+		if (_redirects) {
+			for (path in _redirects) {
+				fromState = new navigatorjs.NavigationState(path);
+				if (fromState.equals(requestedState)) {
+					toState = navigatorjs.NavigationState.make(_redirects[path]);
+					//logger.info("Redirecting " + from + " to " + to);
+					_request(toState);
+					return;
+				}
+			}
+		}
+
+		// this event makes it possible to add responders just in time to participate in the validation process.
+		_$eventDispatcher.trigger(navigatorjs.NavigatorEvent.STATE_REQUESTED, {state: requestedState});
+
+		// Inline redirection is reset with every request call.
+		// It can be changed by a responder implementing the IHasStateRedirection interface.
+		_inlineRedirectionState = null;
+
+		_performRequestCascade(requestedState);
+	};
+
 	var _performRequestCascade = function(requestedState, startAsyncValidation) {
 		if (!_defaultState) { throw new Error("No default state set. Call start() before the first request!"); }
 		// Request cascade starts here.
@@ -158,7 +203,7 @@ this.navigatorjs = this.navigatorjs || {};
 		} else if (startAsyncValidation && _asyncValidationOccurred) {
 			// any async prepration happened instantaneuously
 		} else if (_inlineRedirectionState) {
-			this.request(_inlineRedirectionState);
+			_request(_inlineRedirectionState);
 		} else if (_currentState) {
 			// If validation fails, the notifyStateChange() is called with the current state as a parameter,
 			// mainly for subclasses to respond to the blocked navigation (e.g. SWFAddress).
@@ -742,6 +787,7 @@ this.navigatorjs = this.navigatorjs || {};
 		_responders = new navigatorjs.ResponderLists();
 		_respondersByID = {};
 		_statusByResponderID = {};
+		_redirects = null;
 		_responderIDCount = 0;
 	};
 
@@ -768,48 +814,7 @@ this.navigatorjs = this.navigatorjs || {};
 		},
 
 		request: function(pathOrState) {
-			if (pathOrState == null) {
-				// logger.error("Requested a null state. Aborting request.");
-				return;
-			}
-
-			var requestedState,
-				path,
-				fromState,
-				toState;
-
-			// Store and possibly mask the requested state
-			requestedState = navigatorjs.NavigationState.make(pathOrState);
-			if (requestedState.hasWildcard()) {
-				requestedState = requestedState.mask(_currentState || _defaultState);
-			}
-
-			// Check for exact match of the requested and the current state
-			if (_currentState && _currentState.getPath() == requestedState.getPath()) {
-				//logger.info("Already at the requested state: " + requested);
-				return;
-			}
-
-			if (_redirects) {
-				for (path in _redirects) {
-					fromState = new navigatorjs.NavigationState(path);
-					if (fromState.equals(requestedState)) {
-						toState = navigatorjs.NavigationState.make(_redirects[path]);
-						//logger.info("Redirecting " + from + " to " + to);
-						this.request(toState);
-						return;
-					}
-				}
-			}
-
-			// this event makes it possible to add responders just in time to participate in the validation process.
-			_$eventDispatcher.trigger(navigatorjs.NavigatorEvent.STATE_REQUESTED, {state: requestedState});
-
-			// Inline redirection is reset with every request call.
-			// It can be changed by a responder implementing the IHasStateRedirection interface.
-			_inlineRedirectionState = null;
-
-			_performRequestCascade(requestedState);
+			_request(pathOrState);
 		},
 
 		getCurrentState: function() {

@@ -243,7 +243,87 @@ describe("Navigator responder behavior/interface validation", function() {
 		});
 
 		describe("redirection", function() {
+			beforeEach(function() {
+				Responder = function() {};
+				Responder.prototype = {
+					navigatorBehaviors: ["IHasStateRedirection"],
 
+					validate: function(truncatedState, fullState) {
+						return false;
+					},
+
+					redirect: function(truncatedState, fullState) {
+						return new navigatorjs.NavigationState("contact");
+					}
+				};
+
+				responder = new Responder();
+
+				njs.add({}, "/");
+			});
+
+			it("redirects to another state", function() {
+				njs.add({}, "contact");
+				njs.add(responder, "home");
+				njs.start("/");
+				njs.request("home");
+				expect(njs.getCurrentState().getPath()).toEqual('/contact/');
+			});
+
+			it("doesn't redirect when there is no responder for the state it redirects to", function() {
+				njs.add(responder, "home");
+				njs.start("/");
+				njs.request("home");
+				expect(njs.getCurrentState().getPath()).toEqual('/');
+			});
+
+			it("throws an error when it redirects to itself", function() {
+				njs.add(responder, "contact");
+				njs.start("/");
+
+				expect(function() {njs.request("contact");}).toThrow();
+			});
+
+			it("doens't throw an error when we redirect to a substate, as long as the validate doesn't return false for the substate", function() {
+				responder.validate = function(truncatedState, fullState) { return !fullState.equals('home')};
+				responder.redirect = function(truncatedState, fullState) {return new navigatorjs.NavigationState("home/test")};
+				njs.add(responder, "home");
+				njs.add({}, "home/test");
+				njs.start("/");
+				expect(function() {njs.request("home");}).not.toThrow();
+				expect(njs.getCurrentState().getPath()).toEqual('/home/test/');
+			});
+
+			it("is ignored when a native navigatorjs redirect is known", function() {
+				njs.add({}, "contact");
+				njs.add({}, "about");
+				njs.add(responder, "home");
+				njs.registerRedirect("home", "about");
+				njs.start("/");
+				njs.request("home");
+				expect(njs.getCurrentState().getPath()).toEqual('/about/');
+			});
+
+			it("can chain redirects", function() {
+				var contact = new Responder();
+				contact.redirect = function(truncatedState, fullState) {return new navigatorjs.NavigationState("about")};
+
+				njs.add(contact, "contact");
+				njs.add({}, "about");
+				njs.add(responder, "home");
+				njs.start("/");
+				njs.request("home");
+				expect(njs.getCurrentState().getPath()).toEqual('/about/');
+			});
+
+			it("can chain with native redirects", function() {
+				njs.add({}, "about");
+				njs.add(responder, "home");
+				njs.registerRedirect("contact", "about");
+				njs.start("/");
+				njs.request("home");
+				expect(njs.getCurrentState().getPath()).toEqual('/about/');
+			});
 		});
 
 		describe("swapping", function() {
