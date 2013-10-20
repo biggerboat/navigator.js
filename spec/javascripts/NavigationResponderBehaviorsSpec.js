@@ -561,6 +561,53 @@ describe("Navigator responder behavior/interface validation", function() {
 				});
 
 				describe("IHasStateValidationOptional", function() {
+					beforeEach(function() {
+						Responder = function() {};
+						Responder.prototype = {
+							navigatorBehaviors: ["IHasStateValidationOptional"],
+
+							willValidateCount:0,
+							validateCount:0,
+
+							willValidate: function(truncatedState, fullState) {
+								this.willValidateCount++;
+								return true;
+							},
+
+							validate: function(truncatedState, fullState) {
+								this.validateCount++;
+								return true;
+							}
+						};
+
+						responder = new Responder();
+
+						njs.add({}, "/");
+					});
+
+					it("requests the responder if we should execute validation for this state", function() {
+						njs.add(responder, "validation");
+						njs.start("/");
+						expect(responder.willValidateCount).toEqual(0);
+						njs.request("validation");
+						expect(responder.willValidateCount).toEqual(1);
+					});
+
+					it("does not execute the validate method if the responder returns that we don't need to run custom validation", function() {
+						responder.willValidate = function() { return false; };
+						njs.add(responder, "validation");
+						njs.start("/");
+						njs.request("validation");
+						expect(responder.validateCount).toEqual(0);
+					});
+
+					it("allows us to visit a state when the willValidate method returns false, as long as there is a responder bound to the given state", function() {
+						responder.willValidate = function() { return false; };
+						njs.add(responder, "validation");
+						njs.start("/");
+						njs.request("validation");
+						expect(njs.getCurrentState().getPath()).toEqual("/validation/");
+					});
 
 				});
 			});
