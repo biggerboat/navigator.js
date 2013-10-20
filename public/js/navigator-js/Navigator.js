@@ -138,6 +138,25 @@ this.navigatorjs = this.navigatorjs || {};
 		return false;
 	};
 
+	var _hasRegisteredResponder = function(state) {
+		var i, length = _responders.all.length,
+			responders, path;
+		
+		console.log('_hasRegisteredResponder -> _hasRegisteredResponder', _responders);
+		
+		for(i=0; i<length; i++) {
+			responders = _responders.all[i];
+			for(path in responders) {
+				console.log('_hasRegisteredResponder -> _hasRegisteredResponder', path);
+				if(state.equals(path)) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	};
+
 	var _request = function(pathOrState) {
 		if (pathOrState == null) {
 			// logger.error("Requested a null state. Aborting request.");
@@ -187,36 +206,48 @@ this.navigatorjs = this.navigatorjs || {};
 		if (!_defaultState) { throw new Error("No default state set. Call start() before the first request!"); }
 		// Request cascade starts here.
 		//
+		console.groupEnd();
+		console.group('_performRequestCascade', requestedState.getPath(), startAsyncValidation);
 		if (requestedState.getPath() == _defaultState.getPath() && !_defaultState.hasWildcard()) {
+			console.log('exact match');
 			// Exact match on default state bypasses validation.
 			_grantRequest(_defaultState);
 		} else if (_asyncValidationOccurred && (_asyncValidated && !_asyncInvalidated)) {
+			console.log('Async operation completed');
 			// Async operation completed
 			_grantRequest(requestedState);
 		} else if (_validate(requestedState, true, startAsyncValidation)) {
+			console.log('Any other state needs to be validated.');
 			// Any other state needs to be validated.
 			_grantRequest(requestedState);
 		} else if (_validatingAsynchResponders && _validatingAsynchResponders.isBusy()) {
+			console.log('Waiting for async validation.');
 			// Waiting for async validation.
 			// FIXME: What do we do in the mean time, dispatch an event or sth?
 			//logger.notice("waiting for async validation to complete");
 		} else if (startAsyncValidation && _asyncValidationOccurred) {
+			console.log('any async prepration happened instantaneuously');
 			// any async prepration happened instantaneuously
 		} else if (_inlineRedirectionState) {
+			console.log('_inlineRedirectionState');
 			_request(_inlineRedirectionState);
 		} else if (_currentState) {
+			console.log('_inlineRedirectionState');
 			// If validation fails, the notifyStateChange() is called with the current state as a parameter,
 			// mainly for subclasses to respond to the blocked navigation (e.g. SWFAddress).
 			_notifyStateChange(_currentState);
 		} else if (requestedState.hasWildcard()) {
+			console.log('wildcard error');
 			// If we get here, after validateWithWildcards has failed, this means there are still
 			// wildcards in the requested state that didn't match the previous state. This,
 			// unfortunately means your application has a logic error. Go fix it!
 			throw new Error("Check wildcard masking: " + requestedState.getPath());
 		} else if (_defaultState) {
+			console.log('everything failed, use default state');
 			// If all else fails, we'll put up the default state.
 			_grantRequest(_defaultState);
 		} else {
+			console.log('everything failed without default state');
 			// If you don't provide a default state, at least make sure your first request makes sense!
 			throw new Error("First request is invalid: " + requestedState.getPath());
 		}
@@ -613,11 +644,13 @@ this.navigatorjs = this.navigatorjs || {};
 
 		// check to see if there are still wildcards left
 		if (unvalidatedState.hasWildcard()) {
+			console.log("validate - validateState: Requested states may not contain wildcards", "return false");
 			// throw new Error("validateState: Requested states may not contain wildcards " + NavigationState.WILDCARD);
 			return false;
 		}
 
 		if (unvalidatedState.equals(_defaultState)) {
+			console.log("validate - unvalidatedState.equals(_defaultState)", unvalidatedState.getPath(), _defaultState.getPath() , "return false");
 			return true;
 		}
 
@@ -632,8 +665,9 @@ this.navigatorjs = this.navigatorjs || {};
 		}
 
 		implicit = _validateImplicitly(unvalidatedState);
-
+		console.groupCollapsed('Responders');
 		for (path in _responders.validateByPath) {
+			console.log(path);
 			// create a state object for comparison:
 			state = new navigatorjs.NavigationState(path);
 
@@ -671,6 +705,8 @@ this.navigatorjs = this.navigatorjs || {};
 						// if (_asyncValidationOccurred && (_asyncValidated || _asyncInvalidated) {
 						// async validation was instantaneous, which means that the validation was approved or denied elsewhere
 						// in the stack. this method should return false any which way.
+						console.log("validate - _asyncValidationOccurred","return false");
+						console.groupEnd();
 						return false;
 					}
 				}
@@ -689,7 +725,7 @@ this.navigatorjs = this.navigatorjs || {};
 						continue;
 					}
 
-					if (responder.validate(remainderState, unvalidatedState)) {
+					if (responder.validate(remainderState, unvalidatedState) && _hasRegisteredResponder(unvalidatedState)) {
 						validated = true;
 					} else {
 						//logger.warn("Invalidated by validator: " + responder);
@@ -702,24 +738,31 @@ this.navigatorjs = this.navigatorjs || {};
 				}
 			}
 		}
+		console.groupEnd();
 
 		if (_validatingAsynchResponders.isBusy()) {
+			console.log("validate - _validatingAsynchResponders.isBusy", "return false");
 			// the request cascade will double check the asynch validators and act accordingly.
 			return false;
 		}
 
 		// invalidation overrules any validation
 		if (invalidated || _asyncInvalidated) {
+			console.log("validate - invalidated || _asyncInvalidated", invalidated,  _asyncInvalidated, "return false");
 			return false;
 		}
 
 		if (validated || _asyncValidated) {
+			console.log("validate - validated || _asyncValidated", validated, _asyncValidated, "return true");
 			return true;
 		}
 
 		if (!implicit) {
+			console.log("validate - Validation failed. No validators or transitions matched the requested ", unvalidatedState);
 			//logger.warn("Validation failed. No validators or transitions matched the requested " + unvalidatedState);
 		}
+
+		console.log("validate - return with the implicit return value", implicit);
 
 		return implicit;
 	};

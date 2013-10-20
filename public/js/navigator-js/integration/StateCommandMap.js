@@ -8,7 +8,7 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 		this._commandsByState = {};
 		this._verifiedCommandClasses = {};
 
-		this._navigator.add(this, "");
+		//this._navigator.add(this, "");
 
 		this.initialize();
 	};
@@ -31,6 +31,7 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 				commands = this._commandsByState[state.getPath()] || [];
 
 			this._commandsByState[state.getPath()] = commands;
+			this._navigator.add(this, state);
 
 			if (this._hasCommand(commands, CommandClass)) {
 				throw new Error("Already mapped " + CommandClass + " to state " + state.getPath());
@@ -47,7 +48,7 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 				commands = this._commandsByState[state.getPath()] || [],
 				i, wrapper;
 			this._commandsByState[state.getPath()] = commands;
-
+			this._navigator.remove(this, state);
 			for (i = commands.length; --i >= 0;) {
 				wrapper = commands[i];
 				if (wrapper.CommandClass == CommandClass) {
