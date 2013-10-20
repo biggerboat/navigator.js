@@ -547,9 +547,9 @@ describe("Navigator responder behavior/interface validation", function() {
 					});
 
 					it("doesn't validate the child state if the parent state did not validate", function() {
-						responder.validate = function() {return false;};
+						responder.validate = function() {this.validateCount++; return false;};
 
-						var childResponder = new Responder();
+						var childResponder = new Responder("child");
 						njs.add(responder, "validation");
 						njs.add(childResponder, "validation/test");
 						njs.start("/");
