@@ -699,7 +699,7 @@ this.navigatorjs = this.navigatorjs || {};
 
 				_initializeIfNeccessary(validateByPathList);
 
-				if (allowAsyncValidation && _hasRegisteredResponder(stateToValidate, "IHasStateValidationAsync")) {
+				if (allowAsyncValidation && _hasRegisteredResponder(stateToValidate)) {
 					// check for async validators first. If this does not
 					for (i = 0; i < validateByPathList.length; i++) {
 						responder = validateByPathList[i];
@@ -710,13 +710,13 @@ this.navigatorjs = this.navigatorjs || {};
 						}
 
 						if (navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, "IHasStateValidationAsync")) {
-							_asyncValidationOccurred = true;
 							_validatingAsynchResponders.addResponder(responder);
 							console.log("Preparing validation (total of " + _validatingAsynchResponders.getLength() + ")");
 							//logger.notice("Preparing validation (total of " + _validatingAsynchResponders.length + ")");
 
 							//use namespace validation;
 							responder.prepareValidation(remainderState, unvalidatedState, new navigatorjs.transition.ValidationPreparedDelegate(responder, remainderState, unvalidatedState, this, _validation).call);
+							_asyncValidationOccurred = true;
 						}
 					}
 
