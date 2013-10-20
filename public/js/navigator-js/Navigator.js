@@ -142,12 +142,9 @@ this.navigatorjs = this.navigatorjs || {};
 		var i, length = _responders.all.length,
 			responders, path;
 		
-		console.log('_hasRegisteredResponder -> _hasRegisteredResponder', _responders);
-		
 		for(i=0; i<length; i++) {
 			responders = _responders.all[i];
 			for(path in responders) {
-				console.log('_hasRegisteredResponder -> _hasRegisteredResponder', path);
 				if(state.equals(path)) {
 					return true;
 				}
