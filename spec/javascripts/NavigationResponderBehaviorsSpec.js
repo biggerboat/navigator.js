@@ -558,6 +558,21 @@ describe("Navigator responder behavior/interface validation", function() {
 						expect(responder.validateCount).toEqual(1);
 						expect(childResponder.validateCount).toEqual(0);
 					});
+
+					it("Mapping a validating child state before a invalidating parent state will validate the state", function() {
+						//TODO this is probably an issue. Should we order the states we loop through internally?
+
+						responder.validate = function() {this.validateCount++; return false;};
+
+						var childResponder = new Responder("child");
+						njs.add(childResponder, "validation/test");
+						njs.add(responder, "validation");
+						njs.start("/");
+						njs.request("validation/test");
+
+						expect(responder.validateCount).toEqual(1);
+						expect(childResponder.validateCount).toEqual(1);
+					});
 				});
 
 				describe("IHasStateValidationOptional", function() {

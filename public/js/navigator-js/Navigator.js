@@ -663,6 +663,8 @@ this.navigatorjs = this.navigatorjs || {};
 
 		implicit = _validateImplicitly(unvalidatedState);
 		console.groupCollapsed('Responders');
+
+		//TODO should we order the states? As mapping a validating child state before a invalidating parent state will validate the state
 		for (path in _responders.validateByPath) {
 			console.log(path);
 			// create a state object for comparison:
@@ -721,7 +723,7 @@ this.navigatorjs = this.navigatorjs || {};
 					if (navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, "IHasStateValidationOptional") && !responder.willValidate(remainderState, unvalidatedState)) {
 						continue;
 					}
-
+					
 					if (responder.validate(remainderState, unvalidatedState) && _hasRegisteredResponder(unvalidatedState)) {
 						validated = true;
 					} else {
@@ -731,6 +733,10 @@ this.navigatorjs = this.navigatorjs || {};
 						if (allowRedirection && navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, "IHasStateRedirection")) {
 							_inlineRedirectionState = responder.redirect(remainderState, unvalidatedState);
 						}
+
+						console.log("validate - a responder was mapped to the given state, but it did not validate");
+						console.groupEnd();
+						return false;
 					}
 				}
 			}
