@@ -115,7 +115,7 @@ describe("Navigator responder behavior/interface validation", function() {
 				navigatorBehaviors: ["IHasStateInitialization", "IHasStateValidation", "IHasStateValidationAsync", "IHasStateValidationOptional", "IHasStateValidationOptionalAsync", "IHasStateRedirection", "IHasStateSwap", "IHasStateTransition", "IHasStateUpdate"],
 
 				initializeByNavigator: function() {}, //IHasStateInitialization
-				validate: function(truncatedState, fullState) {}, //IHasStateValidation, IHasStateValidationAsync, IHasStateValidationOptional, IHasStateValidationOptionalAsync, IHasStateRedirection
+				validate: function(truncatedState, fullState) {/*return bool*/}, //IHasStateValidation, IHasStateValidationAsync, IHasStateValidationOptional, IHasStateValidationOptionalAsync, IHasStateRedirection
 				prepareValidation: function(truncatedState, fullState, callOnPrepared) {}, //IHasStateValidationAsync, IHasStateValidationOptionalAsync
 				willValidate: function(truncatedState, fullState) {/*return bool*/}, //IHasStateValidationOptional, IHasStateValidationOptionalAsync
 				redirect: function(truncatedState, fullState) {/*return NavigationState*/}, //IHasStateRedirection
@@ -470,6 +470,109 @@ describe("Navigator responder behavior/interface validation", function() {
 
 			describe("synchronous", function() {
 
+				describe("IHasStateValidation", function() {
+					beforeEach(function() {
+						Responder = function() {};
+						Responder.prototype = {
+							navigatorBehaviors: ["IHasStateValidation"],
+
+							validateCount:0,
+
+							validate: function(truncatedState, fullState) {
+								this.validateCount++;
+								return true;
+							}
+						};
+
+						responder = new Responder();
+
+						njs.add({}, "/");
+					});
+
+					it("requests the responder if the state we want to visit is valid", function() {
+						njs.add(responder, "validation");
+						njs.start("/");
+						expect(responder.validateCount).toEqual(0);
+						njs.request("validation");
+						expect(responder.validateCount).toEqual(1);
+					});
+
+					it("updates to the requested state when the state is validated", function() {
+						njs.add(responder, "validation");
+						njs.start("/");
+						njs.request("validation");
+						expect(njs.getCurrentState().getPath()).toEqual("/validation/");
+					});
+
+					it("doesn't change to the requested state when the state did not validate", function() {
+						responder.validate = function() {return false;};
+						njs.add(responder, "validation");
+						njs.start("/");
+						njs.request("validation");
+						expect(njs.getCurrentState().getPath()).toEqual("/");
+					});
+
+					it("doesn't call the validate method when we visit a different state", function() {
+						njs.add(responder, "validation");
+						njs.add({}, "test");
+						njs.start("/");
+						njs.request("validation");
+						expect(responder.validateCount).toEqual(1);
+						njs.request("test");
+						expect(responder.validateCount).toEqual(1);
+					});
+
+					it("doesn't allow to visit child states when there is no mapping. Even though the responder says it is a valid state", function() {
+						njs.add(responder, "validation");
+						njs.start("/");
+						njs.request("validation/test");
+						expect(njs.getCurrentState().getPath()).toEqual("/");
+					});
+
+					it("does allow to visit child states when is a mapping", function() {
+						njs.add(responder, "validation");
+						njs.add({}, "validation/test");
+						njs.start("/");
+						njs.request("validation/test");
+						expect(njs.getCurrentState().getPath()).toEqual("/validation/test/");
+					});
+
+					it("doesn't allow to visit child states when the state did not validate", function() {
+						responder.validate = function() {return false;};
+						njs.add(responder, "validation");
+						njs.add({}, "validation/test");
+						njs.start("/");
+						njs.request("validation/test");
+						expect(njs.getCurrentState().getPath()).toEqual("/");
+					});
+
+					it("first validates both the parent and child states", function() {
+						var childResponder = new Responder();
+						njs.add(responder, "validation");
+						njs.add(childResponder, "validation/test");
+						njs.start("/");
+						njs.request("validation/test");
+						expect(responder.validateCount).toEqual(1);
+						expect(childResponder.validateCount).toEqual(1);
+					});
+
+					it("doesn't validate the child state if the parent state did not validate", function() {
+						responder.validate = function() {return false;};
+
+						var childResponder = new Responder();
+						njs.add(responder, "validation");
+						njs.add(childResponder, "validation/test");
+						njs.start("/");
+						njs.request("validation/test");
+
+						expect(responder.validateCount).toEqual(1);
+						expect(childResponder.validateCount).toEqual(0);
+					});
+				});
+
+				describe("IHasStateValidationOptional", function() {
+
+				});
 			});
 
 			describe("asynchronous", function() {
