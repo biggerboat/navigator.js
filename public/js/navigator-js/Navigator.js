@@ -138,14 +138,35 @@ this.navigatorjs = this.navigatorjs || {};
 		return false;
 	};
 
-	var _hasRegisteredResponder = function(state) {
+	/**
+	 * Check if there is a responder registered for a given state. Optionally check for implementation of a given
+	 * interface. This allows you to check if there was something mapped to a state which implements
+	 * "IHasStateValidationAsync" for example.
+	 */
+	var _hasRegisteredResponder = function(state, optionalInterface) {
 		var i, length = _responders.all.length,
-			responders, path;
+			j, respondersLength, responder,
+			responders, respondersForPath, path;
 		
 		for(i=0; i<length; i++) {
 			responders = _responders.all[i];
 			for(path in responders) {
 				if(state.equals(path)) {
+
+					if(optionalInterface) {
+						//Loop through all responders and check if it implements the given interface
+						respondersForPath = responders[path];
+						respondersLength = respondersForPath.length;
+						for(j=0; j<respondersLength; j++) {
+							responder = respondersForPath[j];
+							if(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, optionalInterface)) {
+								return true;
+							}
+						}
+					} else {
+						return true;
+					}
+
 					return true;
 				}
 			}
@@ -678,7 +699,7 @@ this.navigatorjs = this.navigatorjs || {};
 
 				_initializeIfNeccessary(validateByPathList);
 
-				if (allowAsyncValidation) {
+				if (allowAsyncValidation && _hasRegisteredResponder(stateToValidate, "IHasStateValidationAsync")) {
 					// check for async validators first. If this does not
 					for (i = 0; i < validateByPathList.length; i++) {
 						responder = validateByPathList[i];
@@ -691,6 +712,7 @@ this.navigatorjs = this.navigatorjs || {};
 						if (navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, "IHasStateValidationAsync")) {
 							_asyncValidationOccurred = true;
 							_validatingAsynchResponders.addResponder(responder);
+							console.log("Preparing validation (total of " + _validatingAsynchResponders.getLength() + ")");
 							//logger.notice("Preparing validation (total of " + _validatingAsynchResponders.length + ")");
 
 							//use namespace validation;
@@ -699,7 +721,7 @@ this.navigatorjs = this.navigatorjs || {};
 					}
 
 					if (_asyncValidationOccurred) {
-						//						//  If there are active async validators, stop the validation chain and wait for the prepration to finish.
+						// If there are active async validators, stop the validation chain and wait for the prepration to finish.
 						// if (_validating.isBusy()) return false;
 						// if (_asyncValidationOccurred && (_asyncValidated || _asyncInvalidated) {
 						// async validation was instantaneous, which means that the validation was approved or denied elsewhere
