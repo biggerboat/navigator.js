@@ -684,7 +684,7 @@ this.navigatorjs = this.navigatorjs || {};
 						responder = validateByPathList[i];
 
 						// check for optional validation
-						if (navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, "IHasStateValidationOptional") && !responder.willValidate(remainderState, unvalidatedState)) {
+						if (navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, "IHasStateValidationOptionalAsync") && !responder.willValidate(remainderState, unvalidatedState)) {
 							continue;
 						}
 
