@@ -585,7 +585,7 @@ describe("Navigator responder behavior/interface validation", function() {
 						njs.add({}, "/");
 					});
 
-					it("requests the responder if we should execute validation for this state", function() {
+					it("calls willValidate on the responder to request if we should execute validation for this state", function() {
 						njs.add(responder, "validation");
 						njs.start("/");
 						expect(responder.willValidateCount).toEqual(0);
@@ -614,90 +614,233 @@ describe("Navigator responder behavior/interface validation", function() {
 
 			describe("asynchronous", function() {
 
-				var Responder1, Responder2,
-					responder1ValidateCalls,
-					responder2ValidateCalls;
+				describe("IHasStateValidationAsync", function() {
+					beforeEach(function() {
+						Responder = function() {};
+						Responder.prototype = {
+							navigatorBehaviors: ["IHasStateValidationAsync"],
 
-				beforeEach(function() {
-					responder1ValidateCalls = responder2ValidateCalls = 0;
+							prepareValidationCount:0,
+							callOnPrepared: null,
+							validateCount:0,
 
-					Responder1 = function() {};
-					Responder1.prototype = {
-						navigatorBehaviors: ["IHasStateValidationOptionalAsync"],
-						willValidate: function(truncatedState, fullState) {
-							return true;
-						},
+							prepareValidation: function(truncatedState, fullState, callOnPrepared) {
+								this.callOnPrepared = callOnPrepared;
+								this.prepareValidationCount++;
+							},
 
-						prepareValidation: function(truncatedState, fullState, callOnPrepared) {
-							callOnPrepared();
-						},
+							validate: function(truncatedState, fullState) {
+								this.validateCount++;
+								return true;
+							}
 
-						validate: function(truncatedState, fullState) {
-							responder1ValidateCalls++;
-							return true;
-						}
-					};
+						};
 
-					Responder2 = function() {};
-					Responder2.prototype = {
-						navigatorBehaviors: ["IHasStateValidationOptionalAsync"],
-						willValidate: function(truncatedState, fullState) {
-							return true;
-						},
+						responder = new Responder();
 
-						prepareValidation: function(truncatedState, fullState, callOnPrepared) {
-							callOnPrepared();
-						},
+						njs.add({}, "/");
+					});
 
-						validate: function(truncatedState, fullState) {
-							responder2ValidateCalls++;
-							return true;
-						}
-					};
+					it("doesn't call the validate method until the prepareValidation callback has been called", function() {
+						njs.add(responder, "validation");
+						njs.start("/");
+						njs.request("validation");
+						expect(responder.prepareValidationCount).toEqual(1);
+						expect(responder.validateCount).toEqual(0);
+						responder.callOnPrepared();
+						expect(responder.validateCount).toEqual(1);
+					});
 
-					njs.add(new Responder1(), "/*/");
-//				njs.add({}, "/*/");
-					njs.add(new Responder2(), "/*/test/*/");
-					njs.start("/");
+					it("doesn't update the currentState until the state validation is prepared", function() {
+						njs.add(responder, "validation");
+						njs.start("/");
+						njs.request("validation");
+						expect(njs.getCurrentState().getPath()).toEqual("/");
+						responder.callOnPrepared();
+						expect(njs.getCurrentState().getPath()).toEqual("/validation/");
+					});
+
+					it("can navigate away while the validation is still running and skips validation once the validation is prepared", function() {
+						njs.add(responder, "validation");
+						njs.add({}, "test");
+						njs.start("/");
+						njs.request("validation");
+						expect(njs.getCurrentState().getPath()).toEqual("/");
+						njs.request("test");
+						expect(njs.getCurrentState().getPath()).toEqual("/test/");
+						responder.callOnPrepared();
+						expect(njs.getCurrentState().getPath()).toEqual("/test/");
+						expect(responder.validateCount).toEqual(0);
+					});
+
+					it("won't validate substates of the responder's state when there is no mapping", function() {
+						njs.add(responder, "validation");
+						njs.start("/");
+						njs.request("validation/test");
+						expect(responder.prepareValidationCount).toEqual(0);
+						expect(njs.getCurrentState().getPath()).toEqual("/");
+					});
+
+					it("will validate substates of the responder's state when there is a mapping", function() {
+						njs.add(responder, "validation");
+						njs.add({}, "validation/test");
+						njs.start("/");
+						njs.request("validation/test");
+
+						expect(responder.prepareValidationCount).toEqual(1);
+						expect(njs.getCurrentState().getPath()).toEqual("/");
+
+						responder.callOnPrepared();
+
+						expect(njs.getCurrentState().getPath()).toEqual("/validation/test/");
+					});
+
+					it("stacks validation calls of substates that has to be validated", function() {
+						var childValidateResponder = new Responder();
+						njs.add(responder, "validation");
+						njs.add(childValidateResponder, "validation/test");
+						njs.start("/");
+						njs.request("validation/test");
+
+						expect(responder.prepareValidationCount).toEqual(1);
+						expect(childValidateResponder.prepareValidationCount).toEqual(0);
+
+						responder.callOnPrepared();
+
+						expect(responder.validateCount).toEqual(1);
+						expect(childValidateResponder.prepareValidationCount).toEqual(1);
+						expect(childValidateResponder.validateCount).toEqual(0);
+
+						childValidateResponder.callOnPrepared();
+					});
+
+					it("allows to navigate when the child responder's validate method returns true", function() {
+						var childValidateResponder = new Responder();
+						njs.add(responder, "validation");
+						njs.add(childValidateResponder, "validation/test");
+						njs.start("/");
+						njs.request("validation/test");
+
+						responder.callOnPrepared();
+						childValidateResponder.callOnPrepared();
+
+						expect(njs.getCurrentState().getPath()).toEqual("/validation/test/");
+					});
+
+					it("Doesn't allow to navigate when the child responder's validate method returns false", function() {
+						var childValidateResponder = new Responder();
+						childValidateResponder.validate = function() { return false; };
+						njs.add(responder, "validation");
+						njs.add(childValidateResponder, "validation/test");
+						njs.start("/");
+						njs.request("validation/test");
+
+						responder.callOnPrepared();
+						childValidateResponder.callOnPrepared();
+
+						expect(njs.getCurrentState().getPath()).toEqual("/");
+					});
+
+					it("doesn't try to validate a childState when the parent responder already invalidated the state", function() {
+						responder.validate = function() { return false; };
+
+						var childValidateResponder = new Responder();
+						njs.add(responder, "validation");
+						njs.add(childValidateResponder, "validation/test");
+						njs.start("/");
+						njs.request("validation/test");
+
+						responder.callOnPrepared();
+
+						expect(childValidateResponder.prepareValidationCount).toEqual(0);
+						expect(njs.getCurrentState().getPath()).toEqual("/");
+					});
 				});
 
-				it("allows us to visit the /hello/ state", function() {
-					njs.request("hello");
-
-					expect(njs.getCurrentState().getPath()).toEqual("/hello/");
-				});
-
-				it("doesn't allow us to visit the /hello/world/ state", function() {
-					njs.request("hello/world");
-
-					expect(njs.getCurrentState().getPath()).toEqual("/");
-				});
-
-				it("allows us to visit the /hello/test/world/ state", function() {
-					njs.request("hello/test/world");
-
-					expect(njs.getCurrentState().getPath()).toEqual("/hello/test/world/");
-				});
-
-				it("doesn't allow us to visit the /hello/test/world/and/space/ state", function() {
-					njs.request("hello/test/world/and/space");
-
-					expect(njs.getCurrentState().getPath()).toEqual("/");
-				});
-
-				it("validates the any of the first segment changes with Responder1", function() {
-					njs.request("hello");
-
-					expect(responder1ValidateCalls).toEqual(1);
-					expect(responder2ValidateCalls).toEqual(0);
-				});
-
-				it("first validates responder 1 and on success responder 2", function() {
-					njs.request("hello/test/world");
-
-					expect(responder1ValidateCalls).toEqual(1);
-					expect(responder2ValidateCalls).toEqual(1);
-				});
+//				var Responder1, Responder2,
+//					responder1ValidateCalls,
+//					responder2ValidateCalls;
+//
+//				beforeEach(function() {
+//					responder1ValidateCalls = responder2ValidateCalls = 0;
+//
+//					Responder1 = function() {};
+//					Responder1.prototype = {
+//						navigatorBehaviors: ["IHasStateValidationOptionalAsync"],
+//						willValidate: function(truncatedState, fullState) {
+//							return true;
+//						},
+//
+//						prepareValidation: function(truncatedState, fullState, callOnPrepared) {
+//							callOnPrepared();
+//						},
+//
+//						validate: function(truncatedState, fullState) {
+//							responder1ValidateCalls++;
+//							return true;
+//						}
+//					};
+//
+//					Responder2 = function() {};
+//					Responder2.prototype = {
+//						navigatorBehaviors: ["IHasStateValidationOptionalAsync"],
+//						willValidate: function(truncatedState, fullState) {
+//							return true;
+//						},
+//
+//						prepareValidation: function(truncatedState, fullState, callOnPrepared) {
+//							callOnPrepared();
+//						},
+//
+//						validate: function(truncatedState, fullState) {
+//							responder2ValidateCalls++;
+//							return true;
+//						}
+//					};
+//
+//					njs.add(new Responder1(), "/*/");
+////				njs.add({}, "/*/");
+//					njs.add(new Responder2(), "/*/test/*/");
+//					njs.start("/");
+//				});
+//
+//				it("allows us to visit the /hello/ state", function() {
+//					njs.request("hello");
+//
+//					expect(njs.getCurrentState().getPath()).toEqual("/hello/");
+//				});
+//
+//				it("doesn't allow us to visit the /hello/world/ state", function() {
+//					njs.request("hello/world");
+//
+//					expect(njs.getCurrentState().getPath()).toEqual("/");
+//				});
+//
+//				it("allows us to visit the /hello/test/world/ state", function() {
+//					njs.request("hello/test/world");
+//
+//					expect(njs.getCurrentState().getPath()).toEqual("/hello/test/world/");
+//				});
+//
+//				it("doesn't allow us to visit the /hello/test/world/and/space/ state", function() {
+//					njs.request("hello/test/world/and/space");
+//
+//					expect(njs.getCurrentState().getPath()).toEqual("/");
+//				});
+//
+//				it("validates the any of the first segment changes with Responder1", function() {
+//					njs.request("hello");
+//
+//					expect(responder1ValidateCalls).toEqual(1);
+//					expect(responder2ValidateCalls).toEqual(0);
+//				});
+//
+//				it("first validates responder 1 and on success responder 2", function() {
+//					njs.request("hello/test/world");
+//
+//					expect(responder1ValidateCalls).toEqual(1);
+//					expect(responder2ValidateCalls).toEqual(1);
+//				});
 
 			})
 		});
