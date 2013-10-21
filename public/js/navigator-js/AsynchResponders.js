@@ -41,7 +41,7 @@ this.navigatorjs = this.navigatorjs || {};
 
 		reset: function() {
 			if (this._responders.length > 0) {
-				//logger.warn("Resetting too early? Still have responders marked for asynchronous tasks");
+				console.warn("Resetting too early? Still have responders marked for asynchronous tasks");
 			}
 
 			this._responders = [];

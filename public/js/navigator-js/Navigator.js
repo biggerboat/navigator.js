@@ -22,6 +22,7 @@ this.navigatorjs = this.navigatorjs || {};
 	var _appearingAsynchResponders = null;
 	var _swappingAsynchResponders = null;
 	var _validatingAsynchResponders = null;
+	var _preparedValidatingAsynchRespondersStack = null;
 	var _inlineRedirectionState = null;
 	//
 	var _asyncInvalidated = false;
@@ -633,10 +634,14 @@ this.navigatorjs = this.navigatorjs || {};
 					_inlineRedirectionState = validatorResponder.redirect(truncatedState, fullState);
 				}
 			}
-
-			if (!_validatingAsynchResponders.isBusy()) {
+			console.log('_asyncValidated',_asyncValidated, _asyncInvalidated);
+			if (_asyncInvalidated || !_validatingAsynchResponders.isBusy()) {
+				_validatingAsynchResponders.reset();
+				_preparedValidatingAsynchRespondersStack = [];
 				_performRequestCascade(fullState, false);
 			} else {
+				_validateFirstValidatingAsynchResponderFromStack();
+				console.log("Waiting for " + _validatingAsynchResponders.getLength() + " validators to prepare");
 				//logger.notice("Waiting for " + _validatingAsynchResponders.length + " validators to prepare");
 			}
 		} else {
@@ -645,10 +650,23 @@ this.navigatorjs = this.navigatorjs || {};
 	};
 	// VALIDATION NAMESPACE END
 
+	var _validateFirstValidatingAsynchResponderFromStack = function() {
+		if(_preparedValidatingAsynchRespondersStack.length == 0) {
+			return false;
+		}
+
+		var preparedResponder = _preparedValidatingAsynchRespondersStack.shift();
+		preparedResponder.responder.prepareValidation(preparedResponder.remainderState, preparedResponder.unvalidatedState, preparedResponder.callOnPrepared);
+
+		return true;
+	};
+
+
 	var _validate = function(stateToValidate, allowRedirection, allowAsyncValidation) {
 		var allowRedirection = allowRedirection == undefined ? true : allowRedirection,
 			allowAsyncValidation = allowAsyncValidation == undefined ? true : allowAsyncValidation,
 			unvalidatedState = stateToValidate,
+			callOnPrepared = null,
 			implicit,
 			invalidated = false,
 			validated = false,
@@ -680,6 +698,7 @@ this.navigatorjs = this.navigatorjs || {};
 
 			// reset asynchronous validation for every new state.
 			_validatingAsynchResponders = new navigatorjs.AsynchResponders();
+			_preparedValidatingAsynchRespondersStack = [];
 		}
 
 		implicit = _validateImplicitly(unvalidatedState);
@@ -710,25 +729,14 @@ this.navigatorjs = this.navigatorjs || {};
 						}
 
 						if (navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, "IHasStateValidationAsync")) {
-							_validatingAsynchResponders.addResponder(responder);
-							console.log("Preparing validation (total of " + _validatingAsynchResponders.getLength() + ")");
-							//logger.notice("Preparing validation (total of " + _validatingAsynchResponders.length + ")");
-
-							//use namespace validation;
-							responder.prepareValidation(remainderState, unvalidatedState, new navigatorjs.transition.ValidationPreparedDelegate(responder, remainderState, unvalidatedState, this, _validation).call);
 							_asyncValidationOccurred = true;
-						}
-					}
 
-					if (_asyncValidationOccurred) {
-						// If there are active async validators, stop the validation chain and wait for the prepration to finish.
-						// if (_validating.isBusy()) return false;
-						// if (_asyncValidationOccurred && (_asyncValidated || _asyncInvalidated) {
-						// async validation was instantaneous, which means that the validation was approved or denied elsewhere
-						// in the stack. this method should return false any which way.
-						console.log("validate - _asyncValidationOccurred","return false");
-						console.groupEnd();
-						return false;
+							callOnPrepared = new navigatorjs.transition.ValidationPreparedDelegate(responder, remainderState, unvalidatedState, this, _validation).call;
+							_validatingAsynchResponders.addResponder(responder);
+							_preparedValidatingAsynchRespondersStack.push({responder: responder, remainderState: remainderState, unvalidatedState: unvalidatedState, callOnPrepared: callOnPrepared});
+
+							console.log("Preparing validation (total of " + _validatingAsynchResponders.getLength() + ")");
+						}
 					}
 				}
 
@@ -763,6 +771,18 @@ this.navigatorjs = this.navigatorjs || {};
 				}
 			}
 		}
+
+		if (_asyncValidationOccurred && _validateFirstValidatingAsynchResponderFromStack()) {
+			// If there are active async validators, stop the validation chain and wait for the prepration to finish.
+			// if (_validating.isBusy()) return false;
+			// if (_asyncValidationOccurred && (_asyncValidated || _asyncInvalidated) {
+			// async validation was instantaneous, which means that the validation was approved or denied elsewhere
+			// in the stack. this method should return false any which way.
+			console.log("validate - _asyncValidationOccurred","return false");
+			console.groupEnd();
+			return false;
+		}
+
 		console.groupEnd();
 
 		if (_validatingAsynchResponders.isBusy()) {
