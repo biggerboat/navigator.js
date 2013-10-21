@@ -22,6 +22,7 @@ this.navigatorjs = this.navigatorjs || {};
 	var _appearingAsynchResponders = null;
 	var _swappingAsynchResponders = null;
 	var _validatingAsynchResponders = null;
+	var _preparedValidatingAsynchRespondersStack = null;
 	var _inlineRedirectionState = null;
 	//
 	var _asyncInvalidated = false;
@@ -138,40 +139,134 @@ this.navigatorjs = this.navigatorjs || {};
 		return false;
 	};
 
+	/**
+	 * Check if there is a responder registered for a given state. Optionally check for implementation of a given
+	 * interface. This allows you to check if there was something mapped to a state which implements
+	 * "IHasStateValidationAsync" for example.
+	 */
+	var _hasRegisteredResponder = function(state, optionalInterface) {
+		var i, length = _responders.all.length,
+			j, respondersLength, responder,
+			responders, respondersForPath, path;
+		
+		for(i=0; i<length; i++) {
+			responders = _responders.all[i];
+			for(path in responders) {
+				if(state.equals(path)) {
+
+					if(optionalInterface) {
+						//Loop through all responders and check if it implements the given interface
+						respondersForPath = responders[path];
+						respondersLength = respondersForPath.length;
+						for(j=0; j<respondersLength; j++) {
+							responder = respondersForPath[j];
+							if(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, optionalInterface)) {
+								return true;
+							}
+						}
+					} else {
+						return true;
+					}
+
+					return true;
+				}
+			}
+		}
+
+		return false;
+	};
+
+	var _request = function(pathOrState) {
+		if (pathOrState == null) {
+			// logger.error("Requested a null state. Aborting request.");
+			return;
+		}
+
+		var requestedState,
+			path,
+			fromState,
+			toState;
+
+		// Store and possibly mask the requested state
+		requestedState = navigatorjs.NavigationState.make(pathOrState);
+		if (requestedState.hasWildcard()) {
+			requestedState = requestedState.mask(_currentState || _defaultState);
+		}
+
+		// Check for exact match of the requested and the current state
+		if (_currentState && _currentState.getPath() == requestedState.getPath()) {
+			//logger.info("Already at the requested state: " + requested);
+			return;
+		}
+
+		if (_redirects) {
+			for (path in _redirects) {
+				fromState = new navigatorjs.NavigationState(path);
+				if (fromState.equals(requestedState)) {
+					toState = navigatorjs.NavigationState.make(_redirects[path]);
+					//logger.info("Redirecting " + from + " to " + to);
+					_request(toState);
+					return;
+				}
+			}
+		}
+
+		// this event makes it possible to add responders just in time to participate in the validation process.
+		_$eventDispatcher.trigger(navigatorjs.NavigatorEvent.STATE_REQUESTED, {state: requestedState});
+
+		// Inline redirection is reset with every request call.
+		// It can be changed by a responder implementing the IHasStateRedirection interface.
+		_inlineRedirectionState = null;
+
+		_performRequestCascade(requestedState);
+	};
+
 	var _performRequestCascade = function(requestedState, startAsyncValidation) {
 		if (!_defaultState) { throw new Error("No default state set. Call start() before the first request!"); }
 		// Request cascade starts here.
 		//
+//		console.groupEnd();
+//		console.group('_performRequestCascade', requestedState.getPath(), startAsyncValidation);
 		if (requestedState.getPath() == _defaultState.getPath() && !_defaultState.hasWildcard()) {
+//			console.log('exact match');
 			// Exact match on default state bypasses validation.
 			_grantRequest(_defaultState);
 		} else if (_asyncValidationOccurred && (_asyncValidated && !_asyncInvalidated)) {
+//			console.log('Async operation completed');
 			// Async operation completed
 			_grantRequest(requestedState);
 		} else if (_validate(requestedState, true, startAsyncValidation)) {
+//			console.log('Any other state needs to be validated.');
 			// Any other state needs to be validated.
 			_grantRequest(requestedState);
 		} else if (_validatingAsynchResponders && _validatingAsynchResponders.isBusy()) {
+//			console.log('Waiting for async validation.');
 			// Waiting for async validation.
 			// FIXME: What do we do in the mean time, dispatch an event or sth?
 			//logger.notice("waiting for async validation to complete");
 		} else if (startAsyncValidation && _asyncValidationOccurred) {
+//			console.log('any async prepration happened instantaneuously');
 			// any async prepration happened instantaneuously
 		} else if (_inlineRedirectionState) {
-			this.request(_inlineRedirectionState);
+//			console.log('_inlineRedirectionState');
+			_request(_inlineRedirectionState);
 		} else if (_currentState) {
+//			console.log('_inlineRedirectionState');
 			// If validation fails, the notifyStateChange() is called with the current state as a parameter,
 			// mainly for subclasses to respond to the blocked navigation (e.g. SWFAddress).
 			_notifyStateChange(_currentState);
 		} else if (requestedState.hasWildcard()) {
+//			console.log('wildcard error');
 			// If we get here, after validateWithWildcards has failed, this means there are still
 			// wildcards in the requested state that didn't match the previous state. This,
 			// unfortunately means your application has a logic error. Go fix it!
 			throw new Error("Check wildcard masking: " + requestedState.getPath());
 		} else if (_defaultState) {
+//			console.log('everything failed, use default state');
 			// If all else fails, we'll put up the default state.
 			_grantRequest(_defaultState);
 		} else {
+//			console.log('everything failed without default state');
 			// If you don't provide a default state, at least make sure your first request makes sense!
 			throw new Error("First request is invalid: " + requestedState.getPath());
 		}
@@ -225,7 +320,10 @@ this.navigatorjs = this.navigatorjs || {};
 			responder = _respondersByID[responderID];
 			if (respondersToShow.indexOf(responder) == -1) {
 				// if the responder is not already hidden or disappearing, trigger the transitionOut:
-				if (navigatorjs.transition.TransitionStatus.HIDDEN < _statusByResponderID[responderID] && _statusByResponderID[responderID] < navigatorjs.transition.TransitionStatus.DISAPPEARING) {
+				if (navigatorjs.transition.TransitionStatus.HIDDEN < _statusByResponderID[responderID] && _statusByResponderID[responderID] < navigatorjs.transition.TransitionStatus.DISAPPEARING &&
+					//We could also not be hidden or disappearing but performing a state swap.
+					navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, "IHasStateTransition")) {
+
 					_statusByResponderID[responderID] = navigatorjs.transition.TransitionStatus.DISAPPEARING;
 					waitForResponders.push(responder);
 
@@ -367,7 +465,7 @@ this.navigatorjs = this.navigatorjs || {};
 						waitForResponders.push(responder);
 
 						//use namespace transition;
-						responder.swapOut(new navigatorjs.TransitionCompleteDelegate(responder, navigatorjs.transition.TransitionStatus.SHOWN, navigatorjs.transition.NavigationBehaviors.SWAP, this, _transition).call);
+						responder.swapOut(new navigatorjs.transition.TransitionCompleteDelegate(responder, navigatorjs.transition.TransitionStatus.SHOWN, navigatorjs.NavigationBehaviors.SWAP, this, _transition).call);
 					}
 				}
 			}
@@ -537,10 +635,13 @@ this.navigatorjs = this.navigatorjs || {};
 				}
 			}
 
-			if (!_validatingAsynchResponders.isBusy()) {
+			if (_asyncInvalidated || !_validatingAsynchResponders.isBusy()) {
+				_validatingAsynchResponders.reset();
+				_preparedValidatingAsynchRespondersStack = [];
 				_performRequestCascade(fullState, false);
 			} else {
-				//logger.notice("Waiting for " + _validatingAsynchResponders.length + " validators to prepare");
+				_validateFirstValidatingAsynchResponderFromStack();
+//				console.log("Waiting for " + _validatingAsynchResponders.getLength() + " validators to prepare");
 			}
 		} else {
 			// ignore async preparations of former requests.
@@ -548,10 +649,23 @@ this.navigatorjs = this.navigatorjs || {};
 	};
 	// VALIDATION NAMESPACE END
 
+	var _validateFirstValidatingAsynchResponderFromStack = function() {
+		if(_preparedValidatingAsynchRespondersStack.length == 0) {
+			return false;
+		}
+
+		var preparedResponder = _preparedValidatingAsynchRespondersStack.shift();
+		preparedResponder.responder.prepareValidation(preparedResponder.remainderState, preparedResponder.unvalidatedState, preparedResponder.callOnPrepared);
+
+		return true;
+	};
+
+
 	var _validate = function(stateToValidate, allowRedirection, allowAsyncValidation) {
 		var allowRedirection = allowRedirection == undefined ? true : allowRedirection,
 			allowAsyncValidation = allowAsyncValidation == undefined ? true : allowAsyncValidation,
 			unvalidatedState = stateToValidate,
+			callOnPrepared = null,
 			implicit,
 			invalidated = false,
 			validated = false,
@@ -565,11 +679,13 @@ this.navigatorjs = this.navigatorjs || {};
 
 		// check to see if there are still wildcards left
 		if (unvalidatedState.hasWildcard()) {
+//			console.log("validate - validateState: Requested states may not contain wildcards", "return false");
 			// throw new Error("validateState: Requested states may not contain wildcards " + NavigationState.WILDCARD);
 			return false;
 		}
 
 		if (unvalidatedState.equals(_defaultState)) {
+//			console.log("validate - unvalidatedState.equals(_defaultState)", unvalidatedState.getPath(), _defaultState.getPath() , "return false");
 			return true;
 		}
 
@@ -581,11 +697,15 @@ this.navigatorjs = this.navigatorjs || {};
 
 			// reset asynchronous validation for every new state.
 			_validatingAsynchResponders = new navigatorjs.AsynchResponders();
+			_preparedValidatingAsynchRespondersStack = [];
 		}
 
 		implicit = _validateImplicitly(unvalidatedState);
+//		console.groupCollapsed('Responders');
 
+		//TODO should we order the states? As mapping a validating child state before a invalidating parent state will validate the state
 		for (path in _responders.validateByPath) {
+//			console.log(path);
 			// create a state object for comparison:
 			state = new navigatorjs.NavigationState(path);
 
@@ -597,33 +717,25 @@ this.navigatorjs = this.navigatorjs || {};
 
 				_initializeIfNeccessary(validateByPathList);
 
-				if (allowAsyncValidation) {
+				if (allowAsyncValidation && _hasRegisteredResponder(stateToValidate)) {
 					// check for async validators first. If this does not
 					for (i = 0; i < validateByPathList.length; i++) {
 						responder = validateByPathList[i];
 
 						// check for optional validation
-						if (navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, "IHasStateValidationOptional") && !responder.willValidate(remainderState, unvalidatedState)) {
+						if (navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, "IHasStateValidationOptionalAsync") && !responder.willValidate(remainderState, unvalidatedState)) {
 							continue;
 						}
 
 						if (navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, "IHasStateValidationAsync")) {
 							_asyncValidationOccurred = true;
+
+							callOnPrepared = new navigatorjs.transition.ValidationPreparedDelegate(responder, remainderState, unvalidatedState, this, _validation).call;
 							_validatingAsynchResponders.addResponder(responder);
-							//logger.notice("Preparing validation (total of " + _validatingAsynchResponders.length + ")");
+							_preparedValidatingAsynchRespondersStack.push({responder: responder, remainderState: remainderState, unvalidatedState: unvalidatedState, callOnPrepared: callOnPrepared});
 
-							//use namespace validation;
-							responder.prepareValidation(remainderState, unvalidatedState, new navigatorjs.transition.ValidationPreparedDelegate(responder, remainderState, unvalidatedState, this, _validation).call);
+//							console.log("Preparing validation (total of " + _validatingAsynchResponders.getLength() + ")");
 						}
-					}
-
-					if (_asyncValidationOccurred) {
-						//						//  If there are active async validators, stop the validation chain and wait for the prepration to finish.
-						// if (_validating.isBusy()) return false;
-						// if (_asyncValidationOccurred && (_asyncValidated || _asyncInvalidated) {
-						// async validation was instantaneous, which means that the validation was approved or denied elsewhere
-						// in the stack. this method should return false any which way.
-						return false;
 					}
 				}
 
@@ -640,8 +752,8 @@ this.navigatorjs = this.navigatorjs || {};
 					if (navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, "IHasStateValidationOptional") && !responder.willValidate(remainderState, unvalidatedState)) {
 						continue;
 					}
-
-					if (responder.validate(remainderState, unvalidatedState)) {
+					
+					if (responder.validate(remainderState, unvalidatedState) && _hasRegisteredResponder(unvalidatedState)) {
 						validated = true;
 					} else {
 						//logger.warn("Invalidated by validator: " + responder);
@@ -650,28 +762,51 @@ this.navigatorjs = this.navigatorjs || {};
 						if (allowRedirection && navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, "IHasStateRedirection")) {
 							_inlineRedirectionState = responder.redirect(remainderState, unvalidatedState);
 						}
+
+//						console.log("validate - a responder was mapped to the given state, but it did not validate");
+//						console.groupEnd();
+						return false;
 					}
 				}
 			}
 		}
 
+		if (_asyncValidationOccurred && _validateFirstValidatingAsynchResponderFromStack()) {
+			// If there are active async validators, stop the validation chain and wait for the prepration to finish.
+			// if (_validating.isBusy()) return false;
+			// if (_asyncValidationOccurred && (_asyncValidated || _asyncInvalidated) {
+			// async validation was instantaneous, which means that the validation was approved or denied elsewhere
+			// in the stack. this method should return false any which way.
+//			console.log("validate - _asyncValidationOccurred","return false");
+//			console.groupEnd();
+			return false;
+		}
+
+//		console.groupEnd();
+
 		if (_validatingAsynchResponders.isBusy()) {
+//			console.log("validate - _validatingAsynchResponders.isBusy", "return false");
 			// the request cascade will double check the asynch validators and act accordingly.
 			return false;
 		}
 
 		// invalidation overrules any validation
 		if (invalidated || _asyncInvalidated) {
+//			console.log("validate - invalidated || _asyncInvalidated", invalidated,  _asyncInvalidated, "return false");
 			return false;
 		}
 
 		if (validated || _asyncValidated) {
+//			console.log("validate - validated || _asyncValidated", validated, _asyncValidated, "return true");
 			return true;
 		}
 
 		if (!implicit) {
+//			console.log("validate - Validation failed. No validators or transitions matched the requested ", unvalidatedState);
 			//logger.warn("Validation failed. No validators or transitions matched the requested " + unvalidatedState);
 		}
+
+//		console.log("validate - return with the implicit return value", implicit);
 
 		return implicit;
 	};
@@ -742,6 +877,7 @@ this.navigatorjs = this.navigatorjs || {};
 		_responders = new navigatorjs.ResponderLists();
 		_respondersByID = {};
 		_statusByResponderID = {};
+		_redirects = null;
 		_responderIDCount = 0;
 	};
 
@@ -768,48 +904,7 @@ this.navigatorjs = this.navigatorjs || {};
 		},
 
 		request: function(pathOrState) {
-			if (pathOrState == null) {
-				// logger.error("Requested a null state. Aborting request.");
-				return;
-			}
-
-			var requestedState,
-				path,
-				fromState,
-				toState;
-
-			// Store and possibly mask the requested state
-			requestedState = navigatorjs.NavigationState.make(pathOrState);
-			if (requestedState.hasWildcard()) {
-				requestedState = requestedState.mask(_currentState || _defaultState);
-			}
-
-			// Check for exact match of the requested and the current state
-			if (_currentState && _currentState.getPath() == requestedState.getPath()) {
-				//logger.info("Already at the requested state: " + requested);
-				return;
-			}
-
-			if (_redirects) {
-				for (path in _redirects) {
-					fromState = new navigatorjs.NavigationState(path);
-					if (fromState.equals(requestedState)) {
-						toState = navigatorjs.NavigationState.make(_redirects[path]);
-						//logger.info("Redirecting " + from + " to " + to);
-						this.request(toState);
-						return;
-					}
-				}
-			}
-
-			// this event makes it possible to add responders just in time to participate in the validation process.
-			_$eventDispatcher.trigger(navigatorjs.NavigatorEvent.STATE_REQUESTED, {state: requestedState});
-
-			// Inline redirection is reset with every request call.
-			// It can be changed by a responder implementing the IHasStateRedirection interface.
-			_inlineRedirectionState = null;
-
-			_performRequestCascade(requestedState);
+			_request(pathOrState);
 		},
 
 		getCurrentState: function() {
@@ -839,7 +934,7 @@ this.navigatorjs = this.navigatorjs || {};
 		},
 
 		logResponders: function() {
-			console.log(_responders.toString());
+//			console.log(_responders.toString());
 		}
 	};
 

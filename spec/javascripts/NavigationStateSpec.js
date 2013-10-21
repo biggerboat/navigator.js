@@ -7,7 +7,6 @@ describe("NavigationState", function() {
 
 	describe("Segments", function() {
 
-
 		it("has three segments", function() {
 			expect(currentState.getSegments().length).toEqual(3);
 		});
@@ -127,6 +126,23 @@ describe("NavigationState", function() {
 		it("does not equal the foreign state /gallery/holiday/*/a/", function() {
 			var foreignState = new navigatorjs.NavigationState("/gallery/holiday/*/a/");
 			expect(currentState.equals(foreignState)).toBeFalsy();
+		});
+	});
+
+	describe("Array matching", function() {
+		it("performs the equals test on an array of states or paths", function() {
+			expect(currentState.equals(["gallery"])).toBe(false);
+			expect(currentState.equals(["gallery","gallery/holiday/*"])).toBe(true);
+			expect(currentState.equals(["gallery/holiday/*/test"])).toBe(false);
+			expect(currentState.equals([new navigatorjs.NavigationState("gallery/holiday/1")])).toBe(true);
+		});
+
+		it("performs the contains test on an array of states or paths", function() {
+			expect(currentState.contains(["gallery"])).toBe(true);
+			expect(currentState.contains(["gallery","gallery/holiday/*"])).toBe(true);
+			expect(currentState.contains(["gallery/holiday/*/test"])).toBe(false);
+			expect(currentState.contains([new navigatorjs.NavigationState("gallery/holiday/1")])).toBe(true);
+			expect(currentState.contains(["test", "state"])).toBe(false);
 		});
 	});
 
