@@ -771,97 +771,11 @@ describe("Navigator responder behavior/interface validation", function() {
 						expect(njs.getCurrentState().getPath()).toEqual("/");
 					});
 				});
-
-//				var Responder1, Responder2,
-//					responder1ValidateCalls,
-//					responder2ValidateCalls;
-//
-//				beforeEach(function() {
-//					responder1ValidateCalls = responder2ValidateCalls = 0;
-//
-//					Responder1 = function() {};
-//					Responder1.prototype = {
-//						navigatorBehaviors: ["IHasStateValidationOptionalAsync"],
-//						willValidate: function(truncatedState, fullState) {
-//							return true;
-//						},
-//
-//						prepareValidation: function(truncatedState, fullState, callOnPrepared) {
-//							callOnPrepared();
-//						},
-//
-//						validate: function(truncatedState, fullState) {
-//							responder1ValidateCalls++;
-//							return true;
-//						}
-//					};
-//
-//					Responder2 = function() {};
-//					Responder2.prototype = {
-//						navigatorBehaviors: ["IHasStateValidationOptionalAsync"],
-//						willValidate: function(truncatedState, fullState) {
-//							return true;
-//						},
-//
-//						prepareValidation: function(truncatedState, fullState, callOnPrepared) {
-//							callOnPrepared();
-//						},
-//
-//						validate: function(truncatedState, fullState) {
-//							responder2ValidateCalls++;
-//							return true;
-//						}
-//					};
-//
-//					njs.add(new Responder1(), "/*/");
-////				njs.add({}, "/*/");
-//					njs.add(new Responder2(), "/*/test/*/");
-//					njs.start("/");
-//				});
-//
-//				it("allows us to visit the /hello/ state", function() {
-//					njs.request("hello");
-//
-//					expect(njs.getCurrentState().getPath()).toEqual("/hello/");
-//				});
-//
-//				it("doesn't allow us to visit the /hello/world/ state", function() {
-//					njs.request("hello/world");
-//
-//					expect(njs.getCurrentState().getPath()).toEqual("/");
-//				});
-//
-//				it("allows us to visit the /hello/test/world/ state", function() {
-//					njs.request("hello/test/world");
-//
-//					expect(njs.getCurrentState().getPath()).toEqual("/hello/test/world/");
-//				});
-//
-//				it("doesn't allow us to visit the /hello/test/world/and/space/ state", function() {
-//					njs.request("hello/test/world/and/space");
-//
-//					expect(njs.getCurrentState().getPath()).toEqual("/");
-//				});
-//
-//				it("validates the any of the first segment changes with Responder1", function() {
-//					njs.request("hello");
-//
-//					expect(responder1ValidateCalls).toEqual(1);
-//					expect(responder2ValidateCalls).toEqual(0);
-//				});
-//
-//				it("first validates responder 1 and on success responder 2", function() {
-//					njs.request("hello/test/world");
-//
-//					expect(responder1ValidateCalls).toEqual(1);
-//					expect(responder2ValidateCalls).toEqual(1);
-//				});
-
-			})
+			});
 		});
 
 		describe("implementing all behaviors", function() {
-
+			//TODO write tests for more complex scenarios where we have multiple responders with a variation of behaviors
 		});
 	});
 
