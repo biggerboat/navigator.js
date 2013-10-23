@@ -214,6 +214,29 @@ $(function() {
 					expect(viewInstance.$el.parent()[0]).toEqual(stateViewMap.get$Root()[0]);
 				});
 
+				it("adds elements to the DOM in the order they were mapped", function() {
+					stateViewMap.mapState("red/blue").toView(View).withArguments('blue');
+					expect($('.view').length).toEqual(0);
+
+					navigator.request("red/blue");
+
+					expect($('.view').length).toEqual(2);
+					expect($($('.view')[1]).hasClass('blue')).toBe(true);
+				});
+
+				it("adds elements to the DOM in the order they were mapped when we start at a deeplink state right away", function() {
+					navigator = new navigatorjs.Navigator();
+					stateViewMap = new navigatorjs.integration.StateViewMap(navigator);
+
+					stateViewMap.mapState(["/"]).toView(View);
+					stateViewMap.mapState(["/game"]).toView(View).withArguments('game');
+
+					navigator.start("/game");
+
+					expect($('.view').length).toEqual(2);
+					expect($($('.view')[1]).hasClass('game')).toBe(true);
+				});
+
 				it("automatically adds the $el of the ViewInstance inside the provided inside-selector when we enter the mapped state", function() {
 					viewRecipe.inside('#container');
 					expect($container.children().length).toEqual(0);
