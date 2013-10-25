@@ -39,11 +39,11 @@ this.navigatorjs = this.navigatorjs || {};
 				segment = segments[i];
 
 				if(segment == "**") {
-					regexPath = regexPath + "(.*?)";
+					regexPath = regexPath + "(.*)";
 				} else if(segment == "*") {
 					regexPath = regexPath + "([^/]*)\/";
 				} else {
-					regexPath = regexPath + "("+segment+"|\\*|\\**)\/";
+					regexPath = regexPath + "("+segment+"|\\*|\\*\\*)\/";
 				}
 			}
 
@@ -116,7 +116,7 @@ this.navigatorjs = this.navigatorjs || {};
 			var stateOrPath = stateOrPathOrArray, //if we get this far, it is a state or path
 				state = NavigationState.make(stateOrPath),
 				subtractedState = this.subtract(state);
-
+			
 			if (subtractedState === null) {
 				return false;
 			}
@@ -140,16 +140,15 @@ this.navigatorjs = this.navigatorjs || {};
 
 		subtract: function(operandStateOrPath) {
 			var operand = NavigationState.make(operandStateOrPath),
-				subtractedSegments;
+				subtractedPath;
 
 			if (!this.contains(operand)) {
 				return null;
 			}
 
-			subtractedSegments = this.getSegments();
-			subtractedSegments.splice(0, operand.getSegments().length);
+			subtractedPath = this.getPath().replace(operand.getPathRegex(), "");
 
-			return new navigatorjs.NavigationState(subtractedSegments);
+			return new navigatorjs.NavigationState(subtractedPath);
 		},
 
 		append: function(stringOrState) {
