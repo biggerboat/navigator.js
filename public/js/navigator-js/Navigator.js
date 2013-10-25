@@ -752,7 +752,7 @@ this.navigatorjs = this.navigatorjs || {};
 					if (navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, "IHasStateValidationOptional") && !responder.willValidate(remainderState, unvalidatedState)) {
 						continue;
 					}
-					
+
 					if (responder.validate(remainderState, unvalidatedState) && _hasRegisteredResponder(unvalidatedState)) {
 						validated = true;
 					} else {

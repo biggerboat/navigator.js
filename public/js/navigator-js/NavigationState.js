@@ -121,7 +121,7 @@ this.navigatorjs = this.navigatorjs || {};
 
 			var stateOrPath = stateOrPathOrArray, //if we get this far, it is a state or path
 				state = NavigationState.make(stateOrPath),
-				subtractedState = this.subtract(state);
+				subtractedState = this.subtract(state) || state.subtract(this); //Or the other way around for double wildcard states
 			
 			if (subtractedState === null) {
 				return false;
