@@ -64,18 +64,42 @@ this.navigatorjs = this.navigatorjs || {};
 				foreignState = NavigationState.make(foreignStateOrPath),
 				foreignSegments = foreignState.getSegments(),
 				nativeSegments = this.getSegments(),
+				isWildcard, isDoubleWildcard,
 				foreignSegment, nativeSegment,
-				i;
+				nextForeignSegment, nextNativeSegment,
+				foreignLength = foreignSegments.length,
+				nativeLength = nativeSegments.length,
+				length = Math.max(foreignLength, nativeLength),
+				i, foreignIndex;
 
-			if (foreignSegments.length > nativeSegments.length) {
-				return false;
-			}
+			for (i = foreignIndex = 0; i < length; i++) {
+				foreignIndex = i;
 
-			for (i = 0; i < foreignSegments.length; i++) {
-				foreignSegment = foreignSegments[i];
+				if(foreignIndex >= nativeLength) {
+					//We are ahead of the length of the nativeState, we can no longer contain the foreignState
+					return false;
+				} else if(foreignIndex >= foreignLength || i >= nativeLength) {
+					//We will run out of indexes on either. This means we got thus far and contain the operand.
+					return true;
+				}
+
+				foreignSegment = foreignSegments[foreignIndex];
 				nativeSegment = nativeSegments[i];
 
-				if (!(foreignSegment === "*" || nativeSegment === "*") && foreignSegment !== nativeSegment) {
+				if(foreignSegment === "**") {
+					//Are we done matching segments?
+					if(foreignLength == foreignIndex+1) {
+						return true;
+					}
+
+					if(i+1 < nativeLength && foreignIndex+1 <foreignLength) {
+						nextForeignSegment = nativeSegments[foreignIndex+1];
+						nextNativeSegment = nativeSegments[i+1];
+					}
+				}
+
+				isWildcard = foreignSegment === "*" || nativeSegment === "*";
+				if (!(isWildcard) && foreignSegment !== nativeSegment) {
 					return false;
 				}
 			}

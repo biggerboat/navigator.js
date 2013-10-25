@@ -129,6 +129,25 @@ describe("NavigationState", function() {
 		});
 	});
 
+	describe("Operations with double wildcards", function() {
+
+		it("Accepts double wildcards as the state", function() {
+			var foreignState = new navigatorjs.NavigationState("**");
+			expect(foreignState.getPath()).toEqual("/**/")
+		});
+
+		it("contains the foreign state **", function() {
+			var foreignState = new navigatorjs.NavigationState("**");
+			expect(currentState.contains(foreignState)).toBeTruthy();
+		});
+
+		it("contains the foreign state **/1/", function() {
+			var foreignState = new navigatorjs.NavigationState("**/1");
+			expect(currentState.contains(foreignState)).toBeTruthy();
+		});
+
+	});
+
 	describe("Array matching", function() {
 		it("performs the equals test on an array of states or paths", function() {
 			expect(currentState.equals(["gallery"])).toBe(false);
@@ -193,7 +212,6 @@ describe("NavigationState", function() {
 		});
 
 	});
-
 
 	describe("State prepending by string", function() {
 		it("can be prepended by a string", function() {
