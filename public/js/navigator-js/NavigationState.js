@@ -57,22 +57,11 @@ this.navigatorjs = this.navigatorjs || {};
 
 		contains: function(foreignStateOrPathOrArray) {
 			if(foreignStateOrPathOrArray instanceof Array) {
-				var length = foreignStateOrPathOrArray.length,
-					foreignStateOrPath;
-
-				for(i=0; i<length; i++){
-					foreignStateOrPath = foreignStateOrPathOrArray[i];
-					if(this.contains(foreignStateOrPath)) {
-						return true;
-					}
-				}
-
-				return false;
+				return this._containsStateInArray(foreignStateOrPathOrArray);
 			}
 
-			foreignStateOrPath = foreignStateOrPathOrArray; //if we get this far, it is a state or path
-
-			var foreignState = NavigationState.make(foreignStateOrPath),
+			var foreignStateOrPath = foreignStateOrPathOrArray, //if we get this far, it is a state or path
+				foreignState = NavigationState.make(foreignStateOrPath),
 				foreignSegments = foreignState.getSegments(),
 				nativeSegments = this.getSegments(),
 				foreignSegment, nativeSegment,
@@ -94,24 +83,27 @@ this.navigatorjs = this.navigatorjs || {};
 			return true;
 		},
 
-		equals: function(stateOrPathOrArray) {
-			if(stateOrPathOrArray instanceof Array) {
-				var i, length = stateOrPathOrArray.length,
-					stateOrPath;
+		_containsStateInArray: function(foreignStatesOrPaths) {
+			var i, length = foreignStatesOrPaths.length,
+				foreignStateOrPath;
 
-				for(i=0; i<length; i++){
-					stateOrPath = stateOrPathOrArray[i];
-					if(this.equals(stateOrPath)) {
-						return true;
-					}
+			for(i=0; i<length; i++){
+				foreignStateOrPath = foreignStatesOrPaths[i];
+				if(this.contains(foreignStateOrPath)) {
+					return true;
 				}
-
-				return false;
 			}
 
-			stateOrPath = stateOrPathOrArray; //if we get this far, it is a state or path
+			return false;
+		},
 
-			var state = NavigationState.make(stateOrPath),
+		equals: function(stateOrPathOrArray) {
+			if(stateOrPathOrArray instanceof Array) {
+				return this._equalsStateInArray(stateOrPathOrArray);
+			}
+
+			var stateOrPath = stateOrPathOrArray, //if we get this far, it is a state or path
+				state = NavigationState.make(stateOrPath),
 				subtractedState = this.subtract(state);
 
 			if (subtractedState === null) {
@@ -119,6 +111,20 @@ this.navigatorjs = this.navigatorjs || {};
 			}
 
 			return subtractedState.getSegments().length === 0;
+		},
+
+		_equalsStateInArray: function(statesOrPaths) {
+			var i, length = statesOrPaths.length,
+				stateOrPath;
+
+			for(i=0; i<length; i++){
+				stateOrPath = statesOrPaths[i];
+				if(this.equals(stateOrPath)) {
+					return true;
+				}
+			}
+
+			return false;
 		},
 
 		subtract: function(operandStateOrPath) {
@@ -152,7 +158,7 @@ this.navigatorjs = this.navigatorjs || {};
 		},
 
 		hasWildcard: function() {
-			return this.getPath().indexOf("*") != -1;
+			return this.getPath().indexOf("/*/") != -1;
 		},
 
 		mask: function(sourceStateOrPath) {
