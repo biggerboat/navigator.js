@@ -29,6 +29,27 @@ this.navigatorjs = this.navigatorjs || {};
 			return this._path;
 		},
 
+		getPathRegex: function() {
+			var segments = this.getSegments(),
+				regexPath = "\/",
+				segment,
+				i, length = segments.length;
+
+			for(i=0; i<length; i++) {
+				segment = segments[i];
+
+				if(segment == "**") {
+					regexPath = regexPath + "(.*?)";
+				} else if(segment == "*") {
+					regexPath = regexPath + "([^/]*)\/";
+				} else {
+					regexPath = regexPath + "("+segment+")\/";
+				}
+			}
+
+			return new RegExp(regexPath);
+		},
+
 		setSegments: function(segments) {
 			this.setPath(segments.join("/"));
 		},
@@ -62,49 +83,9 @@ this.navigatorjs = this.navigatorjs || {};
 
 			var foreignStateOrPath = foreignStateOrPathOrArray, //if we get this far, it is a state or path
 				foreignState = NavigationState.make(foreignStateOrPath),
-				foreignSegments = foreignState.getSegments(),
-				nativeSegments = this.getSegments(),
-				isWildcard, isDoubleWildcard,
-				foreignSegment, nativeSegment,
-				nextForeignSegment, nextNativeSegment,
-				foreignLength = foreignSegments.length,
-				nativeLength = nativeSegments.length,
-				length = Math.max(foreignLength, nativeLength),
-				i, foreignIndex;
+				match = this.getPath().match(foreignState.getPathRegex());
 
-			for (i = foreignIndex = 0; i < length; i++) {
-				foreignIndex = i;
-
-				if(foreignIndex >= nativeLength) {
-					//We are ahead of the length of the nativeState, we can no longer contain the foreignState
-					return false;
-				} else if(foreignIndex >= foreignLength || i >= nativeLength) {
-					//We will run out of indexes on either. This means we got thus far and contain the operand.
-					return true;
-				}
-
-				foreignSegment = foreignSegments[foreignIndex];
-				nativeSegment = nativeSegments[i];
-
-				if(foreignSegment === "**") {
-					//Are we done matching segments?
-					if(foreignLength == foreignIndex+1) {
-						return true;
-					}
-
-					if(i+1 < nativeLength && foreignIndex+1 <foreignLength) {
-						nextForeignSegment = nativeSegments[foreignIndex+1];
-						nextNativeSegment = nativeSegments[i+1];
-					}
-				}
-
-				isWildcard = foreignSegment === "*" || nativeSegment === "*";
-				if (!(isWildcard) && foreignSegment !== nativeSegment) {
-					return false;
-				}
-			}
-
-			return true;
+			return match && match.index == 0 ? true : false;
 		},
 
 		_containsStateInArray: function(foreignStatesOrPaths) {

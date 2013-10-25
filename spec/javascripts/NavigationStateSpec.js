@@ -69,26 +69,30 @@ describe("NavigationState", function() {
 		});
 	});
 
-	//demonstrates use of expected exceptions
 	describe("Operations without wildcards", function() {
 		it("contains the foreign state /gallery/holiday/", function() {
 			var foreignState = new navigatorjs.NavigationState("/gallery/holiday/");
-			expect(currentState.contains(foreignState)).toBeTruthy();
+			expect(currentState.contains(foreignState)).toBe(true);
 		});
 
 		it("does not contain the foreign state /gallery/vacation/", function() {
 			var foreignState = new navigatorjs.NavigationState("/gallery/vacation/");
-			expect(currentState.contains(foreignState)).toBeFalsy();
+			expect(currentState.contains(foreignState)).toBe(false);
+		});
+
+		it("does contain the foreign state /gallery/holiday/1/more/", function() {
+			var foreignState = new navigatorjs.NavigationState("/gallery/holiday/1/more/");
+			expect(currentState.contains(foreignState)).toBe(false);
 		});
 
 		it("equals the foreign state /gallery/holiday/1/", function() {
 			var foreignState = new navigatorjs.NavigationState("/gallery/holiday/1/");
-			expect(currentState.equals(foreignState)).toBeTruthy();
+			expect(currentState.equals(foreignState)).toBe(true);
 		});
 
 		it("does not equal the foreign state /gallery/holiday/2/", function() {
 			var foreignState = new navigatorjs.NavigationState("/gallery/holiday/2/");
-			expect(currentState.equals(foreignState)).toBeFalsy();
+			expect(currentState.equals(foreignState)).toBe(false);
 		});
 	});
 
@@ -136,16 +140,55 @@ describe("NavigationState", function() {
 			expect(foreignState.getPath()).toEqual("/**/")
 		});
 
-		it("contains the foreign state **", function() {
-			var foreignState = new navigatorjs.NavigationState("**");
-			expect(currentState.contains(foreignState)).toBeTruthy();
-		});
+		describe("contains", function() {
+			it("contains the foreign state **", function() {
+				var foreignState = new navigatorjs.NavigationState("**");
 
-		it("contains the foreign state **/1/", function() {
-			var foreignState = new navigatorjs.NavigationState("**/1");
-			expect(currentState.contains(foreignState)).toBeTruthy();
-		});
+				expect(currentState.contains(foreignState)).toBe(true);
+			});
 
+			it("contains the foreign state **/1/", function() {
+				var foreignState = new navigatorjs.NavigationState("**/1");
+
+				expect(currentState.contains(foreignState)).toBe(true);
+			});
+
+			it("contains the foreign state /gallery/**/1/", function() {
+				var foreignState = new navigatorjs.NavigationState("gallery/**/1");
+
+				expect(currentState.contains(foreignState)).toBe(true);
+			});
+
+			it("doesn't contain the foreign state /gal/**/1/", function() {
+				var foreignState = new navigatorjs.NavigationState("gal/**/1");
+
+				expect(currentState.contains(foreignState)).toBe(false);
+			});
+
+			it("doesn't contain the foreign state /gallery/**/1/more/", function() {
+				var foreignState = new navigatorjs.NavigationState("gallery/**/1/more");
+
+				expect(currentState.contains(foreignState)).toBe(false);
+			});
+
+			it("contains /**/**/1/", function() {
+				var foreignState = new navigatorjs.NavigationState("**/**/1");
+
+				expect(currentState.contains(foreignState)).toBe(true);
+			});
+
+			it("contains /gallery/*/1/", function() {
+				var foreignState = new navigatorjs.NavigationState("gallery/*/1");
+
+				expect(currentState.contains(foreignState)).toBe(true);
+			});
+
+			it("doesn't contain /*/1/", function() {
+				var foreignState = new navigatorjs.NavigationState("*/1");
+
+				expect(currentState.contains(foreignState)).toBe(false);
+			});
+		});
 	});
 
 	describe("Array matching", function() {
