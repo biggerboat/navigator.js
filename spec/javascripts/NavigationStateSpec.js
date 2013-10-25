@@ -250,6 +250,13 @@ describe("NavigationState", function() {
 				var foreignState = new navigatorjs.NavigationState("/**/holiday/**/**");
 				expect(currentState.equals(foreignState)).toBe(false);
 			});
+
+			it("equals any substate when we end with two wildcards", function() {
+				var currentState = new navigatorjs.NavigationState("/home/**/");
+				expect(currentState.equals('home/test')).toBe(true);
+				expect(currentState.equals('home/test/more/sub/states')).toBe(true);
+				expect(currentState.equals('contact/test/more/sub/states')).toBe(false);
+			});
 		});
 	});
 
