@@ -29,6 +29,33 @@ this.navigatorjs = this.navigatorjs || {};
 			return this._path;
 		},
 
+		getPathRegex: function() {
+			var segments = this.getSegments(),
+				regexPath = "\/",
+				segment,
+				i, length = segments.length;
+
+			for(i=0; i<length; i++) {
+				segment = segments[i];
+
+				if(segment == "**") {
+					// match any character, including slashes (multiple segments)
+					// eg: bla or bla/bla or bla/bla/bla
+					regexPath = regexPath + "(.*)";
+				} else if(segment == "*") {
+					// match anything expect slashes and end with a slash (1 segment only).
+					// eg: bla/ but not /bla/ or bla/bla/
+					regexPath = regexPath + "([^/]*)\/";
+				} else {
+					// Either the segment, a wildcard or double wildcard and ends with a forward slash (1 segment only).
+					// eg: segment/ or */ or **/
+					regexPath = regexPath + "("+segment+"|\\*|\\*\\*)\/";
+				}
+			}
+
+			return new RegExp(regexPath);
+		},
+
 		setSegments: function(segments) {
 			this.setPath(segments.join("/"));
 		},
@@ -57,63 +84,45 @@ this.navigatorjs = this.navigatorjs || {};
 
 		contains: function(foreignStateOrPathOrArray) {
 			if(foreignStateOrPathOrArray instanceof Array) {
-				var length = foreignStateOrPathOrArray.length,
-					foreignStateOrPath;
-
-				for(i=0; i<length; i++){
-					foreignStateOrPath = foreignStateOrPathOrArray[i];
-					if(this.contains(foreignStateOrPath)) {
-						return true;
-					}
-				}
-
-				return false;
+				return this._containsStateInArray(foreignStateOrPathOrArray);
 			}
 
-			foreignStateOrPath = foreignStateOrPathOrArray; //if we get this far, it is a state or path
-
-			var foreignState = NavigationState.make(foreignStateOrPath),
+			var foreignStateOrPath = foreignStateOrPathOrArray, //if we get this far, it is a state or path
+				foreignState = NavigationState.make(foreignStateOrPath),
 				foreignSegments = foreignState.getSegments(),
 				nativeSegments = this.getSegments(),
-				foreignSegment, nativeSegment,
-				i;
+				foreignMatch = this.getPath().match(foreignState.getPathRegex()),
+				nativeMatch = foreignState.getPath().match(this.getPathRegex()),
+				isForeignMatch = foreignMatch && foreignMatch.index == 0 ? true : false,
+				isNativeMatch = nativeMatch && nativeMatch.index == 0 ? true : false,
+				tooManyForeignSegments = foreignSegments.length > nativeSegments.length;
 
-			if (foreignSegments.length > nativeSegments.length) {
-				return false;
-			}
+			return (isForeignMatch || isNativeMatch) && !tooManyForeignSegments;
+		},
 
-			for (i = 0; i < foreignSegments.length; i++) {
-				foreignSegment = foreignSegments[i];
-				nativeSegment = nativeSegments[i];
+		_containsStateInArray: function(foreignStatesOrPaths) {
+			var i, length = foreignStatesOrPaths.length,
+				foreignStateOrPath;
 
-				if (!(foreignSegment === "*" || nativeSegment === "*") && foreignSegment !== nativeSegment) {
-					return false;
+			for(i=0; i<length; i++){
+				foreignStateOrPath = foreignStatesOrPaths[i];
+				if(this.contains(foreignStateOrPath)) {
+					return true;
 				}
 			}
 
-			return true;
+			return false;
 		},
 
 		equals: function(stateOrPathOrArray) {
 			if(stateOrPathOrArray instanceof Array) {
-				var i, length = stateOrPathOrArray.length,
-					stateOrPath;
-
-				for(i=0; i<length; i++){
-					stateOrPath = stateOrPathOrArray[i];
-					if(this.equals(stateOrPath)) {
-						return true;
-					}
-				}
-
-				return false;
+				return this._equalsStateInArray(stateOrPathOrArray);
 			}
 
-			stateOrPath = stateOrPathOrArray; //if we get this far, it is a state or path
-
-			var state = NavigationState.make(stateOrPath),
-				subtractedState = this.subtract(state);
-
+			var stateOrPath = stateOrPathOrArray, //if we get this far, it is a state or path
+				state = NavigationState.make(stateOrPath),
+				subtractedState = this.subtract(state) || state.subtract(this); //Or the other way around for double wildcard states
+			
 			if (subtractedState === null) {
 				return false;
 			}
@@ -121,18 +130,31 @@ this.navigatorjs = this.navigatorjs || {};
 			return subtractedState.getSegments().length === 0;
 		},
 
+		_equalsStateInArray: function(statesOrPaths) {
+			var i, length = statesOrPaths.length,
+				stateOrPath;
+
+			for(i=0; i<length; i++){
+				stateOrPath = statesOrPaths[i];
+				if(this.equals(stateOrPath)) {
+					return true;
+				}
+			}
+
+			return false;
+		},
+
 		subtract: function(operandStateOrPath) {
 			var operand = NavigationState.make(operandStateOrPath),
-				subtractedSegments;
+				subtractedPath;
 
 			if (!this.contains(operand)) {
 				return null;
 			}
 
-			subtractedSegments = this.getSegments();
-			subtractedSegments.splice(0, operand.getSegments().length);
+			subtractedPath = this.getPath().replace(operand.getPathRegex(), "");
 
-			return new navigatorjs.NavigationState(subtractedSegments);
+			return new navigatorjs.NavigationState(subtractedPath);
 		},
 
 		append: function(stringOrState) {
@@ -152,7 +174,7 @@ this.navigatorjs = this.navigatorjs || {};
 		},
 
 		hasWildcard: function() {
-			return this.getPath().indexOf("*") != -1;
+			return this.getPath().indexOf("/*/") != -1;
 		},
 
 		mask: function(sourceStateOrPath) {

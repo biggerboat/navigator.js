@@ -93,6 +93,15 @@ describe("StateCommandMap", function() {
 			expect(executeCount).toBe(3);
 		});
 
+		it("executes the command every time the new state contains the mapped state", function() {
+			stateCommandMap.mapCommand("**/command", Command);
+			navigator.request("/test/command");
+			navigator.request("/test/bla/command");
+			navigator.request("/test/bla/bla/command");
+
+			expect(executeCount).toBe(3);
+		});
+
 		it("doesn't execute the command when we leave the mapped state", function() {
 			navigator.add({}, "/");
 			stateCommandMap.mapCommand("/command", Command);

@@ -63,5 +63,41 @@ describe("Navigator", function() {
 			expect(responder.initializeByNavigator).toHaveBeenCalled();
 		});
 
+		it("Can not request a state that is not mapped", function() {
+			navigator.start();
+			navigator.request(states.contact);
+			expect(navigator.getCurrentState().getPath()).toEqual("/");
+		});
+
+		it("Can request a state that is mapped with a wildcard", function() {
+			navigator.add({}, "product/*");
+			navigator.start();
+			navigator.request("product/2");
+			expect(navigator.getCurrentState().getPath()).toEqual("/product/2/");
+		});
+
+		it("Can not request a substate of a wildcard state when there is no mapping", function() {
+			navigator.add({}, "product/*");
+			navigator.start();
+			navigator.request("product/2/home");
+			expect(navigator.getCurrentState().getPath()).toEqual("/");
+		});
+
+		it("Can request a state that is mapped with a double wildcard", function() {
+			navigator.add({}, "**/overlay");
+			navigator.start();
+			navigator.request("product/2/overlay");
+			expect(navigator.getCurrentState().getPath()).toEqual("/product/2/overlay/");
+		});
+
+		it("Can not request a state any state when a responder with double wildcards is added", function() {
+			navigator.add({}, "**/overlay");
+			navigator.start();
+			navigator.request("test");
+			expect(navigator.getCurrentState().getPath()).toEqual("/");
+			navigator.request("test/overlay/bla");
+			expect(navigator.getCurrentState().getPath()).toEqual("/");
+		});
+
 	});
 });
