@@ -127,6 +127,16 @@ describe("NavigationState", function() {
 			expect(currentState.contains(foreignState)).toBeFalsy();
 		});
 
+		it("does equal the foreign state /gallery/holiday/*/", function() {
+			var foreignState = new navigatorjs.NavigationState("/gallery/holiday/*/");
+			expect(currentState.equals(foreignState)).toBe(true);
+		});
+
+		it("does equal the foreign state /*/*/1/", function() {
+			var foreignState = new navigatorjs.NavigationState("/*/*/1/");
+			expect(currentState.equals(foreignState)).toBe(true);
+		});
+
 		it("does not equal the foreign state /gallery/holiday/*/a/", function() {
 			var foreignState = new navigatorjs.NavigationState("/gallery/holiday/*/a/");
 			expect(currentState.equals(foreignState)).toBeFalsy();
