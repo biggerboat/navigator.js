@@ -226,6 +226,11 @@ describe("NavigationState", function() {
 				expect(currentState.equals(foreignState)).toBe(true);
 			});
 
+			it("does equal the foreign state /**/holiday/1/", function() {
+				var foreignState = new navigatorjs.NavigationState("/**/holiday/1/");
+				expect(currentState.equals(foreignState)).toBe(true);
+			});
+
 			it("does equal the foreign state /**/holiday/**/", function() {
 				var foreignState = new navigatorjs.NavigationState("/**/holiday/**/");
 				expect(currentState.equals(foreignState)).toBe(true);

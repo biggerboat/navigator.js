@@ -39,10 +39,16 @@ this.navigatorjs = this.navigatorjs || {};
 				segment = segments[i];
 
 				if(segment == "**") {
+					// match any character, including slashes (multiple segments)
+					// eg: bla or bla/bla or bla/bla/bla
 					regexPath = regexPath + "(.*)";
 				} else if(segment == "*") {
+					// match anything expect slashes and end with a slash (1 segment only).
+					// eg: bla/ but not /bla/ or bla/bla/
 					regexPath = regexPath + "([^/]*)\/";
 				} else {
+					// Either the segment, a wildcard or double wildcard and ends with a forward slash (1 segment only).
+					// eg: segment/ or */ or **/
 					regexPath = regexPath + "("+segment+"|\\*|\\*\\*)\/";
 				}
 			}
