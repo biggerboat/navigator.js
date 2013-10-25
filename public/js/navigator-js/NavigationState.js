@@ -43,7 +43,7 @@ this.navigatorjs = this.navigatorjs || {};
 				} else if(segment == "*") {
 					regexPath = regexPath + "([^/]*)\/";
 				} else {
-					regexPath = regexPath + "("+segment+")\/";
+					regexPath = regexPath + "("+segment+"|\\*|\\**)\/";
 				}
 			}
 
@@ -83,9 +83,15 @@ this.navigatorjs = this.navigatorjs || {};
 
 			var foreignStateOrPath = foreignStateOrPathOrArray, //if we get this far, it is a state or path
 				foreignState = NavigationState.make(foreignStateOrPath),
-				match = this.getPath().match(foreignState.getPathRegex());
+				foreignSegments = foreignState.getSegments(),
+				nativeSegments = this.getSegments(),
+				foreignMatch = this.getPath().match(foreignState.getPathRegex()),
+				nativeMatch = foreignState.getPath().match(this.getPathRegex()),
+				isForeignMatch = foreignMatch && foreignMatch.index == 0 ? true : false,
+				isNativeMatch = nativeMatch && nativeMatch.index == 0 ? true : false,
+				tooManyForeignSegments = foreignSegments.length > nativeSegments.length;
 
-			return match && match.index == 0 ? true : false;
+			return (isForeignMatch || isNativeMatch) && !tooManyForeignSegments;
 		},
 
 		_containsStateInArray: function(foreignStatesOrPaths) {
