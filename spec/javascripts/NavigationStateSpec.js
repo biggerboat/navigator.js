@@ -236,8 +236,8 @@ describe("NavigationState", function() {
 				expect(currentState.equals(foreignState)).toBe(true);
 			});
 
-			it("does not equal the foreign state /**/holiday/*/**", function() {
-				var foreignState = new navigatorjs.NavigationState("/**/holiday/*/**");
+			it("does not equal the foreign state /**/holiday/*/*/**", function() {
+				var foreignState = new navigatorjs.NavigationState("/**/holiday/*/*/**");
 				expect(currentState.equals(foreignState)).toBe(false);
 			});
 
@@ -246,9 +246,9 @@ describe("NavigationState", function() {
 				expect(currentState.equals(foreignState)).toBe(false);
 			});
 
-			it("does not equal the foreign state /**/holiday/**/**", function() {
-				var foreignState = new navigatorjs.NavigationState("/**/holiday/**/**");
-				expect(currentState.equals(foreignState)).toBe(false);
+			it("does equal the foreign state /**/holiday/1/**/**", function() {
+				var foreignState = new navigatorjs.NavigationState("/**/holiday/1/**/**");
+				expect(currentState.equals(foreignState)).toBe(true);
 			});
 
 			it("equals any substate when we end with two wildcards", function() {
@@ -256,6 +256,11 @@ describe("NavigationState", function() {
 				expect(currentState.equals('home/test')).toBe(true);
 				expect(currentState.equals('home/test/more/sub/states')).toBe(true);
 				expect(currentState.equals('contact/test/more/sub/states')).toBe(false);
+			});
+
+			it("is optional to have a segment at the double wildcards, (eg matching /home/ with /**/home/)", function() {
+				var currentState = new navigatorjs.NavigationState("home");
+				expect(currentState.equals('**/home')).toBe(true);
 			});
 		});
 	});

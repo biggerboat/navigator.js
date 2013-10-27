@@ -95,9 +95,12 @@ this.navigatorjs = this.navigatorjs || {};
 				nativeMatch = foreignState.getPath().match(this.getPathRegex()),
 				isForeignMatch = foreignMatch && foreignMatch.index == 0 ? true : false,
 				isNativeMatch = nativeMatch && nativeMatch.index == 0 ? true : false,
-				tooManyForeignSegments = foreignSegments.length > nativeSegments.length;
+				foreignSegmentDoubleWildcardsMatch = foreignState.getPath().match(/\*\*/g),
+				doubleWildcardsLength = foreignSegmentDoubleWildcardsMatch ? foreignSegmentDoubleWildcardsMatch.length : 0,
+				tooManyForeignSegments = foreignSegments.length > (nativeSegments.length + doubleWildcardsLength),
+				enoughNativeSegments = nativeSegments.length > foreignSegments.length;
 
-			return (isForeignMatch || isNativeMatch) && !tooManyForeignSegments;
+			return (isForeignMatch || (isNativeMatch && enoughNativeSegments)) && !tooManyForeignSegments;
 		},
 
 		_containsStateInArray: function(foreignStatesOrPaths) {
@@ -151,7 +154,7 @@ this.navigatorjs = this.navigatorjs || {};
 			if (!this.contains(operand)) {
 				return null;
 			}
-
+			
 			subtractedPath = this.getPath().replace(operand.getPathRegex(), "");
 
 			return new navigatorjs.NavigationState(subtractedPath);
