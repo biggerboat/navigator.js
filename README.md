@@ -34,7 +34,7 @@ Then open your browser with this url; [http://localhost:8888/](http://localhost:
 ## Usage
 Please refer to the [examples](https://github.com/biggerboat/navigator.js/tree/master/public/examples),
 [tests](https://github.com/biggerboat/navigator.js/tree/master/spec/javascripts) and
-[Navigator-Injector-Backbone-Command-TodoMVC example](https://github.com/PaulTondeur/nibc-todomvc)
+[Navigator-Injector-Backbone-Command-TodoMVC example](https://github.com/BiggerBoat/nibc-todomvc)
 for details of how this library can be used.
 
 [Writing full documentation of all its features is on the roadmap](https://github.com/biggerboat/navigator.js/issues/38)
