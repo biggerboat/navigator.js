@@ -1,6 +1,6 @@
 this.navigatorjs = this.navigatorjs || {};
 
-(function($) {
+(function() {
 
 	/**
 	 * History manager for the navigatorjs.Navigator
@@ -294,4 +294,4 @@ this.navigatorjs = this.navigatorjs || {};
 
 	// Copy the History object to the navigatorjs namespace
 	navigatorjs.History = History;
-}(jQuery));
+}());
