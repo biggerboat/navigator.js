@@ -16,7 +16,6 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 		_started = false;
 	};
 
-
 	StateUrlSyncer.prototype = {
 		supportsPushState: !!(window && window.history && window.history.pushState),
 
@@ -28,10 +27,25 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 
 			_usingPushState = this.supportsPushState;
 			_rootUrl = rootUrl || _rootUrl;
+
+			this._redirectPushStateOrHashOnDeeplink();
 		},
 
 		isUsingPushState: function() {
 			return _usingPushState;
+		},
+
+		_redirectPushStateOrHashOnDeeplink: function() {
+			var pushUrl = this.parsePushStateUrl(window.location.pathname),
+				hashUrl = this.parseHashUrl(window.location.hash);
+
+			if(this.supportsPushState && pushUrl=="" && hashUrl!="") {
+				//There is a hash and no push state.
+				window.history.replaceState(null, '', new navigatorjs.NavigationState(_rootUrl + hashUrl).getPath());
+			} else if(!this.supportsPushState && pushUrl!="") {
+				//There is a push state deeplink, but we don't support it. Redirect back.
+				window.location.href = _rootUrl + "#/" + pushUrl;
+			}
 		},
 
 		start: function() {
@@ -114,7 +128,6 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 		dispose: function() {
 			this._removeListeners();
 		}
-
 
 	};
 
