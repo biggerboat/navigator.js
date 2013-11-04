@@ -20,6 +20,9 @@ Most work was done by [Paul Tondeur](https://twitter.com/PaulTondeur), later joi
 Navigator.js was build with [TDD](http://en.wikipedia.org/wiki/Test-driven_development). We created a test suite with [Jasmine gem](https://github.com/pivotal/jasmine-gem). Every commit and pull requests gets tested with [Travis-ci](https://travis-ci.org/biggerboat/navigator.js).
 
 You can run the test locally by installing Ruby 2.x.x. For more information on how to install Ruby check the [Rbenv](https://github.com/sstephenson/rbenv#installation) installation guide. 
+To run the other commands, you will need the Bundler gem if you don't have it yet. (You may need to add 'sudo' in front of this command.)
+
+    $ gem install bundler
 
 When you have Ruby and Bundler installed run this command to install all dependencies:
 
