@@ -7,7 +7,7 @@ this.navigatorjs = this.navigatorjs || {};
 		if (pathStringOrArray instanceof Array) {
 			this.setSegments(pathStringOrArray);
 		} else {
-			this.setPath(pathStringOrArray);
+			this.setPath(pathStringOrArray || "");
 		}
 	};
 

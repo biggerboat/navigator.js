@@ -375,6 +375,12 @@ describe("NavigationState", function() {
 	});
 
 	describe("Other", function() {
+
+		it("Can be instantiated without parameters", function() {
+			var state = new navigatorjs.NavigationState();
+			expect(state.getPath()).toEqual('/');
+		});
+
 		it("Can clone", function() {
 			expect(currentState.clone().getPath()).toEqual('/gallery/holiday/1/');
 		});
