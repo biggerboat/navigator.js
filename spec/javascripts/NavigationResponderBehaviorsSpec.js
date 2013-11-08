@@ -85,8 +85,8 @@ describe("Navigator responder behavior/interface validation", function() {
 				initializeByNavigator: function() {}
 			};
 
-			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateInitialization")).toBeTruthy();
-			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateTransition")).toBeFalsy();
+			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateInitialization")).toBe(true);
+			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateTransition")).toBe(false);
 		});
 
 		it("Has state transition but no state initialization", function() {
@@ -95,8 +95,8 @@ describe("Navigator responder behavior/interface validation", function() {
 				transitionIn: function(callOnComplete) {},
 				transitionOut: function(callOnComplete) {}
 			};
-			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateTransition")).toBeTruthy();
-			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateInitialization")).toBeFalsy();
+			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateTransition")).toBe(true);
+			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateInitialization")).toBe(false);
 		});
 
 		it("Checks inherited behaviours", function() {
@@ -106,8 +106,8 @@ describe("Navigator responder behavior/interface validation", function() {
 				willValidate: function(truncatedState, fullState) {/*return bool*/} //IHasStateValidationOptional, IHasStateValidationOptionalAsync
 			};
 
-			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateValidationOptional")).toBeTruthy();
-			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateValidation")).toBeTruthy();
+			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateValidationOptional")).toBe(true);
+			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateValidation")).toBe(true);
 		});
 
 		it("Has implemented all behaviors", function() {
@@ -127,15 +127,15 @@ describe("Navigator responder behavior/interface validation", function() {
 				updateState: function(truncatedState, fullState) {} //IHasStateUpdate
 			};
 
-			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateInitialization")).toBeTruthy();
-			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateValidation")).toBeTruthy();
-			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateValidationAsync")).toBeTruthy();
-			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateValidationOptional")).toBeTruthy();
-			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateValidationOptionalAsync")).toBeTruthy();
-			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateRedirection")).toBeTruthy();
-			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateSwap")).toBeTruthy();
-			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateTransition")).toBeTruthy();
-			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateUpdate")).toBeTruthy();
+			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateInitialization")).toBe(true);
+			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateValidation")).toBe(true);
+			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateValidationAsync")).toBe(true);
+			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateValidationOptional")).toBe(true);
+			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateValidationOptionalAsync")).toBe(true);
+			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateRedirection")).toBe(true);
+			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateSwap")).toBe(true);
+			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateTransition")).toBe(true);
+			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateUpdate")).toBe(true);
 		});
 
 		it("Doesn't validate when a behavior has a missing method", function() {
@@ -143,15 +143,15 @@ describe("Navigator responder behavior/interface validation", function() {
 				navigatorBehaviors: ["IHasStateInitialization", "IHasStateValidation", "IHasStateValidationAsync", "IHasStateValidationOptional", "IHasStateValidationOptionalAsync", "IHasStateRedirection", "IHasStateSwap", "IHasStateTransition", "IHasStateUpdate"]
 			};
 
-			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateInitialization")).toBeFalsy();
-			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateValidation")).toBeFalsy();
-			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateValidationAsync")).toBeFalsy();
-			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateValidationOptional")).toBeFalsy();
-			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateValidationOptionalAsync")).toBeFalsy();
-			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateRedirection")).toBeFalsy();
-			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateSwap")).toBeFalsy();
-			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateTransition")).toBeFalsy();
-			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateUpdate")).toBeFalsy();
+			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateInitialization")).toBe(false);
+			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateValidation")).toBe(false);
+			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateValidationAsync")).toBe(false);
+			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateValidationOptional")).toBe(false);
+			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateValidationOptionalAsync")).toBe(false);
+			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateRedirection")).toBe(false);
+			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateSwap")).toBe(false);
+			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateTransition")).toBe(false);
+			expect(navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(object, "IHasStateUpdate")).toBe(false);
 		});
 
 	});

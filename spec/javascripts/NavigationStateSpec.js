@@ -99,32 +99,32 @@ describe("NavigationState", function() {
 	describe("Operations with wildcards", function() {
 		it("contains the foreign state /*", function() {
 			var foreignState = new navigatorjs.NavigationState("/*");
-			expect(currentState.contains(foreignState)).toBeTruthy();
+			expect(currentState.contains(foreignState)).toBe(true);
 		});
 
 		it("contains the foreign state /gallery/*/", function() {
 			var foreignState = new navigatorjs.NavigationState("/gallery/*/");
-			expect(currentState.contains(foreignState)).toBeTruthy();
+			expect(currentState.contains(foreignState)).toBe(true);
 		});
 
 		it("contains the foreign state /gallery/holiday/*", function() {
 			var foreignState = new navigatorjs.NavigationState("/gallery/holiday/*/");
-			expect(currentState.contains(foreignState)).toBeTruthy();
+			expect(currentState.contains(foreignState)).toBe(true);
 		});
 
 		it("contains the foreign state /gallery/*/1", function() {
 			var foreignState = new navigatorjs.NavigationState("/gallery/*/1/");
-			expect(currentState.contains(foreignState)).toBeTruthy();
+			expect(currentState.contains(foreignState)).toBe(true);
 		});
 
 		it("contains the foreign state /gallery/*/*", function() {
 			var foreignState = new navigatorjs.NavigationState("/gallery/*/*/");
-			expect(currentState.contains(foreignState)).toBeTruthy();
+			expect(currentState.contains(foreignState)).toBe(true);
 		});
 
 		it("does not contain the foreign state /gallery/vacation/*/", function() {
 			var foreignState = new navigatorjs.NavigationState("/gallery/vacation/*/");
-			expect(currentState.contains(foreignState)).toBeFalsy();
+			expect(currentState.contains(foreignState)).toBe(false);
 		});
 
 		it("does equal the foreign state /gallery/holiday/*/", function() {
@@ -139,7 +139,7 @@ describe("NavigationState", function() {
 
 		it("does not equal the foreign state /gallery/holiday/*/a/", function() {
 			var foreignState = new navigatorjs.NavigationState("/gallery/holiday/*/a/");
-			expect(currentState.equals(foreignState)).toBeFalsy();
+			expect(currentState.equals(foreignState)).toBe(false);
 		});
 	});
 

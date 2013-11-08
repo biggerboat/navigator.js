@@ -52,14 +52,14 @@ describe('History', function() {
 	});
 
 	it('does not go back without history', function() {
-		expect(history.back()).toBeFalsy();
+		expect(history.back()).toBe(false);
 		expect(history.getCurrentState().getPath()).toEqual('/');
 	});
 
 	it('does not allow to navigate forwards if we did not go back first', function() {
 		navigator.request('state1');
 
-		expect(history.forward()).toBeFalsy();
+		expect(history.forward()).toBe(false);
 		expect(history.getCurrentState().getPath()).toEqual('/state1/');
 	});
 
@@ -67,7 +67,7 @@ describe('History', function() {
 		navigator.request('state1');
 
 		expect(history.getCurrentState().getPath()).toEqual('/state1/');
-		expect(history.back()).toBeTruthy();
+		expect(history.back()).toBe(true);
 
 		expect(history.getCurrentState().getPath()).toEqual('/');
 		expect(history.getNextState().getPath()).toEqual('/state1/');
@@ -78,7 +78,7 @@ describe('History', function() {
 		navigator.request('state2');
 
 		expect(history.getCurrentState().getPath()).toEqual('/state2/');
-		expect(history.back()).toBeTruthy();
+		expect(history.back()).toBe(true);
 
 		expect(history.getCurrentState().getPath()).toEqual('/state1/');
 		expect(history.getNextState().getPath()).toEqual('/state2/');
@@ -89,57 +89,57 @@ describe('History', function() {
 		navigator.request('state1');
 		navigator.request('state2');
 
-		expect(history.back()).toBeTruthy();
-		expect(history.back()).toBeTruthy();
+		expect(history.back()).toBe(true);
+		expect(history.back()).toBe(true);
 		expect(history.getCurrentState().getPath()).toEqual('/');
 	});
 
 	it('navigates back with multiple steps at once', function() {
 		navigator.request('state1');
 		navigator.request('state2');
-		expect(history.back(2)).toBeTruthy();
+		expect(history.back(2)).toBe(true);
 		expect(history.getCurrentState().getPath()).toEqual('/');
 	});
 
 	it('navigates forward in history', function() {
 		navigator.request('state1');
-		expect(history.back()).toBeTruthy();
-		expect(history.forward()).toBeTruthy();
+		expect(history.back()).toBe(true);
+		expect(history.forward()).toBe(true);
 		expect(history.getCurrentState().getPath()).toEqual('/state1/');
 	});
 
 	it('navigates forward across multiple history items', function() {
 		navigator.request('state1');
 		navigator.request('state2');
-		expect(history.back()).toBeTruthy();
-		expect(history.back()).toBeTruthy();
-		expect(history.forward()).toBeTruthy();
-		expect(history.forward()).toBeTruthy();
+		expect(history.back()).toBe(true);
+		expect(history.back()).toBe(true);
+		expect(history.forward()).toBe(true);
+		expect(history.forward()).toBe(true);
 		expect(history.getCurrentState().getPath()).toEqual('/state2/');
 	});
 
 	it('navigates forward with multiple steps at once', function() {
 		navigator.request('state1');
 		navigator.request('state2');
-		expect(history.back()).toBeTruthy();
-		expect(history.back()).toBeTruthy();
-		expect(history.forward(2)).toBeTruthy();
+		expect(history.back()).toBe(true);
+		expect(history.back()).toBe(true);
+		expect(history.forward(2)).toBe(true);
 		expect(history.getCurrentState().getPath()).toEqual('/state2/');
 	});
 
 	it('navigates backwards multiple steps but caps it within history bounds', function() {
 		navigator.request('state1');
 		navigator.request('state2');
-		expect(history.back(10)).toBeTruthy();
+		expect(history.back(10)).toBe(true);
 		expect(history.getCurrentState().getPath()).toEqual('/');
 	});
 
 	it('navigates forward multiple steps but caps it within history bounds', function() {
 		navigator.request('state1');
 		navigator.request('state2');
-		expect(history.back()).toBeTruthy();
-		expect(history.back()).toBeTruthy();
-		expect(history.forward(10)).toBeTruthy();
+		expect(history.back()).toBe(true);
+		expect(history.back()).toBe(true);
+		expect(history.forward(10)).toBe(true);
 		expect(history.getCurrentState().getPath()).toEqual('/state2/');
 	});
 

@@ -35,7 +35,7 @@ $(function() {
 
 		describe("Test view", function() {
 			it("can be instantiated", function() {
-				expect(new View() instanceof View).toBeTruthy();
+				expect(new View() instanceof View).toBe(true);
 			});
 
 			it("has responders", function() {
@@ -57,12 +57,12 @@ $(function() {
 			it("can instantiate a view", function() {
 				var viewRecipe = new navigatorjs.integration.ViewRecipe().toView(View);
 
-				expect(viewRecipe.isInstantiated()).toBeFalsy();
+				expect(viewRecipe.isInstantiated()).toBe(false);
 
 				var viewInstance = viewRecipe.getViewInstance();
 
-				expect(viewInstance instanceof View).toBeTruthy();
-				expect(viewRecipe.isInstantiated()).toBeTruthy();
+				expect(viewInstance instanceof View).toBe(true);
+				expect(viewRecipe.isInstantiated()).toBe(true);
 			});
 
 			it("always returns the exact same view instance once the view is instantiated", function() {
@@ -119,7 +119,7 @@ $(function() {
 				var viewRecipe = stateViewMap.mapState("red");
 				expect(viewRecipe).toBeDefined();
 				expect(viewRecipe).not.toBeNull();
-				expect(viewRecipe instanceof navigatorjs.integration.ViewRecipe).toBeTruthy();
+				expect(viewRecipe instanceof navigatorjs.integration.ViewRecipe).toBe(true);
 			});
 
 			it("can map a string state and return a recipe holding a reference to a NavigationState, of which the path is equal to the input state", function() {
@@ -193,12 +193,12 @@ $(function() {
 				});
 
 				it("automatically instantiates the matching view recipe's view class once the navigator enters the mapped state", function() {
-					expect(viewRecipe.isInstantiated()).toBeFalsy();
+					expect(viewRecipe.isInstantiated()).toBe(false);
 
 					navigator.request("red");
 
-					expect(viewRecipe.isInstantiated()).toBeTruthy();
-					expect(viewRecipe.getViewInstance() instanceof View).toBeTruthy();
+					expect(viewRecipe.isInstantiated()).toBe(true);
+					expect(viewRecipe.getViewInstance() instanceof View).toBe(true);
 				});
 
 				it("automatically adds the $el of the ViewInstance to the DOM when we enter the mapped state", function() {
