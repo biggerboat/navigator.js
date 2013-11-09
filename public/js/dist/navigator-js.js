@@ -488,7 +488,7 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceMethods = function(int
 		if (pathStringOrArray instanceof Array) {
 			this.setSegments(pathStringOrArray);
 		} else {
-			this.setPath(pathStringOrArray);
+			this.setPath(pathStringOrArray || "");
 		}
 	};
 

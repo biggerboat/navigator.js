@@ -1,6 +1,6 @@
 {
 	"name": "navigator.js",
-	"version": "0.4.2",
+	"version": "0.5.0",
 	"description": "NavigatorJS is the ultimate solution to show/hide your dom-elements based on a single state string.",
 	"keywords": ["navigator.js","navigator","navigator-js","navigatorJS"],
 	"homepage": "https://github.com/biggerboat/navigator.js",
