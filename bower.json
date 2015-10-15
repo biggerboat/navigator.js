@@ -17,7 +17,7 @@
 	},
 
 	"main": "navigator-js.js",
-	"dependencies": {
+	"devDependencies": {
 		"jquery": ">=1.7.0",
 		"underscore": "*",
 		"backbone":"*",
