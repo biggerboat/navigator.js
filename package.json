@@ -1,5 +1,5 @@
 {
-  "name": "navigator-js",
+  "name": "@gigwalk/navigator-js",
   "version": "0.4.3",
   "main": "./navigator-js.js",
   "author": {
