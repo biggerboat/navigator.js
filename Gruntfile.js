@@ -27,6 +27,13 @@ module.exports = function (grunt) {
 			}
 		},
 
+		umd: {
+			dist: {
+				src: '<%= pkg.name %>.js',
+				objectToExport: 'this.navigatorjs'
+			}
+		},
+
 		copy: {
 			navigator: {
 				src: ['<%= pkg.name %>.js', '<%= pkg.name %>.min.js'],
@@ -61,8 +68,9 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-bump');
+	grunt.loadNpmTasks('grunt-umd');
 
-	grunt.registerTask('default', ['concat','uglify', 'copy']);
+	grunt.registerTask('default', ['concat', 'umd', 'uglify', 'copy']);
 
 	grunt.registerTask('release', ['default','bump-commit']);
 	grunt.registerTask('release:patch', ['bump-only:patch','release']);
